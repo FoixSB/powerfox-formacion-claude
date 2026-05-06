@@ -4,6 +4,7 @@ import WeatherCard from './components/WeatherCard'
 import WeatherMap from './components/WeatherMap'
 import ForecastList from './components/ForecastList'
 import SolarProgress from './components/SolarProgress'
+import SeasonalSummary from './components/SeasonalSummary'
 import { getWeatherByCity } from './api/weather'
 import './App.css'
 
@@ -138,6 +139,7 @@ export default function App() {
                   <div className="flex flex-col gap-5">
                     <WeatherCard data={weather} displayTemp={displayTemp} unit={unit} />
                     <SolarProgress sunrise={weather.sunrise} sunset={weather.sunset} />
+                    <SeasonalSummary lat={weather.lat} forecast={weather.forecast} displayTemp={displayTemp} unit={unit} />
                     <ForecastList forecast={weather.forecast} displayTemp={displayTemp} unit={unit} />
                   </div>
                 )}
@@ -151,6 +153,7 @@ export default function App() {
                 <div className="flex flex-col gap-5">
                   <WeatherCard data={weather} displayTemp={displayTemp} unit={unit} />
                   <SolarProgress sunrise={weather.sunrise} sunset={weather.sunset} />
+                  <SeasonalSummary lat={weather.lat} forecast={weather.forecast} displayTemp={displayTemp} unit={unit} />
                   <ForecastList forecast={weather.forecast} displayTemp={displayTemp} unit={unit} />
                 </div>
                 <div>
