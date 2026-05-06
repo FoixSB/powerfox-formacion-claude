@@ -1,0 +1,348 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Handoffs entre sesiones — Pasar el contexto a tu yo del lunes | Power Fox</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700&family=JetBrains+Mono:wght@400;500&display=swap');
+  :root{--navy:#0B1D3A;--blue:#1565C0;--blue-light:#42A5F5;--accent:#FF6D00;--accent-soft:#FFF3E0;--bg:#F5F7FA;--card:#FFF;--text:#1A2332;--text-mid:#546E7A;--text-light:#90A4AE;--border:#E8EDF2;--code-bg:#1E1E2E;--green:#2E7D32;--green-soft:#E8F5E9;--red:#C62828;--red-soft:#FFEBEE;--purple:#6A1B9A;--purple-soft:#F3E5F5;--claude:#7C3AED;--ms:#0078D4;--ms-soft:#DEECF9;--r:12px}
+  *{margin:0;padding:0;box-sizing:border-box}body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);line-height:1.7}
+  .nav{display:flex;justify-content:space-between;align-items:center;padding:.75rem 1.5rem;background:var(--card);border-bottom:1px solid var(--border);position:sticky;top:0;z-index:100}.nav-logo{font-weight:700;font-size:.9rem;color:var(--navy);letter-spacing:1px}.nav-links{display:flex;gap:1rem}.nav-links a{font-size:.8rem;color:var(--text-mid);text-decoration:none;font-weight:500}
+  .hero{background:var(--navy);color:#fff;padding:3rem 2rem 2.5rem;position:relative;overflow:hidden}.hero::after{content:'';position:absolute;top:0;right:0;width:40%;height:100%;background:linear-gradient(135deg,transparent,rgba(124,58,237,.18),rgba(255,109,0,.12))}.hero-meta{display:flex;gap:1.5rem;flex-wrap:wrap;align-items:center;margin-bottom:1rem;position:relative;z-index:1}.hero-badge{background:var(--claude);color:#fff;padding:.25rem .75rem;border-radius:4px;font-size:.75rem;font-weight:700;letter-spacing:1.5px;text-transform:uppercase}.hero-week{font-size:.85rem;opacity:.7}.hero h1{font-size:2.2rem;font-weight:700;line-height:1.2;margin-bottom:.5rem;position:relative;z-index:1}.hero-sub{font-size:1rem;opacity:.85;position:relative;z-index:1;max-width:820px}.hero-time{display:inline-flex;align-items:center;gap:.4rem;background:rgba(255,255,255,.1);padding:.3rem .75rem;border-radius:6px;font-size:.85rem;margin-top:.75rem;position:relative;z-index:1}
+  .container{max-width:1100px;margin:0 auto;padding:2rem 1.5rem}
+  .section{margin-bottom:3rem}.section-header{display:flex;align-items:center;gap:.75rem;margin-bottom:1.25rem;padding-bottom:.75rem;border-bottom:2px solid var(--border);flex-wrap:wrap}.section-num{width:36px;height:36px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:.9rem;color:#fff;flex-shrink:0}.section-header h2{font-size:1.3rem;font-weight:700}.section-header .duration{margin-left:auto;font-size:.8rem;color:var(--text-light);font-weight:500}
+  .content-grid{display:grid;grid-template-columns:1fr 1fr;gap:1.25rem}@media(max-width:768px){.content-grid{grid-template-columns:1fr}}
+  .card{background:var(--card);border-radius:var(--r);padding:1.5rem;box-shadow:0 1px 4px rgba(0,0,0,.05);border:1px solid var(--border)}.card h3{font-size:1.05rem;font-weight:700;margin-bottom:.75rem;display:flex;align-items:center;gap:.5rem}.card p,.card li{font-size:.88rem;color:var(--text-mid)}.card ul{padding-left:1.25rem}.card li{margin-bottom:.35rem}.card-full{grid-column:1/-1}
+  .highlight-box{border-left:4px solid var(--accent);background:var(--accent-soft);padding:1rem 1.25rem;border-radius:0 var(--r) var(--r) 0;margin:1rem 0}.highlight-box p{font-size:.88rem;color:var(--text)}.tip-box{border-left:4px solid var(--green);background:var(--green-soft);padding:1rem 1.25rem;border-radius:0 var(--r) var(--r) 0;margin:1rem 0}.tip-box p{font-size:.88rem}.warn-box{border-left:4px solid var(--red);background:var(--red-soft);padding:1rem 1.25rem;border-radius:0 var(--r) var(--r) 0;margin:1rem 0}.warn-box p{font-size:.88rem}
+  .code-block{background:var(--code-bg);color:#CDD6F4;border-radius:8px;padding:1.25rem;font-family:'JetBrains Mono',monospace;font-size:.82rem;overflow-x:auto;margin:1rem 0;line-height:1.7;white-space:pre}.comment{color:#6C7086}.keyword{color:#CBA6F7}.string{color:#A6E3A1}.func{color:#89B4FA}.num{color:#FAB387}.prop{color:#F9E2AF}
+  .table-wrap{overflow-x:auto;margin:1rem 0}table{width:100%;border-collapse:collapse;font-size:.85rem;background:var(--card);border-radius:var(--r);overflow:hidden}th{background:var(--navy);color:#fff;padding:.65rem 1rem;text-align:left;font-size:.75rem;text-transform:uppercase;letter-spacing:.5px}td{padding:.6rem 1rem;border-bottom:1px solid var(--border);vertical-align:top;color:var(--text-mid);font-size:.85rem}td strong{color:var(--text)}tr:hover td{background:#F8FAFC}td code{background:#F1F3F5;color:var(--claude);padding:.1rem .35rem;border-radius:3px;font-family:'JetBrains Mono',monospace;font-size:.78rem}
+  .footer{text-align:center;padding:2rem;font-size:.8rem;color:var(--text-light);border-top:1px solid var(--border);margin-top:2rem}.footer strong{color:var(--navy)}
+  .ai-spotlight{background:linear-gradient(135deg,#1A1A2E,#2D2D4E);color:#fff;border-radius:var(--r);padding:2rem;margin:1.5rem 0;position:relative;overflow:hidden}.ai-spotlight::before{display:block;font-size:.7rem;font-weight:700;letter-spacing:2px;color:#A78BFA;margin-bottom:.75rem;content:'⚡ EL PROBLEMA'}.ai-spotlight h3{font-size:1.3rem;font-weight:700;margin-bottom:.75rem;color:#fff}.ai-spotlight p{font-size:.95rem;color:#CDD6F4;margin-bottom:.5rem}
+  .compare-grid{display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin:1rem 0}@media(max-width:768px){.compare-grid{grid-template-columns:1fr}}.compare-card{padding:1.25rem;border-radius:var(--r);border:1px solid var(--border)}.compare-before{background:var(--red-soft);border-color:#EF9A9A}.compare-after{background:var(--green-soft);border-color:#A5D6A7}.compare-card h4{font-size:.95rem;font-weight:700;margin-bottom:.5rem}.compare-before h4{color:var(--red)}.compare-after h4{color:var(--green)}.compare-card p,.compare-card li{font-size:.85rem;color:var(--text)}.compare-card ul{padding-left:1.2rem;margin-top:.4rem}
+  .step-list{counter-reset:step;padding:0;list-style:none;margin:.5rem 0 1rem}.step-list li{counter-increment:step;position:relative;padding:.65rem 0 .65rem 2.5rem;border-bottom:1px dashed var(--border);font-size:.88rem;color:var(--text-mid)}.step-list li::before{content:counter(step);position:absolute;left:0;top:.6rem;width:1.75rem;height:1.75rem;background:var(--claude);color:#fff;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:.8rem}.step-list li:last-child{border-bottom:none}.step-list li strong{color:var(--text)}
+  .pill-row{display:flex;flex-wrap:wrap;gap:.4rem;margin:.5rem 0}.pill{background:#EDE9FE;color:var(--claude);padding:.2rem .65rem;border-radius:12px;font-size:.72rem;font-weight:600}.pill-orange{background:var(--accent-soft);color:var(--accent)}.pill-green{background:var(--green-soft);color:var(--green)}
+  .anatomy{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:1.5rem;margin:1rem 0}.anatomy-row{display:grid;grid-template-columns:200px 1fr;gap:1rem;padding:.75rem 0;border-bottom:1px dashed var(--border);align-items:start}.anatomy-row:last-child{border-bottom:none}.anatomy-key{font-family:'JetBrains Mono',monospace;font-size:.82rem;color:var(--claude);font-weight:600}.anatomy-val{font-size:.88rem;color:var(--text-mid)}.anatomy-val strong{color:var(--text)}@media(max-width:768px){.anatomy-row{grid-template-columns:1fr}}
+  .quote-box{background:#F8FAFC;border-left:4px solid var(--claude);padding:1.25rem 1.5rem;margin:1rem 0;border-radius:0 var(--r) var(--r) 0;font-style:italic;color:var(--text-mid);font-size:.95rem}.quote-box strong{color:var(--text);font-style:normal}
+</style>
+</head>
+<body>
+
+<nav class="nav"><div class="nav-logo">POWER FOX — Formación</div><div class="nav-links"><a href="#">S4</a><a href="#">Lunes</a><a href="#">Material complementario</a></div></nav>
+
+<div class="hero">
+  <div class="hero-meta"><span class="hero-badge">Material S4 · Lunes · Workflow</span><span class="hero-week">2026-05-05 · Cápsula de 20 min</span></div>
+  <h1>Handoffs entre sesiones · Pasar el contexto a tu yo del lunes</h1>
+  <p class="hero-sub">Claude Code es brutal dentro de una sesión. El problema empieza cuando cierras la terminal: la próxima vez no recuerda en qué rama estabas, qué decisión descartaste el viernes ni por qué. Un handoff es un markdown corto que cubre exactamente ese hueco — y le permite a tu yo del lunes (o a otro miembro del equipo) retomar en 2 minutos lo que costó 4 horas construir.</p>
+  <div class="hero-time">⏱ Lectura: 10 min · Práctica en clase: 10 min · Template: <code style="background:rgba(255,255,255,.15);padding:.1rem .4rem;border-radius:3px;color:#fff">vault/sessions/_template.md</code></div>
+</div>
+
+<div class="container">
+
+  <!-- ========== BLOQUE 1: EL PROBLEMA ========== -->
+  <div class="section">
+    <div class="section-header"><div class="section-num" style="background:var(--claude)">01</div><h2>El problema que resuelve</h2><span class="duration">2 min</span></div>
+
+    <div class="ai-spotlight">
+      <h3>🧠 Claude no tiene memoria entre sesiones</h3>
+      <p>Dentro de una conversación: lee tu repo, infiere convenciones, encadena decisiones, recuerda lo que dijiste hace 40 mensajes. Fuera de ella: cero. Cuando vuelves el lunes, empieza de nuevo.</p>
+      <p>El <code style="background:rgba(255,255,255,.15);padding:.1rem .4rem;border-radius:3px;color:#fff">CLAUDE.md</code> arrastra <strong>convenciones</strong> del proyecto. Pero no arrastra <em>dónde te quedaste</em> ni <em>por qué tomaste esa decisión rara</em>. Ese hueco lo cubre el handoff.</p>
+    </div>
+
+    <div class="content-grid">
+      <div class="card">
+        <h3>😩 Lo que pasa sin handoffs</h3>
+        <ul>
+          <li>Lunes 9:00 — abres el proyecto y no sabes en qué rama estabas</li>
+          <li>Re-exploras el código durante 30 minutos para reconstruir contexto</li>
+          <li>Repites un experimento que ya descartaste el viernes (porque no recordabas <em>por qué</em> lo descartaste)</li>
+          <li>El PR que dejaste pendiente con QA se queda muerto otras 2 semanas</li>
+          <li>Una decisión "rara" del código se reescribe — y vuelve a romperse por la misma razón que la primera vez</li>
+        </ul>
+      </div>
+      <div class="card">
+        <h3>✨ Lo que pasa con handoffs</h3>
+        <ul>
+          <li>Lunes 9:00 — <code>cat sessions/&lt;proyecto&gt;/&lt;último&gt;.md</code></li>
+          <li>En 2 minutos sabes: rama, qué está hecho, qué queda, próximo paso exacto</li>
+          <li>La sección de <strong>decisiones no obvias</strong> evita repetir errores ya cometidos</li>
+          <li>La tabla de <strong>Carried Forward</strong> no deja que se te pierdan items entre sesiones</li>
+          <li>Le pides a Claude: <em>"lee el último handoff y dime por dónde íbamos"</em> — y arranca con el contexto puesto</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- ========== BLOQUE 2: QUÉ ES UN HANDOFF ========== -->
+  <div class="section">
+    <div class="section-header"><div class="section-num" style="background:var(--ms)">02</div><h2>Qué es un handoff</h2><span class="duration">2 min</span></div>
+
+    <p style="font-size:.95rem;color:var(--text-mid);margin-bottom:1rem">Un <strong>handoff</strong> es un markdown corto que escribes <strong>al cerrar cada sesión de trabajo</strong> y guardas dentro del propio repo (o de un vault dedicado, si gestionas varios proyectos a la vez).</p>
+
+    <div class="quote-box">
+      No es un changelog. No es un PR description. Es una <strong>carta a tu yo futuro</strong> — o a otro miembro del equipo — que retoma exactamente donde lo dejaste.
+    </div>
+
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th style="width:40%">Idea central</th><th>Por qué importa</th></tr></thead>
+        <tbody>
+          <tr><td><strong>Una sola lectura al inicio = ~80% del contexto recuperado</strong></td><td>Empiezas la sesión con un <code>cat</code>, no re-explorando 20 archivos para recordar dónde ibas</td></tr>
+          <tr><td><strong>Las decisiones no obvias se documentan o se pierden</strong></td><td>El <code>git diff</code> dice <em>qué</em> cambió. El handoff dice <em>por qué</em> eso y no la otra opción que parecía mejor</td></tr>
+          <tr><td><strong>Los items pendientes no se silencian entre sesiones</strong></td><td>La tabla <em>Carried Forward</em> obliga a arrastrar lo no resuelto hasta que se cierra. Nada se pierde por olvido</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="highlight-box">
+      <p>📍 <strong>Cuándo escribirlo:</strong> al terminar la sesión (aunque no hayas cerrado el feature), al bloquearte por algo externo (esperando review, falta info), antes de un fin de semana largo, o cuando vas a cambiar de proyecto y volverás más tarde a este. <strong>Uno por sesión productiva basta</strong> — no hace falta uno por cada commit.</p>
+    </div>
+  </div>
+
+  <!-- ========== BLOQUE 3: ANATOMÍA DEL TEMPLATE ========== -->
+  <div class="section">
+    <div class="section-header"><div class="section-num" style="background:var(--accent)">03</div><h2>Anatomía del template</h2><span class="duration">4 min</span></div>
+
+    <p style="font-size:.95rem;color:var(--text-mid);margin-bottom:1rem">El template oficial vive en <code>vault/sessions/_template.md</code>. Cada sección está pensada para capturar algo que <strong>no se puede recuperar leyendo el código o el <code>git log</code></strong>. Si una sección se solapa con info que ya está en otro sitio, es ruido.</p>
+
+    <div class="anatomy">
+      <div class="anatomy-row">
+        <div class="anatomy-key">frontmatter</div>
+        <div class="anatomy-val"><strong>Project, date, feature, status, touched-also.</strong> Cinco campos que te permiten encontrar el handoff sin abrirlo. <code>status</code> te dice de un vistazo si la sesión cerró un trozo o quedó a medias.</div>
+      </div>
+      <div class="anatomy-row">
+        <div class="anatomy-key">### Branch</div>
+        <div class="anatomy-val"><strong>Una línea: rama y de dónde sale.</strong> Suena trivial hasta que vuelves el lunes y no recuerdas si estabas en <code>feature/te-refactor</code> o en <code>fix/te-validation</code>.</div>
+      </div>
+      <div class="anatomy-row">
+        <div class="anatomy-key">### Status</div>
+        <div class="anatomy-val">Lo que está hecho <strong>y confirmado funcionando</strong>. La palabra clave es <em>confirmado</em>. No "creo que el endpoint funciona". Lo probaste, viste el 200, lo apuntas. Si no lo confirmaste, va en Blockers.</div>
+      </div>
+      <div class="anatomy-row">
+        <div class="anatomy-key">### Resolved This Session</div>
+        <div class="anatomy-val">Items que arrastrabas de handoffs anteriores y cerraste hoy. <strong>Si no resolviste nada heredado, borra esta sección entera</strong>. Sin obligación de inflarla.</div>
+      </div>
+      <div class="anatomy-row">
+        <div class="anatomy-key">### Blockers / Open Questions</div>
+        <div class="anatomy-val">Lo que la próxima sesión <strong>tiene que tocar primero</strong>. Bloqueos reales (esperando review, falta credencial), preguntas abiertas (¿usamos <code>pfx_time_entry</code> o <code>pfx_time_entry_day</code> para esto?).</div>
+      </div>
+      <div class="anatomy-row">
+        <div class="anatomy-key">### Next Step (exact)</div>
+        <div class="anatomy-val">⭐ <strong>La sección que más valor da.</strong> Una frase, sin ambigüedad, ejecutable. Si no eres capaz de escribir un Next Step concreto, probablemente la sesión no acabó en buen sitio para parar.</div>
+      </div>
+      <div class="anatomy-row">
+        <div class="anatomy-key">### Non-Obvious Decisions</div>
+        <div class="anatomy-val">⭐ <strong>La sección que más rendimiento da a largo plazo.</strong> Decisiones que no se ven en el diff. Tres meses después leerás el código, pensarás "esto está mal hecho", y este apartado te recordará que ya lo intentaste de la otra forma y por qué no funcionaba.</div>
+      </div>
+      <div class="anatomy-row">
+        <div class="anatomy-key">### Files Changed</div>
+        <div class="anatomy-val">Solo los archivos clave. <strong>No es un <code>git diff --name-only</code></strong>. Lo justo para que el yo-futuro sepa qué abrir primero.</div>
+      </div>
+      <div class="anatomy-row">
+        <div class="anatomy-key">### Commit Range</div>
+        <div class="anatomy-val"><code>&lt;sha-inicio&gt;..&lt;sha-fin&gt;</code>. Te permite reconstruir lo trabajado con <code>git log &lt;range&gt;</code> sin recordar fechas.</div>
+      </div>
+      <div class="anatomy-row">
+        <div class="anatomy-key">### Carried Forward</div>
+        <div class="anatomy-val">⭐ <strong>La sección crítica.</strong> Tabla de items que vienen arrastrándose. <strong>Regla: nunca borras filas, solo marcas como resueltas con fecha + commit.</strong> La trazabilidad histórica es lo que evita que algo se silencie entre sesiones.</div>
+      </div>
+      <div class="anatomy-row">
+        <div class="anatomy-key">### Tools/MCPs Used</div>
+        <div class="anatomy-val">Lista corta de MCPs tocados. Cuando algo se rompa en otra sesión, sabes por dónde empezar a debuggear.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ========== BLOQUE 4: NEXT STEP — vago vs ejecutable ========== -->
+  <div class="section">
+    <div class="section-header"><div class="section-num" style="background:var(--green)">04</div><h2>El Next Step — vago vs. ejecutable</h2><span class="duration">2 min</span></div>
+
+    <p style="font-size:.95rem;color:var(--text-mid);margin-bottom:1rem">Si tuvieras que quedarte con una sola sección del handoff, sería <strong>Next Step</strong>. Es lo que decide si tu yo del lunes empieza a trabajar en 2 minutos o pierde 30 reorientándose.</p>
+
+    <div class="compare-grid">
+      <div class="compare-card compare-before">
+        <h4>❌ Vago (inútil)</h4>
+        <ul>
+          <li>"Continuar con el refactor"</li>
+          <li>"Revisar el endpoint"</li>
+          <li>"Seguir con la PR"</li>
+          <li>"Mirar lo del bug del viernes"</li>
+        </ul>
+        <p style="margin-top:.6rem;font-size:.82rem">Tu yo futuro va a tener que <strong>re-explorar</strong> el código para entender qué quería decir esa frase. Has perdido el handoff.</p>
+      </div>
+      <div class="compare-card compare-after">
+        <h4>✅ Ejecutable</h4>
+        <ul>
+          <li>"Ejecutar <code>npm run test:integration -- weather-app</code> y arreglar los 2 tests rojos"</li>
+          <li>"Probar <code>POST /api/time-entries</code> con el payload de <code>fixtures/te-001.json</code> y verificar que <code>approved_by</code> se rellena"</li>
+          <li>"Responder al comentario de Yeriel en línea 47 del PR #142 y re-pedir review"</li>
+        </ul>
+        <p style="margin-top:.6rem;font-size:.82rem">Tu yo futuro <strong>ejecuta</strong>. Sin pensar. Sin re-explorar.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- ========== BLOQUE 5: FLUJO ========== -->
+  <div class="section">
+    <div class="section-header"><div class="section-num" style="background:var(--blue)">05</div><h2>El flujo completo</h2><span class="duration">2 min</span></div>
+
+    <div class="content-grid">
+      <div class="card">
+        <h3>🚪 Cerrar una sesión</h3>
+        <ul class="step-list">
+          <li>Copias el <code>_template.md</code></li>
+          <li>Lo guardas como <code>sessions/&lt;project&gt;/YYYY-MM-DD-&lt;feature&gt;.md</code></li>
+          <li>Lo rellenas — <strong>5 a 10 minutos</strong>, no más</li>
+          <li>Añades una línea a <code>sessions/log.md</code></li>
+          <li>Commit: <code>chore: session handoff &lt;feature&gt; &lt;date&gt;</code></li>
+        </ul>
+      </div>
+      <div class="card">
+        <h3>🚀 Abrir la siguiente sesión</h3>
+        <ul class="step-list">
+          <li><code>cat sessions/&lt;project&gt;/&lt;último&gt;.md</code> — o pídeselo a Claude</li>
+          <li>Lees primero <strong>Carried Forward</strong>: obligaciones heredadas</li>
+          <li>Lees <strong>Next Step</strong>: empiezas por ahí, sin re-explorar</li>
+          <li>Si vas a tocar el feature, revisas <strong>Non-Obvious Decisions</strong> antes</li>
+          <li>~80% del contexto recuperado en un par de minutos</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="tip-box">
+      <p>💡 <strong>Truco con Claude:</strong> al arrancar la sesión, pídele <em>"Lee el último handoff de este proyecto y dime por dónde íbamos, y qué dependencias arrastramos"</em>. Al cerrar, pídele <em>"Genera un handoff siguiendo <code>sessions/_template.md</code> con lo que hemos hecho"</em> — luego revisas y ajustas. Reduce la fricción de mantener el hábito.</p>
+    </div>
+  </div>
+
+  <!-- ========== BLOQUE 6: EJEMPLO ========== -->
+  <div class="section">
+    <div class="section-header"><div class="section-num" style="background:var(--purple)">06</div><h2>Mini-ejemplo real</h2><span class="duration">3 min</span></div>
+
+    <p style="font-size:.95rem;color:var(--text-mid);margin-bottom:1rem">Sesión del 4 de mayo trabajando en el flujo de aprobación del time tracker. Quedó bloqueada esperando una respuesta de Renny.</p>
+
+    <div class="code-block"><span class="comment">---
+project: clients/litoclean
+date: 2026-05-04
+feature: time-tracker-approval-flow
+status: blocked
+touched-also:
+---</span>
+
+<span class="keyword"># Session Handoff — 2026-05-04 — Time Tracker Approval Flow</span>
+
+<span class="prop">### Branch</span>
+`feature/te-approval-flow` — based off `main`
+
+<span class="prop">### Status</span>
+- [x] Endpoint `POST /api/time-entries/approve` implementado y probado con Postman
+- [x] Validación `approver != owner` añadida (commit a3f9c1)
+- [ ] UI de aprobación — falta integrar el botón en Screen1
+
+<span class="prop">### Blockers / Open Questions</span>
+- [ ] Esperando confirmación de Renny: ¿el aprobador puede editar las horas
+      antes de aprobar, o solo aprobar/rechazar tal cual?
+
+<span class="prop">### Next Step (exact)</span>
+<span class="string">> Pingear a Renny por Teams con la pregunta del blocker. Si responde
+> "solo aprobar/rechazar", implementar `btnApprove.OnSelect` en
+> Screen1 línea ~2840 llamando al endpoint nuevo.</span>
+
+<span class="prop">### Non-Obvious Decisions Made This Session</span>
+| Decisión | Razón |
+|----------|-------|
+| Endpoint separado en vez de campo `status` editable | Auditoría: necesitamos log de quién aprobó y cuándo |
+| `approver != owner` se valida en backend, no en UI | UI puede ser bypaseada con dev tools |
+
+<span class="prop">### Files Changed</span>
+api/time-entries/approve.ts
+canvas/Screen1.pa.yaml
+tests/integration/te-approval.spec.ts
+
+<span class="prop">### Commit Range</span>
+`f01abc..a3f9c1`
+
+---
+
+<span class="prop">### Carried Forward</span>
+| #    | Item                                          | Originally From         | Status |
+|------|-----------------------------------------------|-------------------------|--------|
+| CF-1 | Validar timezone en submitted_at              | 2026-04-22 time-tracker | STILL PENDING |
+| CF-2 | Validar approver != owner                     | 2026-04-22 time-tracker | RESOLVED 2026-05-04 via a3f9c1 |
+| CF-3 | Confirmar si approver puede editar al aprobar | 2026-05-04 (este)       | STILL PENDING |
+
+<span class="prop">### Tools/MCPs Used</span>
+ms365 (Teams ping a Renny), claude-code-mcp</div>
+
+    <div class="highlight-box">
+      <p>👀 Fíjate en <strong>CF-2</strong>: era pendiente desde el 22 de abril, se resolvió hoy, y <em>la fila no se borra</em>. Cuando dentro de dos semanas alguien pregunte <em>"esto del approver != owner ¿lo metimos?"</em>, ahí está la trazabilidad: commit <code>a3f9c1</code>, fecha <code>2026-05-04</code>.</p>
+    </div>
+  </div>
+
+  <!-- ========== BLOQUE 7: ANTI-PATRONES ========== -->
+  <div class="section">
+    <div class="section-header"><div class="section-num" style="background:var(--red)">07</div><h2>Anti-patrones</h2><span class="duration">2 min</span></div>
+
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th style="width:35%">Anti-patrón</th><th>Por qué falla</th></tr></thead>
+        <tbody>
+          <tr><td><strong>Handoffs vagos</strong><br><em>"Seguir trabajando en el feature"</em></td><td>Inútil. Si no puedes ser específico, no escribas el handoff: probablemente la sesión no acabó en buen sitio para parar</td></tr>
+          <tr><td><strong>Handoffs como diario personal</strong></td><td>No es un blog ni una bitácora reflexiva. Hechos, decisiones, próximo paso. Punto</td></tr>
+          <tr><td><strong>Saltar el Carried Forward</strong></td><td>La primera vez que omites un item heredado, en dos semanas reaparece como bug en producción</td></tr>
+          <tr><td><strong>Documentar lo que ya está en el código</strong></td><td>El diff cuenta el <em>qué</em>. El handoff cuenta el <em>por qué</em> y el <em>qué falta</em>. Duplicar info es ruido</td></tr>
+          <tr><td><strong>Escribirlo "luego"</strong></td><td>Se escribe al cerrar la sesión, con el contexto fresco. Si lo dejas para mañana, ya perdiste la mitad del valor</td></tr>
+          <tr><td><strong>Borrar filas resueltas del Carried Forward</strong></td><td>Pierdes la trazabilidad histórica. Marcar RESOLVED + fecha + commit es lo que da valor a la tabla</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- ========== BLOQUE 8: PRÁCTICA ========== -->
+  <div class="section">
+    <div class="section-header"><div class="section-num" style="background:var(--accent)">08</div><h2>Práctica de hoy</h2><span class="duration">10 min</span></div>
+
+    <div class="card card-full">
+      <h3>🎯 Objetivo</h3>
+      <p style="margin-bottom:.75rem">No es escribir un handoff perfecto a la primera. Es <strong>establecer el hábito</strong>: cierras sesión → handoff → commit. La calidad mejora sola con la repetición.</p>
+
+      <div class="pill-row" style="margin:1rem 0">
+        <span class="pill">Coge un proyecto real propio</span>
+        <span class="pill pill-orange">5-10 min de escritura</span>
+        <span class="pill pill-green">Pídele review a Claude</span>
+      </div>
+
+      <ul class="step-list">
+        <li><strong>Coge un proyecto tuyo</strong> — rama de cliente, experimento, lo que sea. Algo en lo que estés trabajando ahora mismo</li>
+        <li><strong>Copia el template:</strong> <code>cp vault/sessions/_template.md vault/sessions/&lt;tu-proyecto&gt;/2026-05-05-&lt;feature&gt;.md</code></li>
+        <li><strong>Rellénalo</strong> con el estado real de tu trabajo, aunque sea trivial</li>
+        <li><strong>Foco especial</strong> en <em>Next Step</em> y <em>Non-Obvious Decisions</em>: 70% del valor está ahí</li>
+        <li><strong>Pídele a Claude</strong>: <em>"¿es realmente accionable mi Next Step o sigue siendo vago? Sé crítico."</em> — y ajusta</li>
+        <li><strong>Commit</strong> con mensaje <code>chore: session handoff &lt;feature&gt; 2026-05-05</code></li>
+      </ul>
+
+      <div class="warn-box" style="margin-top:1rem">
+        <p>⚠️ <strong>Recordad las reglas del repo público:</strong> nada de credenciales, URLs internas de producción, nombres de clientes reales fuera de los permitidos, ni código propietario. Si vuestro handoff toca cosas sensibles, escribidlo en un <strong>vault privado</strong> — no en este repo formativo.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- ========== BLOQUE 9: POR QUÉ FUNCIONA ========== -->
+  <div class="section">
+    <div class="section-header"><div class="section-num" style="background:var(--navy)">09</div><h2>Por qué funciona — la idea de fondo</h2><span class="duration">1 min</span></div>
+
+    <div class="quote-box">
+      La ventana de contexto de Claude Code se reinicia en cada sesión. <strong>CLAUDE.md</strong> y <strong>AGENTS.md</strong> arrastran convenciones del proyecto, pero no arrastran <em>dónde te quedaste</em> ni <em>por qué tomaste esa decisión específica</em>. Los handoffs cubren ese hueco. Un solo <code>cat</code> al inicio recupera ~80% del contexto previo. La tabla de Carried Forward asegura que nada se pierde silenciosamente entre sesiones.
+    </div>
+
+    <p style="font-size:.95rem;color:var(--text-mid);margin-top:1rem">No es un proceso enterprise. Son 5-10 minutos al final del día que multiplican la productividad del lunes siguiente — y la del compañero que herede el proyecto.</p>
+  </div>
+
+</div>
+
+<div class="footer">
+  <p><strong>Power Fox BI</strong> · Formación Claude Code · Sesión 4 — Lunes</p>
+  <p style="margin-top:.5rem;font-size:.75rem">Template oficial: <code>vault/sessions/_template.md</code> · Material de apoyo: <code>sesiones/s4-lunes/handoffs.md</code></p>
+</div>
+
+</body>
+</html>

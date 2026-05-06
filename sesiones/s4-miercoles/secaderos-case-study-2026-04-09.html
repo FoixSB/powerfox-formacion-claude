@@ -1,0 +1,876 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Caso de estudio nº 1 — Desarrollo del módulo Secaderos con Claude Code</title>
+<style>
+  :root{
+    --bg:#0f1115;
+    --panel:#161a22;
+    --panel-2:#1d2230;
+    --ink:#e8ecf3;
+    --ink-dim:#a9b3c4;
+    --ink-faint:#6f7a8c;
+    --accent:#3860b2;
+    --accent-2:#5b8def;
+    --good:#3aa46a;
+    --warn:#d8a23e;
+    --bad:#c45656;
+    --line:#2a3140;
+    --code-bg:#0b0e14;
+    --pill:#243149;
+  }
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{
+    margin:0;
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Inter,system-ui,sans-serif;
+    background:var(--bg);
+    color:var(--ink);
+    line-height:1.62;
+    font-size:15.5px;
+  }
+  .wrap{max-width:1080px;margin:0 auto;padding:48px 28px 96px}
+  header.cover{
+    margin-bottom:48px;
+    padding:36px 32px;
+    background:linear-gradient(135deg,#1a2238 0%,#0f1115 100%);
+    border:1px solid var(--line);
+    border-radius:14px;
+    position:relative;
+    overflow:hidden;
+  }
+  header.cover::before{
+    content:"";
+    position:absolute;top:-40px;right:-40px;
+    width:220px;height:220px;
+    background:radial-gradient(circle,rgba(91,141,239,.18) 0%,transparent 70%);
+    pointer-events:none;
+  }
+  .eyebrow{
+    text-transform:uppercase;
+    letter-spacing:.18em;
+    font-size:11px;
+    color:var(--accent-2);
+    font-weight:600;
+    margin-bottom:8px;
+  }
+  h1{
+    font-size:30px;
+    line-height:1.25;
+    margin:0 0 14px;
+    font-weight:700;
+    letter-spacing:-.01em;
+  }
+  .sub{
+    color:var(--ink-dim);
+    font-size:15px;
+    max-width:780px;
+  }
+  .meta-row{
+    display:flex;flex-wrap:wrap;gap:8px;
+    margin-top:20px;
+  }
+  .pill{
+    display:inline-flex;align-items:center;gap:6px;
+    padding:5px 11px;
+    background:var(--pill);
+    color:var(--ink);
+    border-radius:999px;
+    font-size:12.5px;
+    font-weight:500;
+  }
+  .pill .dot{width:6px;height:6px;border-radius:50%;background:var(--accent-2)}
+  nav.toc{
+    background:var(--panel);
+    border:1px solid var(--line);
+    border-radius:12px;
+    padding:18px 22px;
+    margin-bottom:36px;
+  }
+  nav.toc h3{
+    margin:0 0 10px;
+    font-size:13px;
+    text-transform:uppercase;
+    letter-spacing:.12em;
+    color:var(--ink-dim);
+    font-weight:600;
+  }
+  nav.toc ol{margin:0;padding-left:22px;column-count:2;column-gap:32px}
+  nav.toc li{padding:3px 0;break-inside:avoid}
+  nav.toc a{color:var(--ink);text-decoration:none}
+  nav.toc a:hover{color:var(--accent-2)}
+  h2{
+    font-size:22px;
+    margin:48px 0 14px;
+    padding-bottom:8px;
+    border-bottom:1px solid var(--line);
+    font-weight:700;
+    letter-spacing:-.005em;
+  }
+  h3{
+    font-size:17px;
+    margin:28px 0 10px;
+    font-weight:600;
+    color:#dde4f0;
+  }
+  h4{
+    font-size:15px;
+    margin:22px 0 8px;
+    font-weight:600;
+    color:var(--ink-dim);
+  }
+  p{margin:10px 0}
+  a{color:var(--accent-2)}
+  ul,ol{padding-left:22px}
+  li{margin:5px 0}
+  blockquote{
+    margin:14px 0;
+    padding:12px 18px;
+    background:var(--panel-2);
+    border-left:3px solid var(--accent-2);
+    border-radius:0 8px 8px 0;
+    color:var(--ink-dim);
+    font-style:italic;
+  }
+  table{
+    width:100%;
+    border-collapse:collapse;
+    margin:14px 0;
+    background:var(--panel);
+    font-size:14px;
+    border:1px solid var(--line);
+    border-radius:8px;
+    overflow:hidden;
+  }
+  th{
+    background:var(--panel-2);
+    color:var(--ink);
+    font-weight:600;
+    text-align:left;
+    padding:10px 12px;
+    border-bottom:1px solid var(--line);
+    font-size:13px;
+  }
+  td{
+    padding:9px 12px;
+    border-bottom:1px solid var(--line);
+    color:var(--ink-dim);
+    vertical-align:top;
+  }
+  tr:last-child td{border-bottom:none}
+  td strong, td b{color:var(--ink)}
+  code{
+    font-family:"SF Mono",Menlo,Consolas,monospace;
+    font-size:13px;
+    background:var(--code-bg);
+    color:#cfe7ff;
+    padding:1.5px 6px;
+    border-radius:4px;
+    border:1px solid var(--line);
+  }
+  pre{
+    background:var(--code-bg);
+    border:1px solid var(--line);
+    border-radius:8px;
+    padding:14px 16px;
+    overflow-x:auto;
+    font-size:13px;
+    line-height:1.55;
+    margin:14px 0;
+  }
+  pre code{background:transparent;border:0;padding:0;color:#cfe7ff}
+  .callout{
+    border:1px solid var(--line);
+    background:var(--panel);
+    padding:14px 18px;
+    border-radius:10px;
+    margin:18px 0;
+  }
+  .callout.warn{border-left:3px solid var(--warn)}
+  .callout.good{border-left:3px solid var(--good)}
+  .callout.bad{border-left:3px solid var(--bad)}
+  .callout.info{border-left:3px solid var(--accent-2)}
+  .stat-grid{
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(170px,1fr));
+    gap:12px;
+    margin:16px 0;
+  }
+  .stat{
+    background:var(--panel);
+    border:1px solid var(--line);
+    border-radius:10px;
+    padding:14px 16px;
+  }
+  .stat .v{font-size:20px;font-weight:700;color:var(--accent-2);line-height:1.2}
+  .stat .k{font-size:12px;color:var(--ink-dim);margin-top:4px;text-transform:uppercase;letter-spacing:.05em}
+  .est{
+    display:inline-block;
+    font-size:11px;
+    background:var(--warn);
+    color:#1a1100;
+    padding:1px 7px;
+    border-radius:4px;
+    font-weight:600;
+    letter-spacing:.03em;
+    margin-right:4px;
+    vertical-align:middle;
+  }
+  .footer{
+    margin-top:60px;
+    padding-top:24px;
+    border-top:1px solid var(--line);
+    color:var(--ink-faint);
+    font-size:13px;
+  }
+  hr{border:0;border-top:1px solid var(--line);margin:32px 0}
+  details{
+    background:var(--panel);
+    border:1px solid var(--line);
+    border-radius:8px;
+    padding:10px 14px;
+    margin:12px 0;
+  }
+  summary{cursor:pointer;font-weight:600;color:var(--ink)}
+  .ascii{
+    background:var(--code-bg);
+    border:1px solid var(--line);
+    padding:14px 16px;
+    border-radius:8px;
+    font-family:"SF Mono",Menlo,Consolas,monospace;
+    font-size:12.5px;
+    line-height:1.45;
+    color:#cfe7ff;
+    overflow-x:auto;
+    white-space:pre;
+  }
+  @media print{
+    body{background:#fff;color:#222;font-size:11pt}
+    .wrap{max-width:none;padding:1.5cm}
+    header.cover{background:#f5f7fa;border:1px solid #ccc;color:#222;page-break-after:avoid}
+    h1,h2,h3,h4{color:#0a1f4a;page-break-after:avoid}
+    h2{border-bottom:2px solid #3860b2}
+    table,pre,.callout,.ascii,.stat,nav.toc,details{break-inside:avoid;background:#fff;border:1px solid #ccc;color:#222}
+    th{background:#eef2f8;color:#0a1f4a}
+    td{color:#222}
+    .pill{background:#eef2f8;color:#0a1f4a}
+    code{background:#f5f7fa;color:#0a3a8a;border:1px solid #ddd}
+    pre code,.ascii{color:#222}
+    a{color:#0a3a8a;text-decoration:underline}
+    .stat .v{color:#0a3a8a}
+    blockquote{background:#f5f7fa;border-left-color:#3860b2;color:#333}
+    nav.toc ol{column-count:2}
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header class="cover">
+  <div class="eyebrow">Caso de estudio · Sesión de formación</div>
+  <h1>Desarrollo del módulo Secaderos con Claude Code</h1>
+  <div class="sub">Análisis post-mortem honesto del desarrollo del módulo Secaderos para [Cliente], pensado para la sesión de formación práctica sobre Power Apps + IA. No es marketing: se cubren igual los aciertos que los retrabajos, los tokens que nos ahorramos y los pain points que nos costaron horas. Fuentes: repositorio <code>[cliente-repo]/</code> (commits, specs, handoffs, YAML generado) y memorias del proyecto.</div>
+  <div class="meta-row">
+    <span class="pill"><span class="dot"></span>Cliente · [Cliente]</span>
+    <span class="pill"><span class="dot"></span>Entorno · [ENTORNO PROD] (EMEA)</span>
+    <span class="pill"><span class="dot"></span>Publisher · xxx_</span>
+    <span class="pill"><span class="dot"></span>Estado a 2026-04-09 · desplegado, ~90% funcional</span>
+    <span class="pill"><span class="dot"></span>Idioma · Español</span>
+  </div>
+</header>
+
+<nav class="toc">
+  <h3>Tabla de contenidos</h3>
+  <ol>
+    <li><a href="#sec0">Aclaraciones sobre el estado real del repo</a></li>
+    <li><a href="#sec1">Resumen ejecutivo</a></li>
+    <li><a href="#sec2">Qué se construyó (inventario duro)</a></li>
+    <li><a href="#sec3">Prerequisitos y pipeline</a></li>
+    <li><a href="#sec4">Timeline real (del repo)</a></li>
+    <li><a href="#sec5">Complejidad, tokens y esfuerzo</a></li>
+    <li><a href="#sec6">Pain points reales</a></li>
+    <li><a href="#sec7">Qué delegar y qué NO delegar</a></li>
+    <li><a href="#sec8">Anexos operativos</a></li>
+    <li><a href="#sec9">Mapeo a las 15 secciones del prompt</a></li>
+    <li><a href="#sec10">Fuentes consultadas</a></li>
+  </ol>
+</nav>
+
+<section id="sec0">
+<h2>0. Aclaraciones sobre el estado real del repo</h2>
+<p>Antes de entrar en materia: el prompt de análisis original contenía tres asunciones que no reflejan el repo. Se corrigen aquí para que el caso de estudio sea preciso.</p>
+<table>
+<thead><tr><th>Asunción del prompt</th><th>Realidad en el repo</th></tr></thead>
+<tbody>
+<tr><td>Las tablas viven en <code>SistemadeTratamientosSolution</code></td><td>Viven en la solución <strong><code>ProcesosIA</code></strong> v1.0.0.0. <code>SistemadeTratamientosSolution</code> solo contiene la Canvas App y la modificación del <code>OptionSet</code>.</td></tr>
+<tr><td>Valor 105="Secaderos" añadido al picklist global <code>xxx_tiposdeprocesos</code></td><td>Añadido al <strong>MultiSelect <code>xxx_tiposdeprocesos</code> de la tabla <code>xxx_stt_Empresa</code></strong>. No es un picklist global.</td></tr>
+<tr><td>El archivo <code>Prompt_Analisis_Secaderos_ClaudeCode.md</code> existe en el repo</td><td><strong>No existe</strong> como archivo del repo. Fue un prompt pegado en una conversación; no se asume como artefacto persistente.</td></tr>
+</tbody>
+</table>
+</section>
+
+<section id="sec1">
+<h2>1. Resumen ejecutivo</h2>
+<p>El módulo Secaderos digitaliza en la Canvas App de producción de [Cliente] un flujo que antes se llevaba en Excel: apertura de un ciclo de secadero, registro de paquetes de madera (leídos por chapa) entrando y saliendo, captura de datos de máquina (sondas, consumo, duración) y cierre con validaciones específicas por empresa. Se construyó en <strong>3 sesiones efectivas entre 2026-04-08 y 2026-04-09</strong> usando Claude Code como asistente principal.</p>
+<p>El backend (3 tablas Dataverse con 44 campos custom) salió rápido y casi sin retrabajo — lo difícil fue la Canvas App maestro-detalle: ~3.100 líneas de YAML generadas por IA, 8 chunks pegados en Power Apps Studio, ~15 categorías de errores de sintaxis específicos al pegar, y un conjunto estable de correcciones manuales que ahora vive como memoria reutilizable del proyecto.</p>
+
+<div class="callout good">
+<strong>ROI estimado: 60-70% de ahorro</strong> vs desarrollo sin IA, pero con dos condiciones innegociables: (1) un desarrollador que domine Power Fx para validar y corregir, y (2) preparación previa de herramientas (PAC CLI, unpack de Canvas App, DeviceCode auth) que el tutorial "IA hace tu app en 5 minutos" omite siempre.
+</div>
+
+<h3>Cifras clave</h3>
+<div class="stat-grid">
+  <div class="stat"><div class="v">3</div><div class="k">Tablas Dataverse</div></div>
+  <div class="stat"><div class="v">44</div><div class="k">Campos custom</div></div>
+  <div class="stat"><div class="v">9 / 21</div><div class="k">Forms / Views</div></div>
+  <div class="stat"><div class="v">~3.134</div><div class="k">LOC YAML inicial</div></div>
+  <div class="stat"><div class="v">1.140</div><div class="k">LOC Python</div></div>
+  <div class="stat"><div class="v">1.114</div><div class="k">LOC spec + handoffs</div></div>
+  <div class="stat"><div class="v">4</div><div class="k">Commits Secaderos</div></div>
+  <div class="stat"><div class="v">3</div><div class="k">Sesiones efectivas</div></div>
+  <div class="stat"><div class="v">~15</div><div class="k">Categorías de error YAML</div></div>
+  <div class="stat"><div class="v">~90%</div><div class="k">Funcional post-demo</div></div>
+</div>
+</section>
+
+<section id="sec2">
+<h2>2. Qué se construyó (inventario duro)</h2>
+
+<h3>2.1 Dataverse — solución <code>ProcesosIA</code></h3>
+<p><strong><code>xxx_Secado/Entity.xml</code></strong> — Registro padre del ciclo. 14 campos custom: <code>xxx_nolote</code> (correlativo por empresa), <code>xxx_empresalookup</code>, <code>xxx_maquinalookup</code>, <code>xxx_usuariolookup</code>, <code>xxx_clientelookup</code>, <code>xxx_fechainicio</code>, <code>xxx_fechafin</code>, <code>xxx_estado</code> (Abierto=100/Cerrado=101), <code>xxx_tipodematerial</code> (Nuevo=100/Reciclado=101), <code>xxx_entidaddemarcado</code>, <code>xxx_observaciones</code>, <code>xxx_fechaalbaran</code>, <code>xxx_noalbaran</code>.</p>
+<p><strong><code>xxx_LineaSecado/Entity.xml</code></strong> — Hijo. 16 campos custom: <code>xxx_secadolookup</code>, <code>xxx_paqueteproductolookup</code> (→ <code>xxx_srr_PaqueteProducto</code>), <code>xxx_canteadoralookup</code> (→ <code>xxx_Entrada_Canteadoras</code>), <code>xxx_productolookup</code>, <code>xxx_origen</code> (PaqueteExistente=100/Manual=101), <code>xxx_nopaqueteref</code>, <code>xxx_largo</code>, <code>xxx_ancho</code>, <code>xxx_grueso</code>, <code>xxx_unidades</code>, <code>xxx_volumenm3</code>, <code>xxx_fechaentrada</code>, <code>xxx_fechasalida</code>, <code>xxx_estado</code> (EnSecado=100/Finalizado=101).</p>
+<p><strong><code>xxx_ConsumoSecado/Entity.xml</code></strong> — 1:1 con Secado. 14 campos custom: <code>xxx_secadolookup</code>, <code>xxx_duracionciclohoras</code>, <code>xxx_duracionciclominutos</code>, <code>xxx_consumocombustible</code>, <code>xxx_consumoelectricidad</code>, 5 sondas (<code>xxx_sondaaire</code>, <code>xxx_sondacaldera</code>, <code>xxx_sondamadera1..3</code>), <code>xxx_fotourl</code>, <code>xxx_observaciones</code>.</p>
+<p><strong>Modificación a tabla existente:</strong> valor <code>105 = Secaderos</code> añadido al MultiSelect <code>xxx_tiposdeprocesos</code> de <code>xxx_stt_Empresa</code>. Valores previos: 100=Rellenados, 101=Tratamientos, 102=Sierras, 103=Pellets, 104=Canteadoras.</p>
+<p><strong>Model-driven App:</strong> grupo "Secaderos" añadido a <code>xxx_AppPrincipal/AppModuleSiteMap.xml</code> con las 3 subáreas. 21 vistas repartidas (7 por entidad).</p>
+
+<h3>2.2 Canvas App — <code>xxx_appcanvas_cliente</code></h3>
+<ul>
+<li><strong><code>Home_Screen</code> modificado</strong>: botón "Secaderos" con <code>Visible: ='Tipos de Procesos (Empresas)'.Secaderos in _operador_record.Empresa.'Tipos de Procesos'</code>. Data sources <code>Secados</code>, <code>'Líneas de Secado'</code>, <code>'Consumos de Secado'</code> añadidos.</li>
+<li><strong><code>Secaderos_Screen</code></strong> (nueva, pantalla lista): header, gallery de secados abiertos, barra de botones (Home / Nuevo / Editar). YAML inicial: 508 líneas.</li>
+<li><strong><code>Secado_Form_Screen</code></strong> (nueva, maestro-detalle): 8 chunks YAML pegados incrementalmente.</li>
+</ul>
+
+<table>
+<thead><tr><th>Chunk</th><th>Archivo</th><th>Líneas</th><th>Función</th></tr></thead>
+<tbody>
+<tr><td>1</td><td><code>chunk1-header.yaml</code></td><td>113</td><td>Container raíz + header con <code>btn_DatosMaquina</code>, <code>btn_CerrarSecado</code></td></tr>
+<tr><td>2</td><td><code>chunk2-form.yaml</code></td><td>882</td><td>Formulario de cabecera con 10 cards tipados</td></tr>
+<tr><td>3</td><td><code>chunk3-search.yaml</code></td><td>245</td><td>Buscador de paquete (LookUp sierra → canteadora)</td></tr>
+<tr><td>4</td><td><code>chunk4-gallery.yaml</code></td><td>333</td><td>Tabs EnSecado/Finalizados/Todos + gallery con checkboxes</td></tr>
+<tr><td>5</td><td><code>chunk5-footer.yaml</code></td><td>121</td><td>Resumen totales + botones "Sacar Seleccionados/Todos"</td></tr>
+<tr><td>6</td><td><code>chunk6-consumo.yaml</code></td><td>562</td><td>Modal Datos Máquina (5 sondas, combustible, electricidad)</td></tr>
+<tr><td>7</td><td><code>chunk7-manual.yaml</code></td><td>303</td><td>Modal entrada manual (producto, unidades, m³)</td></tr>
+<tr><td>8</td><td><code>chunk8-cerrar.yaml</code></td><td>67</td><td>Fórmula (no control) — se copia a <code>btn_CerrarSecado.OnSelect</code></td></tr>
+<tr><td colspan="2"><strong>Total</strong></td><td><strong>2.626</strong></td><td></td></tr>
+</tbody>
+</table>
+
+<h3>2.3 Scripts Python</h3>
+<ul>
+<li><code>create_secaderos_tables.py</code> · 473 líneas · Fase 1 (tablas+columnas), Fase 2 (lookups), Fase 3 (optionset), Fase 4 (publish). Auth <code>DeviceCodeCredential</code>.</li>
+<li><code>create_secaderos_remaining.py</code> · 162 líneas · Intermedio (redundante post-merge).</li>
+<li><code>create_secaderos_final.py</code> · 187 líneas · Cierra los lookups que quedaron pendientes.</li>
+<li><code>create_secaderos_demo_records.py</code> · 318 líneas · Genera datos demo.</li>
+</ul>
+
+<h3>2.4 Documentación</h3>
+<ul>
+<li><strong>Spec funcional</strong>: <code>secaderos-spec.md</code> · 402 líneas · 6 secciones (tablas, búsqueda de paquetes, cierre, pantallas, sitemap, exclusiones).</li>
+<li><strong>Handoffs (4)</strong>: <code>secaderos-2026-04-08.md</code> (143) · <code>secaderos-canvas-app-2026-04-08.md</code> (117) · <code>secado-form-screen-2026-04-08.md</code> (184) · <code>secado-form-screen-production-2026-04-09.md</code> (268).</li>
+<li><strong>Checklist de QA</strong>: <code>secaderos-user-testing.html</code> · 1073 líneas HTML.</li>
+</ul>
+</section>
+
+<section id="sec3">
+<h2>3. Prerequisitos y pipeline — qué hay que tener montado antes de pedir nada a la IA</h2>
+<p>La mayoría de tutoriales "IA genera tu Power App en 5 minutos" omiten esto. Sin esta preparación, Claude Code trabaja a ciegas y produce código que referencia tablas y campos inventados.</p>
+
+<h3>3.1 Herramientas instaladas</h3>
+<table>
+<thead><tr><th>Herramienta</th><th>Rol en el proyecto</th><th>¿Claude Code la usa directamente?</th></tr></thead>
+<tbody>
+<tr><td><strong>PAC CLI</strong></td><td>Exportar solución, <code>pac solution unpack</code>, <code>pac canvas unpack</code></td><td>Sí, vía <code>Bash</code></td></tr>
+<tr><td><strong>Dataverse DevTools (VS Code)</strong></td><td>Navegar metadata; extraer display names reales</td><td>Manual — el desarrollador consulta y pasa el dato al prompt</td></tr>
+<tr><td><strong>Power Apps Source File Pack/Unpack</strong></td><td><code>.msapp</code> ↔ carpeta YAML</td><td>Sí, vía PAC CLI</td></tr>
+<tr><td><strong><code>python + azure-identity</code></strong> (DeviceCodeCredential)</td><td>Scripts de creación masiva vía Dataverse Web API</td><td>Sí, Claude Code los escribe y ejecuta</td></tr>
+<tr><td><strong><code>git</code></strong></td><td>Versionado de soluciones post-export</td><td>Sí</td></tr>
+<tr><td><strong>Power Apps Studio (web)</strong></td><td>Única forma soportada para pegar el YAML y publicar</td><td><strong>Manual — insustituible</strong></td></tr>
+</tbody>
+</table>
+
+<h3>3.2 Autenticación</h3>
+<p>Todos los scripts Python usan <strong><code>DeviceCodeCredential</code></strong> con <code>client_id="[client-id-azure]"</code>. No se usa <code>InteractiveBrowserCredential</code> porque cuelga en terminales no interactivos (Git Bash, WSL, la terminal embebida de Claude Code). La credencial se guarda como variable global del módulo y se llama <code>get_token()</code> antes de cada request porque los tokens expiran a la hora.</p>
+<p><strong>PAC CLI auth index [2]</strong> apunta a <code>[admin]@[cliente].com</code> en [ENTORNO PROD] (<code>https://[entorno-prod].crm4.dynamics.com/</code>). No se comparten credenciales con la IA — el login es interactivo y local.</p>
+
+<h3>3.3 Skills y repos de referencia</h3>
+<ul>
+<li><strong>Microsoft <code>Dataverse-skills</code></strong> (github.com/microsoft/Dataverse-skills) clonado en <code>/tmp/Dataverse-skills/</code>. Lecciones clave adoptadas: (1) creación por fases con espera de 15-30s entre tablas y lookups para evitar lock contention, (2) usar header <code>MSCRM.SolutionUniqueName</code> para auto-añadir componentes, (3) código de idioma 3082 (es-ES) en todos los labels.</li>
+<li><strong>Skill custom del proyecto: <code>.claude/skills/canvas-apps-ui-gen/</code></strong> — usada en modo 3 para generar los chunks de YAML de Canvas App. Esta skill es la que produce el formato bare (starting con <code>- controlName:</code>) apto para pegar.</li>
+<li><strong>Knowledge base centralizada PowerFox</strong>: <code>&lt;knowledge-base-path&gt;/</code>.</li>
+</ul>
+
+<h3>3.4 Contexto inicial que se le pasó a Claude Code</h3>
+<ol>
+<li><strong>Transcripción de la reunión con el cliente</strong> — capturó requisitos: apertura del ciclo, chapa física con número alfanumérico, salida parcial con checkboxes, mandato específico de EmpresaA (datos de consumo obligatorios para libro de registro HT), [stakeholder] quiere saber m³ activos por secadero.</li>
+<li><strong>Inventario de tablas existentes</strong> leído desde los Entity.xml ya presentes en <code>solutions/</code>.</li>
+<li><strong>Inventario de pantallas existentes</strong> de la Canvas App (Tratamientos_Screen, Tratamiento_Form_Screen) extraído del unpack — para que los nuevos screens heredaran el mismo layout, theme (<code>modernesqueTheme</code>, RGBA 56,96,178), naming convention (<code>btn_</code>, <code>txt_</code>, <code>gal_</code>, etc.).</li>
+<li><strong>Spec como "contrato"</strong>: <code>secaderos-spec.md</code> se escribió en una sesión de Claude chat (no Claude Code) antes de tocar nada. 402 líneas con tablas, fórmulas Power Fx tentativas, flujos y exclusiones.</li>
+</ol>
+
+<h3>3.5 Pipeline completo del desarrollo</h3>
+<div class="ascii">[Reunión cliente] ──► [Transcripción + requisitos]
+                          │
+                          ▼
+[Claude chat]     ──► [spec MD + spec HTML + mockup HTML]  ←── "contrato"
+                          │
+                          ▼
+[pac solution export + unpack]  ──► Entity.xml + Canvas YAML (snapshot base)
+                          │
+                          ▼
+[Claude Code sesión 1]    ──► create_secaderos_tables.py ──► run ──► DataVerse
+                                              ↓
+                                      [re-export + unpack]
+                                              ↓
+                                      [git commit 556c7e7]  (2026-04-08 09:44)
+                          │
+                          ▼
+[Claude Code sesión 2]    ──► Secaderos_Screen YAML (508 líneas)
+                              ──► paste en PA Studio (blank screen → paste code)
+                              ──► Find &amp; Replace de datasource names
+                              ──► ajustes manuales post-paste
+                              ──► probar en dispositivo
+                          │
+                          ▼
+[Claude Code sesión 3]    ──► Secado_Form_Screen en 8 chunks
+                              ──► chunk-a-chunk: generar → pegar → error → fix → pegar → verificar
+                              ──► re-export Canvas App
+                                              ↓
+                                      [git commit 74cdfe4]  (2026-04-08 15:29)
+                          │
+                          ▼
+[Deploy a prod + demo con cliente]  ──► feedback 90% funcional
+                                              ↓
+                                      [git commit 5fdda74]  (2026-04-09 12:21)  + docs commit 6298fbf</div>
+
+<h3>3.6 Seguridad y gobernanza (datos expuestos a la IA)</h3>
+<ul>
+<li><strong>Expuesto</strong>: nombres de tablas, campos, display names de PA, lógica de negocio, nombres de empresas del cliente (EmpresaA, EmpresaB, EmpresaC), nombres de usuarios operarios en la transcripción, fórmulas Power Fx, estructura del sitemap.</li>
+<li><strong>NO expuesto</strong>: credenciales (login interactivo local), connection strings, datos reales de producción (solo se leyó metadata, nunca filas), secretos, registros financieros, emails de clientes reales.</li>
+<li><strong>Riesgo residual</strong>: la transcripción de reunión contenía nombres de personas y operaciones internas — se pegó a Claude Code en texto plano. Para consultoría externa, el equivalente sería anonimizar nombres de personas antes de pasarlos al LLM, o usar un tenant dedicado con cláusulas de no-entrenamiento.</li>
+</ul>
+</section>
+
+<section id="sec4">
+<h2>4. Timeline real (del repo)</h2>
+<p>Extraído de <code>git log</code> y los handoffs. Cada commit incluye los retrabajos que llevaron hasta él.</p>
+
+<table>
+<thead><tr><th>Fecha/hora</th><th>Commit</th><th>Evento</th><th>Impacto</th></tr></thead>
+<tbody>
+<tr><td>2026-04-08 09:44</td><td><code>556c7e7</code></td><td><strong>Backend creado</strong>: 3 tablas + relaciones + optionset, scripts Python, handoff inicial</td><td>143 líneas handoff + 3 Entity.xml grandes (<code>xxx_ConsumoSecado/Entity.xml</code> ~1.272 líneas) + 1.140 líneas Python</td></tr>
+<tr><td>2026-04-08 10:14</td><td><code>51738dd</code></td><td>Reorganización <code>docs/</code> y <code>scripts/</code> por carpetas</td><td>Limpia la raíz para que futuras sesiones encuentren cosas rápido</td></tr>
+<tr><td>2026-04-08 15:29</td><td><code>74cdfe4</code></td><td><strong>Canvas App v1</strong>: pantallas Secaderos + sitemap del MDA + exports completos</td><td>~500 archivos. <code>Secaderos_Screen-1-generated.yaml</code> (508 líneas) añadido</td></tr>
+<tr><td>2026-04-09 12:21</td><td><code>5fdda74</code></td><td>Re-export post-deploy: msapp 11.3 MB → 12.1 MB</td><td>Canvas App de producción con todos los chunks pegados y correcciones manuales</td></tr>
+<tr><td>2026-04-09 12:38</td><td><code>6298fbf</code></td><td>Handoffs finales + checklist QA + gitignore de <code>canvas-apps-output/</code></td><td>1.531 líneas nuevas: handoffs + checklist HTML</td></tr>
+</tbody>
+</table>
+
+<div class="callout info">
+<strong>Handoffs entre fases.</strong> El proyecto usa el patrón <code>&lt;nombre&gt;-YYYY-MM-DD.md</code> porque las sesiones de Claude Code pierden contexto entre runs y cada handoff es el "punto de guardado" que la siguiente sesión lee para no re-explicar. 4 handoffs en 2 días = uno cada sesión efectiva + uno post-deploy.
+</div>
+
+<h3>Post-IA — gestión de la solución</h3>
+<ul>
+<li><strong>Conflictos al importar</strong>: cero. Las tablas nuevas vivían en <code>ProcesosIA</code> (solución separada).</li>
+<li><strong>Regresiones detectadas</strong>: ninguna conocida en el demo del 2026-04-09.</li>
+<li><strong>Versionado del .msapp</strong>: solo hay "la versión actual". No hay "YAML inicial guardado" en git para diff textual. Los chunks intermedios sobreviven en <code>canvas-apps-output/</code> como scratch pero fueron <code>.gitignore</code>-ados.</li>
+</ul>
+</section>
+
+<section id="sec5">
+<h2>5. Complejidad, tokens y esfuerzo (estimaciones marcadas)</h2>
+
+<h3>5.1 Complejidad objetiva (datos duros)</h3>
+<table>
+<thead><tr><th>Métrica</th><th>Secaderos_Screen</th><th>Secado_Form_Screen</th><th>Total</th></tr></thead>
+<tbody>
+<tr><td>LOC YAML inicial</td><td>508</td><td>2.626 (8 chunks)</td><td>3.134</td></tr>
+<tr><td>Controles aproximados</td><td>26</td><td>~179</td><td>~205</td></tr>
+<tr><td>Fórmulas Filter/LookUp/Patch</td><td>~3</td><td><strong>26</strong></td><td>~29</td></tr>
+<tr><td>Modales / overlays</td><td>0</td><td>3 (consumo, manual, cerrar)</td><td>3</td></tr>
+<tr><td>Variables globales nuevas</td><td>0</td><td>11</td><td>11</td></tr>
+<tr><td>Tablas Dataverse referenciadas</td><td>1</td><td>6</td><td>6</td></tr>
+</tbody>
+</table>
+<p><strong>Clasificación:</strong> la <code>Secaderos_Screen</code> es complejidad <strong>baja</strong> (lista + botones). El <code>Secado_Form_Screen</code> es <strong>media-alta</strong> (maestro-detalle + 3 modales + búsqueda cross-table + validaciones + selección múltiple + cierre con reglas por empresa).</p>
+
+<h3>5.2 Tokens estimados <span class="est">Estimación</span></h3>
+<p>Base de cálculo: <strong>~12 tokens/línea YAML</strong>, <strong>~15 tokens/línea MD o Python</strong>, <strong>~8 tokens/línea Entity.xml</strong>.</p>
+
+<table>
+<thead><tr><th>Fase</th><th>Input estimado</th><th>Output estimado</th><th>Notas</th></tr></thead>
+<tbody>
+<tr><td>Análisis en Claude chat → spec</td><td>~8-12k</td><td>~6-10k (402 líneas final)</td><td>Transcripción + dominio</td></tr>
+<tr><td>Entity.xml + CLAUDE.md leídos</td><td>~25-40k</td><td>~1k</td><td>Solo lectura de contexto</td></tr>
+<tr><td>Scripts Python tablas</td><td>~5k</td><td>~17-22k (1.140 líneas)</td><td>2-3 iteraciones por fallo de auth/schema</td></tr>
+<tr><td>Handoff backend</td><td>~2k</td><td>~3k (143 líneas)</td><td></td></tr>
+<tr><td>Canvas — Secaderos_Screen</td><td>~3k</td><td>~8-12k (508 líneas + 2-3 iters)</td><td></td></tr>
+<tr><td>Canvas — Secado_Form_Screen (8 chunks)</td><td>~40-65k</td><td>~32-50k (2.626 líneas)</td><td>Muchas iteraciones por errores de pegado</td></tr>
+<tr><td>Handoffs + checklist HTML</td><td>~4k</td><td>~20-25k</td><td></td></tr>
+<tr><td>Documentación final + memoria</td><td>~3-5k</td><td>~8-12k</td><td></td></tr>
+<tr><td><strong>Total por proyecto</strong></td><td><strong>~100-150k</strong></td><td><strong>~100-160k</strong></td><td><strong>≈ 200-300k tokens</strong></td></tr>
+</tbody>
+</table>
+
+<div class="callout warn">
+<span class="est">Estimación</span> Con claude-opus-4-6 a los precios públicos del momento (input ~$15/M, output ~$75/M), esto equivale a un coste aproximado de <strong>$9-14 por proyecto completo</strong>. Un desarrollador senior factura eso en 10-20 minutos. <strong>El coste de tokens es ruido frente al coste/hora.</strong>
+</div>
+
+<h3>5.3 Comparativa horas-hombre <span class="est">Estimación</span></h3>
+<table>
+<thead><tr><th>Tarea</th><th>Sin IA</th><th>Con Claude Code</th><th>Ahorro</th></tr></thead>
+<tbody>
+<tr><td>Diseño de tablas + validación cliente</td><td>4-6 h</td><td>2-3 h</td><td>40-50%</td></tr>
+<tr><td>3 tablas + 44 campos + lookups + option sets</td><td>6-10 h</td><td>1,5-2 h</td><td>70-80%</td></tr>
+<tr><td>Sitemap + 21 vistas + 9 forms</td><td>4-6 h</td><td>2-3 h</td><td>40-50%</td></tr>
+<tr><td>Spec funcional documentada</td><td>6-8 h</td><td>2-3 h</td><td>60-70%</td></tr>
+<tr><td>Canvas — Secaderos_Screen</td><td>4-6 h</td><td>1,5-2,5 h</td><td>50-60%</td></tr>
+<tr><td>Canvas — Secado_Form_Screen</td><td>30-50 h</td><td><strong>10-15 h</strong></td><td>55-70%</td></tr>
+<tr><td>Pruebas + ajustes demo cliente</td><td>4-6 h</td><td>3-4 h</td><td>15-30%</td></tr>
+<tr><td>Documentación (handoffs, checklist)</td><td>6-10 h</td><td>2-3 h</td><td>65-75%</td></tr>
+<tr><td><strong>Total</strong></td><td><strong>64-102 h</strong></td><td><strong>24-35 h</strong></td><td><strong>~60-70%</strong></td></tr>
+</tbody>
+</table>
+
+<div class="callout bad">
+<strong>Donde la IA SUMÓ tiempo (no restó):</strong>
+<ul>
+<li>Los primeros 2-3 chunks de Canvas App, cuando aún no teníamos la tabla Find &amp; Replace consolidada.</li>
+<li>La primera iteración de los scripts Python, donde hubo que descubrir empíricamente que <code>InteractiveBrowserCredential</code> cuelga en Git Bash.</li>
+<li>El modal "Datos Máquina" del chunk 6 — se regeneró parcialmente dos veces porque los nombres de campo de sondas estaban mal en la primera pasada.</li>
+</ul>
+</div>
+
+<h3>5.4 Diff YAML inicial vs producción</h3>
+<p><strong>Lo que se puede medir textualmente es limitado.</strong> La versión "producción" vive dentro del <code>.msapp</code> binario, y el unpack reagrupa estructuras y muchas propiedades quedan implícitas por defaults del control. <strong>No es un diff línea-a-línea comparable.</strong></p>
+
+<p><strong>Lo que sí se puede afirmar:</strong></p>
+<ul>
+<li>De las ~15 categorías de error de pegado YAML, todas se resolvieron con Find &amp; Replace antes de pegar o ajustes manuales post-paste — no requirieron regenerar el chunk entero.</li>
+<li><strong>Botones <code>btn_DatosMaquina</code> y <code>btn_CerrarSecado</code></strong>: recreados manualmente en PA Studio. <strong>~2 controles de ~205 reescritos a mano ≈ 1%</strong>.</li>
+<li><strong><code>OnVisible</code> del screen</strong>: reescrito completamente en PA Studio. <strong>~15 líneas de Power Fx reescritas</strong>.</li>
+<li><strong>Checkboxes de la gallery</strong>: dimensiones ajustadas a mano. <strong>~6 líneas tocadas manualmente</strong>.</li>
+<li><strong>TextInput Format → Number</strong>: cambio manual en el panel de propiedades. ~6-8 inputs numéricos.</li>
+</ul>
+
+<div class="callout good">
+<span class="est">Estimación</span> "Porcentaje de supervivencia del YAML inicial": entre <strong>80% y 90%</strong>. <strong>No es el 40% catastrófico del que hablan los detractores, pero tampoco el 100% del que hablan los demos</strong> — es un ~85% con una curva de aprendizaje importante en las primeras 2-3 horas.
+</div>
+</section>
+
+<section id="sec6">
+<h2>6. Pain points reales del approach Canvas App + Claude Code</h2>
+<p>Esta sección es lo más valioso para la formación. Son los ~15 errores concretos que nos costaron iteraciones.</p>
+
+<h3>A. Display names ≠ schema names (el pain point más caro)</h3>
+<table>
+<thead><tr><th>Generado por IA</th><th>Real en PA Studio</th></tr></thead>
+<tbody>
+<tr><td><code>'Lineas de Secado'</code></td><td><code>'Líneas de Secado'</code> (con acento)</td></tr>
+<tr><td><code>'Paquetes Productos'</code></td><td><code>'Paquete Productos'</code> (singular)</td></tr>
+<tr><td><code>'Entrada Canteadoras'</code></td><td><code>Canteadoras</code> (sin prefijo)</td></tr>
+<tr><td><code>'Consumos Secado'</code></td><td><code>'Consumos de Secado'</code> ("de" en medio)</td></tr>
+<tr><td><code>Productos</code></td><td><code>Productos</code> (coincide — excepción)</td></tr>
+</tbody>
+</table>
+<p><strong>Coste:</strong> sin el Find &amp; Replace, cada chunk falla al pegar con error de "Data source not found".</p>
+
+<h3>B. Campo primario con nombre de tabla → schema name obligatorio</h3>
+<p>La tabla <code>xxx_Secado</code> tiene el campo primario "Secado". La IA genera <code>record.Secado</code> pero PA exige:</p>
+<ul>
+<li>ID: <code>record.'Secado (xxx_secadoid)'</code></li>
+<li>Nombre: <code>record.'Secado (xxx_secadoname)'</code></li>
+</ul>
+<p><strong>Aplica a:</strong> <code>_secadoRecord</code>, Filter sobre 'Líneas de Secado', colSelectedLineas, Patches. <strong>Aparece en ~20+ lugares del chunk 4 solo</strong>.</p>
+
+<h3>C. OptionSet: columna ≠ valor (la regla más confusa)</h3>
+<pre><code>Patch('Líneas de Secado', Defaults('Líneas de Secado'), {
+    'Estado (xxx_estado)': 'Estado (Líneas de Secado)'.'En Secado'
+    //  ← columna ───         ← valor del optionset global ────
+})</code></pre>
+<p>Columna = <code>'Estado (xxx_estado)'</code> (con schema name). Valor = <code>'Estado (Líneas de Secado)'.'En Secado'</code>. <strong>No son el mismo nombre.</strong> Y encima hay excepciones: <code>Origen</code> funciona sin schema name como columna, pero <code>Estado</code> no.</p>
+
+<h3>D. Variables tipadas — <code>Set(var, Blank())</code> no sirve</h3>
+<pre><code>// Mal (warning "No type found", después var.Campo falla):
+Set(_paqueteEncontrado, Blank())
+
+// Bien (LookUp que nunca devuelve nada, pero tipa):
+Set(_paqueteEncontrado, LookUp('Paquete Productos', false))</code></pre>
+
+<h3>E. Colecciones vacías tipadas</h3>
+<pre><code>// Mal:
+Clear(colSelectedLineas)
+
+// Bien:
+ClearCollect(colSelectedLineas, {ID: GUID()});
+Remove(colSelectedLineas, First(colSelectedLineas))</code></pre>
+
+<h3>F. Propiedades inválidas en modern controls</h3>
+<table>
+<thead><tr><th>Control</th><th>Propiedad inválida</th><th>Alternativa</th></tr></thead>
+<tbody>
+<tr><td><code>Button@0.0.45</code></td><td><code>Size:</code>, <code>Icon:</code> (string), <code>BorderColor:</code>, <code>BorderThickness:</code></td><td>Usar Appearance variants + cambiar Icon en UI</td></tr>
+<tr><td><code>TextInput@0.0.54</code></td><td><code>Format:</code>, <code>Size:</code></td><td>Cambiar Format → Number manualmente post-paste</td></tr>
+<tr><td><code>Gallery@2.15.0</code></td><td><code>Layout:</code></td><td>El variant ya lo define</td></tr>
+<tr><td><code>Header@0.0.44</code></td><td><code>LogoToolTip</code> (PA2108)</td><td>Eliminar — no existe</td></tr>
+<tr><td><code>Rectangle@2.4.1</code></td><td>Versión inexistente</td><td>Usar <code>Rectangle@2.3.0</code></td></tr>
+</tbody>
+</table>
+
+<h3>G. YAML gotcha — dos puntos + espacio dentro de string</h3>
+<pre><code># MAL — YAML parsea como key-value, revienta el pegado
+Placeholder: ="Buscar ej: A12591"
+
+# BIEN
+Placeholder: ="Buscar ej A12591"
+
+# O con literal block si el ":" es obligatorio
+Placeholder: |-
+    ="Buscar ej: A12591"</code></pre>
+
+<h3>H. Campos con caracteres especiales → comillas simples obligatorias</h3>
+<p><code>'Volumen m³'</code>, <code>'Nº Paquete Ref'</code>, <code>'Líneas de Secado'</code>, <code>'Fecha Inicio'</code>. Una vez pegado, PA Studio los muestra igual.</p>
+
+<h3>I. Paste format — nunca usar <code>Screens:</code> wrapper</h3>
+<p>El formato <code>Screens:</code> (que genera <code>pac canvas unpack</code>) <strong>no funciona</strong> para "Paste code" de PA Studio — da error PA1001. Hay que generar en formato bare empezando por <code>- controlName:</code>.</p>
+
+<h3>J. Jerarquía de containers al pegar</h3>
+<p>El paste de PA Studio pega controles al control seleccionado en el árbol. Si el chunk asume un padre que es un <code>GroupContainer</code> y tú tienes seleccionado un <code>Rectangle</code>, el paste falla silenciosamente. <strong>Fix:</strong> cada chunk documenta su contenedor padre esperado.</p>
+
+<h3>K. Iconos en botones</h3>
+<p><code>Button@0.0.45</code> no acepta <code>Icon: ="Notebook"</code> en YAML. Alternativa: meter el símbolo inline en el <code>Text</code>: <code>Text: ="+ Manual"</code>, <code>Text: ="× Cerrar"</code>.</p>
+
+<h3>L. Tabla <code>.Unidades</code> vs <code>.Filas</code></h3>
+<p>La IA generó <code>.Unidades</code> para acceder al número de piezas del paquete, pero en <code>xxx_srr_PaqueteProducto</code> el campo se llama <strong><code>Filas</code></strong> (decisión histórica del cliente). No estaba documentado en la spec inicial — se descubrió al probar.</p>
+
+<h3>M. Contexto y memoria de la IA dentro del mismo proyecto</h3>
+<p>En el chunk 6 (modal consumo), la IA llegó a sugerir <strong>4 sondas</strong> cuando la spec decía <strong>5</strong> (aire, caldera, madera1, madera2, madera3). Se corrigió al revisar, pero demuestra que la ventana de contexto va desgastándose.</p>
+<p><span class="est">Estimación</span> Entre <strong>3 y 6 veces por sesión larga</strong> hubo que re-explicar una decisión ya tomada en la spec o en un handoff previo.</p>
+
+<h3>N. Errores silenciosos — compilaba pero funcionaba mal</h3>
+<ol>
+<li><strong>Filter con lookup mal referenciado</strong>: <code>Filter('Líneas de Secado', Secado = _secadoRecord)</code> compilaba sin error, pero devolvía 0 registros siempre porque PA compara objetos record completos, no IDs. Fix: <code>Secado.'Secado (xxx_secadoid)' = _secadoRecord.'Secado (xxx_secadoid)'</code>.</li>
+<li><strong>LookUp de paquete sin <code>!IsBlank(xxx_cierredepaquete)</code></strong>: la búsqueda funcionaba pero devolvía paquetes aún abiertos.</li>
+</ol>
+
+<h3>Ñ. La IA nunca se equivoca en los triviales — siempre en los sutiles</h3>
+<div class="callout bad">
+<strong>Moraleja para la formación:</strong> la IA es una máquina de producir código sintácticamente correcto que puede ser funcionalmente incorrecto. El desarrollador humano que la supervisa <strong>debe dominar Power Fx lo suficiente para oler los problemas sutiles</strong>.
+</div>
+</section>
+
+<section id="sec7">
+<h2>7. Qué delegar y qué NO delegar a la IA en Power Apps</h2>
+
+<h3>7.1 Delegar con los ojos cerrados (muy eficiente)</h3>
+<table>
+<thead><tr><th>Tarea</th><th>Por qué funciona</th><th>Evidencia del proyecto</th></tr></thead>
+<tbody>
+<tr><td><strong>Creación de tablas Dataverse</strong> (scripts Python)</td><td>Web API bien documentada, payloads correctos el 95% de las veces</td><td>3 tablas, 44 campos, 8 lookups creados en ~2h</td></tr>
+<tr><td><strong>Specs técnicas</strong> a partir de transcripción</td><td>El LLM estructura muy bien requisitos difusos</td><td><code>secaderos-spec.md</code>, 402 líneas, ~2h</td></tr>
+<tr><td><strong>Vistas (SavedQueries)</strong></td><td>XML repetitivo con filtros sencillos</td><td>21 vistas × 3 entidades casi sin retrabajo</td></tr>
+<tr><td><strong>Documentación</strong></td><td>Trabajo de escritura sin riesgo funcional</td><td>4 handoffs + checklist HTML 1073 líneas</td></tr>
+<tr><td><strong>Scripts PAC CLI</strong></td><td>Shell scripts simples</td><td><code>scripts/pac/*.sh</code></td></tr>
+<tr><td><strong>Mockups HTML</strong></td><td>Genera HTML+Tailwind bien</td><td><code>Mockup_Secado_Form_Screen.html</code></td></tr>
+</tbody>
+</table>
+
+<h3>7.2 Delegar con supervisión (aceptable, pero revisa todo)</h3>
+<table>
+<thead><tr><th>Tarea</th><th>Por qué necesita revisión</th></tr></thead>
+<tbody>
+<tr><td><strong>YAML Canvas App</strong></td><td>Funciona con tabla Find &amp; Replace bien mantenida. Sin ella, 30-40% del código falla al pegar</td></tr>
+<tr><td><strong>Power Fx complejas</strong></td><td>Compilan pero pueden tener bugs funcionales sutiles (ver 6.Ñ)</td></tr>
+<tr><td><strong>Dashboards Model-Driven</strong></td><td>El XML es verboso y a veces pone referencias inválidas</td></tr>
+<tr><td><strong>Power Automate flows</strong></td><td>Estructura compleja, hay que validar conexiones y triggers en designer</td></tr>
+</tbody>
+</table>
+
+<h3>7.3 NO delegar (la IA estorba más que ayuda)</h3>
+<table>
+<thead><tr><th>Tarea</th><th>Por qué fracasa</th></tr></thead>
+<tbody>
+<tr><td><strong>Layouts pixel-perfect</strong></td><td>Requiere ojo humano + prueba visual en dispositivo</td></tr>
+<tr><td><strong>Controles anidados con drag-and-drop</strong></td><td>Paste falla por jerarquía y el fix es más caro que hacerlo a mano</td></tr>
+<tr><td><strong>Cambios que requieren UI de PA</strong></td><td>Format, Icon picker, Theme — imposibles vía YAML con modern controls</td></tr>
+<tr><td><strong>Lógica que depende de estado runtime</strong></td><td>La IA razona bien sobre código estático pero mal sobre máquinas de estado</td></tr>
+<tr><td><strong>Decisiones de UX</strong></td><td>El usuario/negocio decide, no la máquina</td></tr>
+</tbody>
+</table>
+
+<h3>7.4 El factor humano — ¿se puede hacer sin saber Power Apps?</h3>
+<div class="callout bad">
+<strong>Respuesta honesta: no.</strong>
+<ul>
+<li><strong>Sin experiencia en Dataverse</strong>: la IA va a sugerir nombres que suenan bien pero no existen.</li>
+<li><strong>Sin Power Fx</strong>: no detectas que <code>Filter('Líneas de Secado', Secado = _secadoRecord)</code> compila pero devuelve 0.</li>
+<li><strong>Sin haber usado PA Studio</strong>: no sabes que <code>Format:</code> no se puede cambiar en YAML.</li>
+<li><strong>Sin haber deployado Canvas Apps</strong>: no distingues los modern controls (<code>@0.0.45</code>) de los clásicos.</li>
+</ul>
+<strong>Conclusión:</strong> La IA <strong>multiplica por 2-3</strong> a un desarrollador experto. Al principiante <strong>lo pone a generar código roto que no puede arreglar</strong> — coste negativo, frustración alta.
+</div>
+</section>
+
+<section id="sec8">
+<h2>8. Anexos operativos para la formación</h2>
+
+<h3>8.1 Canvas App vs Code Apps <span class="est">Estimación</span></h3>
+<table>
+<thead><tr><th>Dimensión</th><th>Canvas App (real)</th><th>Code Apps (hipotético)</th></tr></thead>
+<tbody>
+<tr><td>Lenguaje</td><td>YAML propietario + Power Fx</td><td>React + TypeScript + Fluent UI</td></tr>
+<tr><td>Soporte en Claude Code</td><td>Skill custom + memoria del proyecto</td><td>Nativo</td></tr>
+<tr><td>LOC estimadas</td><td>~3.134 líneas YAML</td><td>~2.000-2.500 líneas TS/TSX</td></tr>
+<tr><td>% código correcto al primer intento</td><td>~80-85% tras Find &amp; Replace</td><td>~90-95%</td></tr>
+<tr><td>Iteraciones por chunk</td><td>2-4</td><td>1-2</td></tr>
+<tr><td>Debugging</td><td>Prueba en dispositivo → error runtime</td><td>TypeScript compile errors + React DevTools</td></tr>
+<tr><td>Despliegue</td><td><code>pac solution import</code> + paste manual</td><td>CI/CD estándar de npm/git</td></tr>
+<tr><td><strong>Horas con IA</strong></td><td><strong>24-35 h</strong> (real)</td><td><strong>15-25 h</strong> (estimado)</td></tr>
+</tbody>
+</table>
+<p><span class="est">Estimación</span> Code Apps probablemente habría recortado otro <strong>30-40%</strong> del tiempo. El freno es que aún no tiene la paridad de features visuales y el ecosistema está menos maduro.</p>
+
+<h3>8.2 Tres prompts para demo en vivo</h3>
+
+<h4>Prompt 1 — MALO (vago, sin contexto)</h4>
+<pre><code>Créame una pantalla en Power Apps para gestionar secaderos de madera.
+Necesita abrir secados, meter paquetes y cerrarlos.</code></pre>
+<p><strong>Resultado esperado:</strong> la IA inventa nombres de tabla, controles genéricos sin theme, fórmulas que no referencian lookups del proyecto. 2 horas de corrección.</p>
+
+<h4>Prompt 2 — MISMA idea con contexto completo</h4>
+<pre><code>Necesito generar el YAML del Secado_Form_Screen para la Canvas App
+xxx_appcanvas_cliente (Tratamientos App - GVN) siguiendo exactamente la
+spec en docs/specs/secaderos-spec.md.
+
+Contexto del entorno:
+- Theme: modernesqueTheme (azul RGBA 56,96,178). Layout tablet 1366x768.
+- Display names reales (NO los schema names — ya verificados en PA Studio):
+  Secados, 'Líneas de Secado', 'Consumos de Secado', 'Paquete Productos',
+  Canteadoras, Productos, Maquinas, Empresas.
+- Primary key pattern: las tablas con campo primario = nombre tabla requieren
+  schema name: 'Secado (xxx_secadoid)' para ID, 'Secado (xxx_secadoname)' para display.
+- OptionSets: columna 'Estado (xxx_estado)', valor 'Estado (Líneas de Secado)'.'En Secado'.
+- Modern controls: Button@0.0.45, TextInput@0.0.54, Gallery@2.15.0, Header@0.0.44,
+  Rectangle@2.3.0. NO incluir: Format, Size, Icon (string), BorderColor, Layout,
+  LogoToolTip (son inválidas en estas versiones).
+- Formato de paste: bare, empezando por `- screenRoot:`. NUNCA `Screens:` wrapper.
+- Variables tipadas: Set(_var, LookUp(DataSource, false)) en vez de Set(_var, Blank()).
+
+Genera SOLO el chunk 4 (Tabs + Gallery de líneas de secado) respetando el
+árbol de containers del chunk 1 ya pegado. El padre esperado es
+ScreenContainer_Secado &gt; BodyContainer_Secado.</code></pre>
+<p><strong>Resultado esperado:</strong> YAML que compila al primer intento con 0-2 correcciones.</p>
+
+<h4>Prompt 3 — EDICIÓN QUIRÚRGICA</h4>
+<pre><code>En canvas-apps-output/Secado_Form_Screen-chunk4-gallery.yaml, el botón
+'btn_Check_Sec' tiene Width: =14 y Height: =14 — los checkboxes salen
+demasiado pequeños en el dispositivo.
+
+Cambia SOLO esos dos valores a Width: =20 y Height: =20. No toques
+NINGÚN otro control, ninguna propiedad, ningún comentario. No reformatees
+el archivo. Muéstrame el diff antes de aplicarlo.</code></pre>
+<p><strong>Técnica:</strong> constraint explícito + petición de diff antes de aplicar = evita el "pero ya que estoy aquí refactorizo otras cositas" que destroza pantallas.</p>
+
+<h3>8.3 Q&amp;A preparado</h3>
+
+<details>
+<summary>P1: ¿Cuánto cuesta usar Claude Code al mes para este tipo de proyecto?</summary>
+<p>Suscripción Claude Max ~$100-200/mes cubre este volumen sin problema. <span class="est">Estimación</span> de tokens del proyecto entero: 200-300k ≈ $9-14 en pago por uso. <strong>El coste real no son los tokens, es la hora del desarrollador que supervisa.</strong> Mil veces más caro que los tokens, mil veces más valioso.</p>
+</details>
+
+<details>
+<summary>P2: ¿Funciona igual con Model-Driven Apps o solo Canvas?</summary>
+<p><strong>Mejor con Model-Driven</strong>, curiosamente. Es XML estructurado que la IA genera muy bien. Canvas App tiene la complejidad extra del YAML propietario + Power Fx + quirks de modern controls. En este proyecto, todo el backend MDA fue ~2h y quedó perfecto; la Canvas App fue ~12h y quedó al 90%.</p>
+</details>
+
+<details>
+<summary>P3: ¿Y con Copilot Studio / Copilot en Power Apps no es suficiente?</summary>
+<p>Copilot en Power Apps es excelente para generar un primer draft. Lo que NO hace: trabajar con el repositorio fuera del Studio, versionar con git, razonar sobre múltiples pantallas a la vez, generar scripts Python para 44 campos, escribir specs de 400 líneas, mantener memoria del proyecto entre sesiones. Claude Code <strong>complementa</strong> a Copilot; no compite con él.</p>
+</details>
+
+<details>
+<summary>P4: ¿Qué pasa cuando Microsoft cambia la estructura de los YAML?</summary>
+<p>Pasó durante este proyecto — el versionado de modern controls (<code>@0.0.44</code> vs <code>@0.0.45</code>) es frágil. <strong>Mitigación:</strong> la memoria del proyecto se actualiza cada vez que descubrimos un nuevo caso. Es el equivalente al "Notion de equipo" — la regla vive en archivos versionados.</p>
+</details>
+
+<details>
+<summary>P5: ¿Se puede usar con soluciones managed de terceros?</summary>
+<p>Sí para <strong>leerlas</strong> (la IA lee Entity.xml sin problema). No para <strong>modificarlas</strong> — las managed son read-only por diseño de Power Platform.</p>
+</details>
+
+<h3>8.4 Recomendaciones para futuros desarrollos</h3>
+<ol>
+<li><strong>Empieza invirtiendo 1-2h en preparación</strong> (PAC CLI, auth, unpack, leer memorias previas). Sin esto, cualquier ahorro queda anulado por debugging.</li>
+<li><strong>Escribe la spec ANTES de tocar código con la IA.</strong> En Claude chat, no en Claude Code. La spec es el contrato. 400 líneas de spec ahorran 40 horas de desarrollo.</li>
+<li><strong>Usa handoffs con fecha</strong> (<code>&lt;tema&gt;-YYYY-MM-DD.md</code>).</li>
+<li><strong>Mantén una memoria viva</strong> de los pain points específicos del stack.</li>
+<li><strong>Divide la Canvas App en chunks</strong> lógicos (header, form, gallery, modales).</li>
+<li><strong>Reserva 20% del tiempo</strong> para correcciones manuales post-paste.</li>
+<li><strong>Pasa el display name exacto en cada prompt.</strong></li>
+<li><strong>Para fórmulas complejas, pide que te enseñe el diff primero.</strong></li>
+<li><strong>Si el cliente tiene fecha fija</strong>, no introduzcas Code Apps si no lo dominas.</li>
+<li><strong>Documenta qué NO funcionó.</strong> La negativa es igual de valiosa que la positiva.</li>
+</ol>
+</section>
+
+<section id="sec9">
+<h2>9. Mapeo a las 15 secciones del prompt original</h2>
+<table>
+<thead><tr><th>#</th><th>Sección del prompt</th><th>Bloque en este doc</th></tr></thead>
+<tbody>
+<tr><td>1</td><td>Inventario de trabajo realizado</td><td>§2</td></tr>
+<tr><td>2</td><td>Prerequisitos antes de escribir código</td><td>§3</td></tr>
+<tr><td>3</td><td>Análisis de complejidad y tokens</td><td>§5.1 y §5.2</td></tr>
+<tr><td>4</td><td>Pain points Canvas App</td><td>§6</td></tr>
+<tr><td>5</td><td>Comparativa Code Apps</td><td>§8.1</td></tr>
+<tr><td>6</td><td>Diff YAML inicial vs producción</td><td>§5.4</td></tr>
+<tr><td>7</td><td>Métricas de contexto y memoria</td><td>§6.M</td></tr>
+<tr><td>8</td><td>Cost-benefit real</td><td>§5.3</td></tr>
+<tr><td>9</td><td>Guía "qué sí y qué no" delegar</td><td>§7</td></tr>
+<tr><td>10</td><td>Limitaciones y errores honestos</td><td>§6.N, §6.Ñ</td></tr>
+<tr><td>11</td><td>Gestión de la solución post-IA</td><td>§4 (final)</td></tr>
+<tr><td>12</td><td>Seguridad y gobernanza</td><td>§3.6</td></tr>
+<tr><td>13</td><td>Factor humano — skill del desarrollador</td><td>§7.4</td></tr>
+<tr><td>14</td><td>Demo en vivo — prompt engineering</td><td>§8.2</td></tr>
+<tr><td>15</td><td>Q&amp;A preparado</td><td>§8.3</td></tr>
+</tbody>
+</table>
+</section>
+
+<section id="sec10">
+<h2>10. Fuentes consultadas (trazabilidad)</h2>
+<ul>
+<li><strong>Specs:</strong> <code>docs/specs/secaderos-spec.md</code></li>
+<li><strong>Handoffs:</strong> <code>secaderos-2026-04-08.md</code>, <code>secaderos-canvas-app-2026-04-08.md</code>, <code>secado-form-screen-2026-04-08.md</code>, <code>secado-form-screen-production-2026-04-09.md</code></li>
+<li><strong>Entity.xml:</strong> <code>xxx_Secado</code>, <code>xxx_LineaSecado</code>, <code>xxx_ConsumoSecado</code></li>
+<li><strong>Canvas App YAML:</strong> <code>canvas-apps-output/Secaderos_Screen-1-generated.yaml</code>, 8 chunks <code>Secado_Form_Screen-chunk[1-8]-*.yaml</code></li>
+<li><strong>Scripts:</strong> <code>create_secaderos_tables.py</code>, <code>create_secaderos_final.py</code>, <code>create_secaderos_remaining.py</code>, <code>create_secaderos_demo_records.py</code></li>
+<li><strong>Git log:</strong> commits <code>556c7e7</code>, <code>74cdfe4</code>, <code>5fdda74</code>, <code>6298fbf</code> (rango 2026-04-08 → 2026-04-09)</li>
+<li><strong>Memorias:</strong> <code>project_secaderos.md</code>, <code>feedback_canvas_app_powerfx.md</code>, <code>feedback_yaml_paste.md</code>, <code>feedback_pa_datasource_names.md</code>, <code>feedback_dataverse_auth.md</code>, <code>feedback_handoff_naming.md</code>, <code>reference_dataverse_skills.md</code></li>
+</ul>
+
+<div class="callout warn">
+<strong>Estimaciones marcadas con <span class="est">Estimación</span></strong> se basan en: (a) contajes LOC reales del repo, (b) ratios de tokens/línea estándar por tipo de archivo, (c) recuerdo del desarrollador sobre el flujo de sesiones. Las estimaciones de horas sin-IA se apoyan en benchmarks informales del equipo PowerFox, no en estudios formales. Cualquier número marcado <span class="est">Estimación</span> debería validarse/refutarse con el siguiente proyecto de tamaño similar.
+</div>
+</section>
+
+<div class="footer">
+Caso de estudio nº 1 · [Cliente] · Sesión de formación PowerFox · 2026-04-09<br>
+Generado a partir del repositorio <code>[cliente-repo]/</code> · commits, specs, handoffs, YAML generado y memorias del proyecto.
+</div>
+
+</div>
+</body>
+</html>

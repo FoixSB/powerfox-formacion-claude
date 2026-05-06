@@ -1,0 +1,947 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Time Tracker — Guía interactiva para sesión con Claude Code</title>
+<link href="https://fonts.googleapis.com/css2?family=Source+Code+Pro:wght@400;500;600&family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #faf9f7;
+  --surface: #ffffff;
+  --surface2: #f3f1ee;
+  --surface3: #e8e5e0;
+  --accent: #c96442;
+  --accent2: #7c6b9e;
+  --accent3: #c49a2a;
+  --green: #3d8b6e;
+  --red: #c0504d;
+  --pink: #b86b8a;
+  --text: #1a1612;
+  --text2: #5c5650;
+  --text3: #8a847c;
+  --radius: 14px;
+  --radius-sm: 8px;
+  --shadow: 0 1px 3px rgba(0,0,0,.06), 0 4px 12px rgba(0,0,0,.04);
+  --shadow-lg: 0 4px 20px rgba(0,0,0,.08);
+}
+* { margin: 0; padding: 0; box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body {
+  font-family: 'Inter', -apple-system, system-ui, sans-serif;
+  background: var(--bg); color: var(--text); line-height: 1.7;
+  font-size: 15px; -webkit-font-smoothing: antialiased;
+}
+::-webkit-scrollbar { width: 8px; }
+::-webkit-scrollbar-track { background: var(--bg); }
+::-webkit-scrollbar-thumb { background: var(--surface3); border-radius: 3px; }
+
+/* HERO */
+.hero {
+  min-height: 70vh;
+  display: flex; flex-direction: column; justify-content: center;
+  padding: 60px 24px;
+  background: linear-gradient(170deg, #faf9f7 0%, #f0ece6 40%, #e8dfd4 100%);
+  position: relative; overflow: hidden;
+}
+.hero::before {
+  content: ''; position: absolute;
+  width: 700px; height: 700px;
+  background: radial-gradient(circle, rgba(201,100,66,.08) 0%, transparent 70%);
+  top: -200px; right: -100px;
+}
+.hero-inner { max-width: 1100px; margin: 0 auto; width: 100%; position: relative; z-index: 1; }
+.kicker {
+  display: inline-block; font-size: 12px; font-weight: 600;
+  letter-spacing: .15em; text-transform: uppercase;
+  color: var(--accent); margin-bottom: 20px;
+  padding: 6px 14px; background: rgba(201,100,66,.08);
+  border-radius: 20px;
+}
+h1 {
+  font-size: clamp(36px, 5vw, 56px); font-weight: 800;
+  line-height: 1.1; margin-bottom: 20px; letter-spacing: -.02em;
+}
+h1 em { font-style: normal; color: var(--accent); }
+.lead {
+  font-size: 19px; color: var(--text2); max-width: 800px;
+  margin-bottom: 30px;
+}
+.meta-row {
+  display: flex; flex-wrap: wrap; gap: 12px; margin-top: 20px;
+}
+.meta-pill {
+  background: var(--surface); border: 1px solid var(--surface3);
+  padding: 8px 16px; border-radius: 20px; font-size: 13px;
+  font-weight: 500; color: var(--text2);
+}
+.meta-pill strong { color: var(--text); }
+
+/* CONTAINER */
+.container { max-width: 1100px; margin: 0 auto; padding: 0 24px; }
+section { padding: 70px 0; }
+section.alt { background: var(--surface2); }
+
+h2 {
+  font-size: 32px; font-weight: 700; margin-bottom: 12px;
+  letter-spacing: -.01em;
+}
+h2 .num {
+  display: inline-block; font-size: 14px; font-weight: 600;
+  color: var(--accent); background: rgba(201,100,66,.1);
+  padding: 4px 10px; border-radius: 6px; margin-right: 12px;
+  vertical-align: middle;
+}
+.section-lead {
+  font-size: 17px; color: var(--text2); margin-bottom: 36px;
+  max-width: 800px;
+}
+
+h3 {
+  font-size: 21px; font-weight: 700; margin: 30px 0 14px;
+  color: var(--text);
+}
+
+p { margin-bottom: 14px; color: var(--text2); }
+p strong { color: var(--text); font-weight: 600; }
+
+ul, ol { margin: 0 0 18px 22px; }
+li { margin-bottom: 8px; color: var(--text2); }
+li strong { color: var(--text); }
+
+/* PROMPT BOX — el corazón del documento */
+.prompt-box {
+  background: var(--surface);
+  border: 1px solid var(--surface3);
+  border-left: 4px solid var(--accent);
+  border-radius: var(--radius);
+  padding: 20px 24px;
+  margin: 18px 0 28px;
+  box-shadow: var(--shadow);
+  position: relative;
+}
+.prompt-label {
+  display: flex; align-items: center; gap: 8px;
+  font-size: 11px; font-weight: 700; letter-spacing: .12em;
+  text-transform: uppercase; color: var(--accent);
+  margin-bottom: 12px;
+}
+.prompt-label::before {
+  content: '▸'; font-size: 14px;
+}
+.prompt-text {
+  font-family: 'Source Code Pro', monospace;
+  font-size: 13.5px; line-height: 1.65;
+  color: var(--text); white-space: pre-wrap;
+  background: var(--surface2);
+  padding: 14px 16px; border-radius: var(--radius-sm);
+}
+.prompt-hint {
+  font-size: 13px; color: var(--text3); margin-top: 10px;
+  font-style: italic;
+}
+.copy-btn {
+  position: absolute; top: 16px; right: 16px;
+  background: var(--surface2); border: 1px solid var(--surface3);
+  padding: 4px 10px; border-radius: 6px; font-size: 11px;
+  font-weight: 600; color: var(--text2); cursor: pointer;
+  transition: all .15s ease;
+}
+.copy-btn:hover { background: var(--accent); color: white; border-color: var(--accent); }
+.copy-btn.copied { background: var(--green); color: white; border-color: var(--green); }
+
+/* STEP CARD */
+.step {
+  background: var(--surface);
+  border: 1px solid var(--surface3);
+  border-radius: var(--radius);
+  padding: 28px 30px;
+  margin-bottom: 22px;
+  box-shadow: var(--shadow);
+  position: relative;
+}
+.step-head {
+  display: flex; align-items: center; gap: 14px; margin-bottom: 14px;
+}
+.step-num {
+  width: 38px; height: 38px; border-radius: 50%;
+  background: var(--accent); color: white;
+  display: flex; align-items: center; justify-content: center;
+  font-weight: 700; font-size: 16px; flex-shrink: 0;
+}
+.step-title {
+  font-size: 19px; font-weight: 700; flex: 1;
+}
+.step-time {
+  font-size: 12px; color: var(--text3); font-weight: 500;
+}
+.step-goal {
+  background: rgba(60,139,110,.08); border-left: 3px solid var(--green);
+  padding: 12px 16px; border-radius: var(--radius-sm);
+  font-size: 14px; color: var(--text2); margin-bottom: 16px;
+}
+.step-goal strong { color: var(--green); }
+
+/* EXPECTED OUTPUT */
+.expected {
+  background: var(--surface2);
+  border-radius: var(--radius-sm);
+  padding: 14px 18px; margin-top: 12px;
+  font-size: 13.5px; color: var(--text2);
+}
+.expected-label {
+  font-size: 11px; font-weight: 700; letter-spacing: .12em;
+  text-transform: uppercase; color: var(--accent2);
+  margin-bottom: 6px;
+}
+
+/* TOC */
+.toc {
+  background: var(--surface);
+  border: 1px solid var(--surface3);
+  border-radius: var(--radius);
+  padding: 20px 28px;
+  box-shadow: var(--shadow);
+  margin-bottom: 30px;
+}
+.toc-title {
+  font-size: 12px; font-weight: 700; letter-spacing: .15em;
+  text-transform: uppercase; color: var(--text3); margin-bottom: 14px;
+}
+.toc ol { margin: 0; padding-left: 22px; }
+.toc li { margin-bottom: 6px; font-size: 14px; }
+.toc a {
+  color: var(--text); text-decoration: none;
+  transition: color .15s;
+}
+.toc a:hover { color: var(--accent); }
+
+/* CALLOUT */
+.callout {
+  background: rgba(124,107,158,.07);
+  border: 1px solid rgba(124,107,158,.2);
+  border-left: 4px solid var(--accent2);
+  border-radius: var(--radius-sm);
+  padding: 16px 20px; margin: 18px 0;
+  font-size: 14.5px; color: var(--text2);
+}
+.callout strong { color: var(--accent2); }
+
+.warning {
+  background: rgba(192,80,77,.07);
+  border-color: rgba(192,80,77,.25);
+  border-left-color: var(--red);
+}
+.warning strong { color: var(--red); }
+
+/* CODE inline */
+code {
+  font-family: 'Source Code Pro', monospace;
+  background: var(--surface2);
+  padding: 2px 6px; border-radius: 4px;
+  font-size: .9em; color: var(--accent);
+}
+
+/* TABLE */
+table {
+  width: 100%; border-collapse: collapse;
+  background: var(--surface); border-radius: var(--radius);
+  overflow: hidden; box-shadow: var(--shadow);
+  margin: 14px 0 22px; font-size: 14px;
+}
+th { background: var(--surface2); padding: 12px 14px; text-align: left; font-weight: 600; color: var(--text); border-bottom: 1px solid var(--surface3); }
+td { padding: 11px 14px; border-bottom: 1px solid var(--surface3); color: var(--text2); }
+tr:last-child td { border-bottom: none; }
+
+/* TIMELINE */
+.timeline {
+  display: flex; flex-direction: column; gap: 0;
+  margin: 30px 0;
+}
+.tl-item {
+  display: flex; gap: 18px; padding: 14px 0;
+  border-bottom: 1px solid var(--surface3);
+}
+.tl-item:last-child { border-bottom: none; }
+.tl-time {
+  font-family: 'Source Code Pro', monospace;
+  font-size: 13px; font-weight: 600;
+  color: var(--accent); white-space: nowrap;
+  min-width: 70px; padding-top: 2px;
+}
+.tl-content { flex: 1; }
+.tl-content strong { display: block; margin-bottom: 4px; color: var(--text); }
+.tl-content span { font-size: 13.5px; color: var(--text2); }
+
+/* CHECKLIST */
+.checklist {
+  background: var(--surface);
+  border: 1px solid var(--surface3);
+  border-radius: var(--radius);
+  padding: 22px 26px; margin: 18px 0;
+}
+.checklist-item {
+  display: flex; align-items: flex-start; gap: 12px;
+  padding: 10px 0; border-bottom: 1px solid var(--surface2);
+  cursor: pointer; user-select: none;
+}
+.checklist-item:last-child { border-bottom: none; }
+.checklist-check {
+  width: 20px; height: 20px; border-radius: 5px;
+  border: 2px solid var(--surface3); flex-shrink: 0;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 13px; color: white; transition: all .15s;
+  margin-top: 2px;
+}
+.checklist-item.done .checklist-check {
+  background: var(--green); border-color: var(--green);
+}
+.checklist-item.done .checklist-check::before { content: '✓'; }
+.checklist-item.done .checklist-text { text-decoration: line-through; color: var(--text3); }
+.checklist-text { font-size: 14.5px; color: var(--text); }
+
+/* FOOTER */
+footer {
+  background: var(--text); color: var(--surface2);
+  padding: 50px 24px; text-align: center; margin-top: 40px;
+}
+footer p { color: rgba(255,255,255,.7); font-size: 14px; }
+
+/* MERMAID-style flow */
+.flow {
+  background: var(--surface); border-radius: var(--radius);
+  padding: 24px; margin: 20px 0; border: 1px solid var(--surface3);
+  font-family: 'Source Code Pro', monospace; font-size: 13px;
+  white-space: pre; overflow-x: auto; line-height: 1.5;
+  color: var(--text);
+}
+
+/* FAB */
+.fab {
+  position: fixed; bottom: 24px; right: 24px;
+  background: var(--accent); color: white; border: none;
+  width: 50px; height: 50px; border-radius: 50%;
+  font-size: 22px; cursor: pointer; box-shadow: var(--shadow-lg);
+  z-index: 100; transition: transform .15s;
+}
+.fab:hover { transform: scale(1.08); }
+
+@media (max-width: 768px) {
+  h1 { font-size: 32px; }
+  h2 { font-size: 24px; }
+  .step { padding: 22px 20px; }
+  .prompt-text { font-size: 12.5px; }
+}
+</style>
+</head>
+<body>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-inner">
+    <span class="kicker">Sesión 4 · Lunes · 2026-05-05</span>
+    <h1>Analizar la Canvas App<br><em>Time Tracker</em> con Claude Code</h1>
+    <p class="lead">
+      Guía paso a paso para que vayas explorando la app <strong>"Registro Semanal de Horas"</strong> de Litoclean junto a los alumnos en directo.
+      Cada bloque tiene un prompt listo para copiar — Claude lo lee, te resume y tú lo explicas.
+    </p>
+    <div class="meta-row">
+      <span class="meta-pill">📂 <strong>Repo:</strong> C:\Dev\clients\litoclean-tema</span>
+      <span class="meta-pill">🎯 <strong>App:</strong> pfx_weeklytimeentrypage</span>
+      <span class="meta-pill">⏱️ <strong>Duración:</strong> 60 min</span>
+      <span class="meta-pill">👥 <strong>Modo:</strong> Live coding guiado</span>
+    </div>
+  </div>
+</section>
+
+<!-- TIMELINE -->
+<section>
+  <div class="container">
+    <h2><span class="num">00</span>Cómo usar este documento</h2>
+    <p class="section-lead">
+      No tienes que recordar nada de cómo se construyó esta app. La idea es que
+      <strong>Claude vaya descubriéndola contigo en directo</strong>.
+      Cada bloque te da: (1) el objetivo del momento, (2) un prompt copiable, (3) qué deberías ver y (4) la pregunta para los alumnos.
+    </p>
+
+    <div class="toc">
+      <div class="toc-title">Plan de la sesión</div>
+      <ol>
+        <li><a href="#bloque-0">Setup — abrir el repo y orientarse</a> · 5 min</li>
+        <li><a href="#bloque-1">¿Qué hace esta app? — descubrimiento general</a> · 10 min</li>
+        <li><a href="#bloque-2">El modelo de datos detrás</a> · 8 min</li>
+        <li><a href="#bloque-3">Cómo arranca — App.OnStart</a> · 7 min</li>
+        <li><a href="#bloque-4">El flujo de carga de datos</a> · 10 min</li>
+        <li><a href="#bloque-5">La galería de horas y validaciones</a> · 8 min</li>
+        <li><a href="#bloque-6">El flujo de aprobación</a> · 7 min</li>
+        <li><a href="#bloque-7">Detección de deuda técnica</a> · 5 min</li>
+        <li><a href="#cierre">Cierre y siguientes pasos</a></li>
+      </ol>
+    </div>
+
+    <div class="callout">
+      <strong>💡 Tip de facilitación:</strong> antes de pegar cada prompt, lee a los alumnos la <em>"pregunta abierta"</em>
+      del bloque y deja que especulen 30 segundos. Luego ejecutas el prompt y comparáis lo que pensaban con lo que descubre Claude.
+      Esto convierte la sesión en exploración, no en monólogo.
+    </div>
+  </div>
+</section>
+
+<!-- BLOQUE 0 -->
+<section class="alt" id="bloque-0">
+  <div class="container">
+    <h2><span class="num">01</span>Setup — abrir el repo de Litoclean</h2>
+    <p class="section-lead">
+      Antes de empezar, abrir Claude Code en la carpeta del cliente y verificar que la solución está descargada.
+    </p>
+
+    <div class="step">
+      <div class="step-head">
+        <div class="step-num">1</div>
+        <div class="step-title">Abrir Claude Code en el repo de Litoclean</div>
+        <div class="step-time">2 min</div>
+      </div>
+      <div class="step-goal">
+        <strong>Objetivo:</strong> que Claude tenga el contexto del repo correcto para todo lo que viene después.
+      </div>
+      <p>Abre una terminal nueva en VS Code dentro de <code>C:\Dev\clients\litoclean-tema</code> y ejecuta <code>claude</code>. Cuando esté listo, lanza este primer prompt para orientarse:</p>
+
+      <div class="prompt-box">
+        <div class="prompt-label">Prompt 1 · Reconocimiento</div>
+        <button class="copy-btn" onclick="copyPrompt(this)">Copiar</button>
+        <div class="prompt-text">Estoy en el repo de Litoclean. Quiero analizar la Canvas App "Registro Semanal de Horas" en una sesión de formación.
+
+Lista las soluciones disponibles bajo /solutions/ y dime cuáles Canvas Apps hay en smart_project_solution. Identifícame cuál es la del Time Tracker (Registro Semanal de Horas).
+
+No hagas más nada todavía, solo orientación inicial.</div>
+        <p class="prompt-hint">Esto da contexto a Claude y te confirma a ti dónde está todo antes de empezar.</p>
+      </div>
+
+      <div class="expected">
+        <div class="expected-label">Lo que Claude debería responder</div>
+        Que hay <code>smart_project_solution</code> con 4 Canvas Apps, y que la del Time Tracker es <code>pfx_weeklytimeentrypage_40d1a</code> (DisplayName: "Registro Semanal de Horas") leyendo el <code>.meta.xml</code>.
+      </div>
+    </div>
+
+    <div class="step">
+      <div class="step-head">
+        <div class="step-num">2</div>
+        <div class="step-title">Extraer el .msapp para poder leerlo</div>
+        <div class="step-time">3 min</div>
+      </div>
+      <div class="step-goal">
+        <strong>Objetivo:</strong> los <code>.msapp</code> son ZIPs renombrados. Hay que descomprimirlos para que Claude pueda leer el YAML de las pantallas.
+      </div>
+
+      <div class="prompt-box">
+        <div class="prompt-label">Prompt 2 · Extracción del msapp</div>
+        <button class="copy-btn" onclick="copyPrompt(this)">Copiar</button>
+        <div class="prompt-text">El archivo pfx_weeklytimeentrypage_40d1a_DocumentUri.msapp es realmente un ZIP. Cópialo a la carpeta temp con extensión .zip, descomprímelo, y dime qué estructura tiene dentro.
+
+Quiero entender qué archivos hay y cuáles contienen la lógica real de la app (las pantallas en YAML).</div>
+        <p class="prompt-hint">Para la sesión: explica que <strong>todo Canvas App es un ZIP con YAML dentro</strong> — esto es lo que hace que Claude pueda analizarlas como si fueran código.</p>
+      </div>
+
+      <div class="expected">
+        <div class="expected-label">Lo que Claude debería encontrar</div>
+        Carpetas <code>Src/</code> (con <code>App.pa.yaml</code>, <code>Screen1.pa.yaml</code>, <code>Screen2.pa.yaml</code>), <code>Controls/</code>, <code>Resources/</code>, y archivos <code>Header.json</code>, <code>Properties.json</code>. La lógica está en <code>Screen1.pa.yaml</code> (~3.400 líneas).
+      </div>
+    </div>
+
+    <div class="callout warning">
+      <strong>⚠️ Pregunta a los alumnos:</strong> "¿Por qué hasta ahora era tan difícil revisar Canvas Apps en code review?"<br>
+      <em>Respuesta: porque el editor visual no exporta a un formato amigable. Pero desde 2024 Power Apps guarda la fuente como YAML, y eso es lo que Claude puede leer.</em>
+    </div>
+  </div>
+</section>
+
+<!-- BLOQUE 1 -->
+<section id="bloque-1">
+  <div class="container">
+    <h2><span class="num">02</span>¿Qué hace esta app?</h2>
+    <p class="section-lead">
+      Antes de meternos en código, que Claude nos resuma de qué va. Esto sirve para alinear al equipo y para que <strong>tú recuerdes</strong> qué construiste.
+    </p>
+
+    <div class="step">
+      <div class="step-head">
+        <div class="step-num">3</div>
+        <div class="step-title">Resumen funcional de la app</div>
+        <div class="step-time">5 min</div>
+      </div>
+      <div class="step-goal">
+        <strong>Pregunta abierta para los alumnos:</strong> "Si esto es un parte de horas semanal, ¿qué tres pantallas o flujos esperaríais encontrar?"
+      </div>
+
+      <div class="prompt-box">
+        <div class="prompt-label">Prompt 3 · ¿Qué hace?</div>
+        <button class="copy-btn" onclick="copyPrompt(this)">Copiar</button>
+        <div class="prompt-text">Lee el App.pa.yaml y los primeros 200 controles del Screen1.pa.yaml extraído.
+
+Dame en 5 viñetas qué hace funcionalmente esta app: qué ve el usuario, qué puede hacer, y qué roles distintos parece soportar. No me cuentes detalles técnicos todavía, quiero el "elevator pitch" del producto.</div>
+      </div>
+
+      <div class="expected">
+        <div class="expected-label">Esto es lo que Claude debería contarte (y tú a los alumnos)</div>
+        <ul style="margin: 8px 0 0 18px;">
+          <li>Es una <strong>pantalla única</strong> embebida en una Model-Driven App donde un usuario carga horas por día y proyecto.</li>
+          <li>Soporta <strong>tres roles</strong>: recurso normal, coordinador (carga en nombre de otros) y aprobador.</li>
+          <li>Tiene <strong>tres popups</strong>: añadir nueva actividad, editar comentario por celda, ver detalle/aprobar parte.</li>
+          <li>El estado de un parte semanal pasa por <strong>Borrador → Enviado → Aprobado/Rechazado</strong>.</li>
+          <li>Todo el dato vive en dos tablas Dataverse: <code>pfx_time_entry</code> (cabecera semanal) y <code>pfx_time_entry_day</code> (línea diaria).</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="step">
+      <div class="step-head">
+        <div class="step-num">4</div>
+        <div class="step-title">Mapa visual de la pantalla</div>
+        <div class="step-time">5 min</div>
+      </div>
+
+      <div class="prompt-box">
+        <div class="prompt-label">Prompt 4 · Árbol de controles</div>
+        <button class="copy-btn" onclick="copyPrompt(this)">Copiar</button>
+        <div class="prompt-text">Dame un árbol jerárquico de los contenedores principales de Screen1.pa.yaml hasta 3 niveles de profundidad. Para cada uno, una frase de qué función cumple en la UI.
+
+Quiero un mapa mental de la pantalla, no el código. Si ves duplicación obvia (contenedores hermanos repetidos) márcala.</div>
+      </div>
+
+      <div class="expected">
+        <div class="expected-label">Lo que probablemente saldrá</div>
+        Va a destacar que hay <strong>siete contenedores hermanos casi idénticos</strong> (<code>Container4</code>, <code>Container4_1</code>, ..., <code>Container4_6</code>), uno por día de la semana. Esto es <strong>la deuda técnica más visible</strong> de la app — apúntala mentalmente para el bloque 7.
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- BLOQUE 2 -->
+<section class="alt" id="bloque-2">
+  <div class="container">
+    <h2><span class="num">03</span>El modelo de datos</h2>
+    <p class="section-lead">
+      Una Canvas App sin entender su modelo Dataverse es código sin sentido. Antes de leer fórmulas, miramos las tablas.
+    </p>
+
+    <div class="step">
+      <div class="step-head">
+        <div class="step-num">5</div>
+        <div class="step-title">Tablas y relaciones</div>
+        <div class="step-time">8 min</div>
+      </div>
+      <div class="step-goal">
+        <strong>Pregunta abierta:</strong> "¿Por qué cabecera + línea? ¿Qué problemas evitamos teniendo dos tablas en vez de una sola con muchos campos?"
+      </div>
+
+      <div class="prompt-box">
+        <div class="prompt-label">Prompt 5 · Modelo de datos</div>
+        <button class="copy-btn" onclick="copyPrompt(this)">Copiar</button>
+        <div class="prompt-text">Lee los Entity.xml de pfx_time_entry y pfx_time_entry_day en /solutions/smart_project_solution/Entities/.
+
+Hazme una tabla resumen con los campos pfx_* de cada entidad: nombre lógico, tipo, y para qué sirve según el nombre.
+
+Después dime cuál es la relación entre ambas tablas y cómo encajan con pfx_project, pfx_project_activity y pfx_team_template.
+
+Termina con un diagrama ASCII simple de las relaciones.</div>
+      </div>
+
+      <div class="expected">
+        <div class="expected-label">Las dos tablas clave</div>
+        <table>
+          <tr><th>Campo</th><th>Tabla</th><th>Para qué</th></tr>
+          <tr><td><code>pfx_time_entryid</code></td><td>pfx_time_entry</td><td>PK cabecera semanal</td></tr>
+          <tr><td><code>pfx_week_start_date</code></td><td>pfx_time_entry</td><td>Lunes de la semana</td></tr>
+          <tr><td><code>pfx_time_entry_status_choice</code></td><td>pfx_time_entry</td><td>Borrador / Enviado / Aprobado / Rechazado</td></tr>
+          <tr><td><code>pfx_total_hours</code></td><td>pfx_time_entry</td><td>Suma agregada (mantenida por la app)</td></tr>
+          <tr><td><code>pfx_entry_date</code></td><td>pfx_time_entry_day</td><td>Día concreto</td></tr>
+          <tr><td><code>pfx_project_activity_id</code></td><td>pfx_time_entry_day</td><td>Actividad del proyecto en ese día</td></tr>
+          <tr><td><code>pfx_total_hours</code></td><td>pfx_time_entry_day</td><td>Horas en ese día/actividad</td></tr>
+          <tr><td><code>pfx_comment</code></td><td>pfx_time_entry_day</td><td>Comentario por celda</td></tr>
+        </table>
+      </div>
+
+      <div class="callout">
+        <strong>Punto clave para enseñar:</strong> el aprobador de un parte no se asigna directamente al usuario. Se llega vía
+        <code>pfx_project → pfx_team_template → pfx_team_template_member</code>. Esto significa que cualquier cambio en un proyecto cambia quién aprueba. <em>Pregunta a los alumnos: ¿es esto bueno o un problema?</em>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- BLOQUE 3 -->
+<section id="bloque-3">
+  <div class="container">
+    <h2><span class="num">04</span>Cómo arranca — App.OnStart</h2>
+    <p class="section-lead">
+      El <code>OnStart</code> es donde se decide quién es el usuario, qué rol tiene, y qué semanas puede seleccionar. Conviene entenderlo antes que ningún botón.
+    </p>
+
+    <div class="step">
+      <div class="step-head">
+        <div class="step-num">6</div>
+        <div class="step-title">Lectura guiada de App.OnStart</div>
+        <div class="step-time">7 min</div>
+      </div>
+
+      <div class="prompt-box">
+        <div class="prompt-label">Prompt 6 · OnStart</div>
+        <button class="copy-btn" onclick="copyPrompt(this)">Copiar</button>
+        <div class="prompt-text">Léeme el App.pa.yaml completo (extracted del .msapp). Dame un diagrama tipo flowchart en texto explicando paso a paso qué hace OnStart.
+
+Presta atención especial a:
+1. Cómo distingue Studio (desarrollo) de Player (producción)
+2. Cómo deduce el rol del usuario actual
+3. Cómo construye la lista de semanas seleccionables (colWeeklyStartDates)
+
+Para cada uno dime si te parece elegante, mejorable o un anti-patrón, y por qué.</div>
+      </div>
+
+      <div class="expected">
+        <div class="expected-label">Tres patrones que tienen que ver los alumnos</div>
+        <ol style="margin: 8px 0 0 18px;">
+          <li><strong>Studio vs Player</strong>: <code>StartsWith(Host.Version, "PowerApps-Studio")</code> — patrón limpio para inyectar usuarios fake en desarrollo.</li>
+          <li><strong>Rol como Switch</strong>: convierte un Choice de Dataverse en el código numérico que espera el conector custom. <em>¿Qué pasa si añaden un rol nuevo? La app deja de mapearlo.</em></li>
+          <li><strong>colWeeklyStartDates</strong>: genera 360 fechas y filtra los lunes. Funciona, pero genera 360 elementos para quedarse con 52. <em>¿Cómo lo harías tú?</em></li>
+        </ol>
+      </div>
+
+      <div class="prompt-box">
+        <div class="prompt-label">Prompt 6b · Refactor opcional (si va sobrado de tiempo)</div>
+        <button class="copy-btn" onclick="copyPrompt(this)">Copiar</button>
+        <div class="prompt-text">Reescríbeme la generación de colWeeklyStartDates para que solo genere los 52 lunes directamente, sin el filtro sobre 360 días. Dame la fórmula Power Fx exacta.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- BLOQUE 4 -->
+<section class="alt" id="bloque-4">
+  <div class="container">
+    <h2><span class="num">05</span>Cómo carga los datos</h2>
+    <p class="section-lead">
+      Toda la información que ve el usuario sale de un único botón oculto: <code>ButtonCanvas_Sources</code>. Aquí está la columna vertebral de la app.
+    </p>
+
+    <div class="step">
+      <div class="step-head">
+        <div class="step-num">7</div>
+        <div class="step-title">Auditoría del botón maestro</div>
+        <div class="step-time">10 min</div>
+      </div>
+      <div class="step-goal">
+        <strong>Pregunta abierta:</strong> "Si pudieseis ejecutar 7 consultas en paralelo o en serie, ¿qué eligen aquí? ¿Y por qué creéis que se hizo así?"
+      </div>
+
+      <div class="prompt-box">
+        <div class="prompt-label">Prompt 7 · Cargas de datos</div>
+        <button class="copy-btn" onclick="copyPrompt(this)">Copiar</button>
+        <div class="prompt-text">En Screen1.pa.yaml busca el control ButtonCanvas_Sources. Léeme su OnSelect entero.
+
+Quiero una tabla con TODAS las llamadas a Environment.pfx_post_powerfox_api que hace, columnas:
+- Variable de salida
+- Tabla Dataverse consultada (extráela del FetchXML)
+- Filtros aplicados
+- Colección local que crea
+- Para qué sirve esa colección en la UI
+
+Después dime: (1) cuántas llamadas son, (2) cuáles son independientes entre sí, (3) si hay alguna optimización de paralelización obvia.</div>
+      </div>
+
+      <div class="expected">
+        <div class="expected-label">Lo que va a salir</div>
+        <p>Aproximadamente <strong>6-7 llamadas FetchXML</strong> secuenciales que cargan: cabecera semanal, aprobadores, usuarios aprobables, proyectos accesibles, actividades, proyectos como admin, usuarios como admin, líneas diarias. Casi todas son independientes pero se ejecutan en serie. <strong>Candidato claro para <code>Concurrent()</code></strong>.</p>
+      </div>
+
+      <div class="callout">
+        <strong>Concepto a explicar:</strong> el patrón
+        <code>Set(varXxxResponse, ...) → ClearCollect(colXxx, ForAll(ParseJSON(varXxxResponse.Result_String), {...}))</code>
+        se repite literalmente 7 veces. Esto es donde un componente o una función reutilizable ahorraría 200+ líneas.
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- BLOQUE 5 -->
+<section id="bloque-5">
+  <div class="container">
+    <h2><span class="num">06</span>La galería y validación de horas</h2>
+    <p class="section-lead">
+      Cada celda de la galería tiene una validación seria. Aquí está el bug-magnet de la app y donde más se nota la deuda técnica.
+    </p>
+
+    <div class="step">
+      <div class="step-head">
+        <div class="step-num">8</div>
+        <div class="step-title">¿Cómo valida una celda de horas?</div>
+        <div class="step-time">8 min</div>
+      </div>
+
+      <div class="prompt-box">
+        <div class="prompt-label">Prompt 8 · Validación de horas</div>
+        <button class="copy-btn" onclick="copyPrompt(this)">Copiar</button>
+        <div class="prompt-text">En Screen1.pa.yaml busca TextInputCanvas5 (el input del Lunes en la galería). Léeme su OnChange.
+
+Explícame en pasos:
+1. Qué formatos de entrada acepta (regex)
+2. Cómo convierte hh:mm a decimal y viceversa
+3. Cómo valida el tope de 8h diarias (busca el "<= 480")
+4. Qué pasa si el formato es inválido
+
+Después dime: ¿cuántas veces más aparece esta lógica casi idéntica en el archivo? Cuenta las apariciones de "<= 480" en el Screen1.pa.yaml.</div>
+      </div>
+
+      <div class="expected">
+        <div class="expected-label">El "wow moment" de la sesión</div>
+        Esa misma fórmula de ~80 líneas está duplicada <strong>siete veces</strong>, una por día. Cualquier ajuste (cambiar el tope a 10h, soportar otro idioma) hay que hacerlo siete veces. <strong>Aquí justificas el componente lienzo.</strong>
+      </div>
+
+      <div class="prompt-box">
+        <div class="prompt-label">Prompt 9 · Refactor a componente</div>
+        <button class="copy-btn" onclick="copyPrompt(this)">Copiar</button>
+        <div class="prompt-text">Diséñame un componente lienzo (canvas component) que encapsule la celda de día. Dame:
+
+1. Qué propiedades de entrada necesita (Input properties)
+2. Qué propiedades de salida debe exponer (Output properties)
+3. Cómo quedaría la fórmula del OnChange dentro del componente
+4. Cómo quedaría la galería tras usar el componente — pseudocódigo, no me hace falta el YAML completo
+
+El objetivo: que los 7 contenedores de día se conviertan en una sola declaración del componente con dayOffset 0..6.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- BLOQUE 6 -->
+<section class="alt" id="bloque-6">
+  <div class="container">
+    <h2><span class="num">07</span>El flujo de aprobación</h2>
+    <p class="section-lead">
+      La parte más rica funcionalmente: enviar a aprobar, aprobar/rechazar, y aprobar en bloque. Todo desde el mismo popup.
+    </p>
+
+    <div class="step">
+      <div class="step-head">
+        <div class="step-num">9</div>
+        <div class="step-title">Mapa de transiciones de estado</div>
+        <div class="step-time">7 min</div>
+      </div>
+      <div class="step-goal">
+        <strong>Pregunta abierta:</strong> "¿Cuántos estados tiene un parte de horas? ¿Quién puede mover de un estado a otro?"
+      </div>
+
+      <div class="prompt-box">
+        <div class="prompt-label">Prompt 10 · Estados y transiciones</div>
+        <button class="copy-btn" onclick="copyPrompt(this)">Copiar</button>
+        <div class="prompt-text">En Screen1.pa.yaml busca todas las apariciones de los códigos 891380000, 891380001, 891380002 y 891380003 (los estados de pfx_time_entry_status_choice).
+
+Para cada uno dime:
+- Qué estado representa
+- Qué botones lo USAN como condición de visibilidad
+- Qué botones lo ESCRIBEN (transiciones)
+- Bajo qué validaciones se permite escribirlo
+
+Después dame un diagrama de estados ASCII simple con las transiciones permitidas.</div>
+      </div>
+
+      <div class="expected">
+        <div class="expected-label">Cuatro estados, cinco transiciones</div>
+        <div class="flow">Borrador (891380000)
+   │
+   │  [Recurso pulsa "Enviar a aprobar" + total >= 40h]
+   ▼
+Enviado (891380001)
+   │
+   ├─ [Aprobador "Aprobar"] ──▶ Aprobado (891380002)
+   │
+   └─ [Aprobador "Rechazar"] ─▶ Rechazado (891380003)
+
+Aprobado / Rechazado
+   │
+   │  [Recurso pulsa "Editar"]
+   ▼
+Borrador (vuelta al inicio)</div>
+      </div>
+
+      <div class="callout warning">
+        <strong>Bug latente que descubriremos:</strong> los códigos <code>891380000</code>...<code>003</code> aparecen como literales en 20+ sitios del YAML. Si Microsoft cambia el OptionSet o el equipo decide renombrarlos, hay que buscar y reemplazar a mano. <em>Solución: declarar constantes en App.OnStart (<code>Set(STATUS_DRAFT, 891380000)</code>...).</em>
+      </div>
+    </div>
+
+    <div class="step">
+      <div class="step-head">
+        <div class="step-num">10</div>
+        <div class="step-title">Aprobación individual vs en bloque</div>
+        <div class="step-time">opcional</div>
+      </div>
+
+      <div class="prompt-box">
+        <div class="prompt-label">Prompt 11 · BulkApprove</div>
+        <button class="copy-btn" onclick="copyPrompt(this)">Copiar</button>
+        <div class="prompt-text">En Screen1.pa.yaml busca la variable BulkApprove. Explícame:
+
+1. Quién la pone a true y quién a false
+2. Cómo cambia el comportamiento del botón "Aprobar" según su valor
+3. Qué pasa si alguien apruebra en bloque y hay un proyecto que no debería aprobarse — ¿hay manera de excluirlo en la UI?
+
+Si encuentras un riesgo funcional, dímelo claramente.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- BLOQUE 7 -->
+<section id="bloque-7">
+  <div class="container">
+    <h2><span class="num">08</span>Detección de deuda técnica</h2>
+    <p class="section-lead">
+      Cierre del análisis: dejamos a Claude que liste todo lo que mejoraría y lo priorizamos juntos.
+    </p>
+
+    <div class="step">
+      <div class="step-head">
+        <div class="step-num">11</div>
+        <div class="step-title">Auditoría completa</div>
+        <div class="step-time">5 min</div>
+      </div>
+
+      <div class="prompt-box">
+        <div class="prompt-label">Prompt 12 · Code review final</div>
+        <button class="copy-btn" onclick="copyPrompt(this)">Copiar</button>
+        <div class="prompt-text">Hazme una auditoría completa de Screen1.pa.yaml y App.pa.yaml.
+
+Dame una tabla con columnas:
+- # (priorización 1=crítico, 5=cosmético)
+- Hallazgo (qué está mal o se puede mejorar)
+- Impacto (qué problema causa hoy o causará)
+- Refactor sugerido (en 1-2 líneas)
+- Esfuerzo estimado (S/M/L)
+
+Cubre como mínimo: duplicación de código, paralelización, números mágicos, manejo de errores, validaciones hardcodeadas, y cualquier patrón que veas que no escala.
+
+Ordena por prioridad descendente.</div>
+      </div>
+
+      <div class="expected">
+        <div class="expected-label">Top 5 esperado</div>
+        <ol style="margin: 8px 0 0 18px;">
+          <li><strong>Siete contenedores de día duplicados</strong> → componente lienzo (esfuerzo M, impacto alto)</li>
+          <li><strong>Cabecera <code>pfx_total_hours</code> recalculada en cliente</strong> → plugin Dataverse pre-update (esfuerzo M, riesgo de inconsistencia)</li>
+          <li><strong>Códigos de estado mágicos</strong> → constantes en OnStart (esfuerzo S, alto valor)</li>
+          <li><strong>Llamadas FetchXML secuenciales</strong> → <code>Concurrent()</code> donde son independientes (esfuerzo S, latencia)</li>
+          <li><strong>Sin <code>IfError</code> en llamadas al conector</strong> → manejo de fallos parciales (esfuerzo M, robustez)</li>
+        </ol>
+      </div>
+    </div>
+
+    <div class="step">
+      <div class="step-head">
+        <div class="step-num">12</div>
+        <div class="step-title">Generar plan de pruebas (si sobra tiempo)</div>
+        <div class="step-time">opcional</div>
+      </div>
+
+      <div class="prompt-box">
+        <div class="prompt-label">Prompt 13 · Plan de regresión</div>
+        <button class="copy-btn" onclick="copyPrompt(this)">Copiar</button>
+        <div class="prompt-text">Basándote en todo lo que hemos analizado, dame un plan de pruebas de regresión en formato checklist.
+
+Agrupa por:
+- Por rol (recurso normal / coordinador con impersonación / aprobador)
+- Por estado (Borrador / Enviado / Aprobado / Rechazado)
+- Por validaciones (8h/día, 40h/semana para enviar, formato hh:mm vs decimal)
+- Por casos edge (proyecto sin team_template, BulkApprove con cero candidatos, semana sin partes)
+
+Que cualquier tester pueda ejecutarlo sin saber del código.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CIERRE -->
+<section class="alt" id="cierre">
+  <div class="container">
+    <h2><span class="num">09</span>Cierre — checklist de la sesión</h2>
+    <p class="section-lead">
+      Marca lo que hayas cubierto. Lo que quede pendiente, encárgalo a un alumno como ejercicio para la próxima sesión.
+    </p>
+
+    <div class="checklist">
+      <div class="checklist-item" onclick="this.classList.toggle('done')">
+        <div class="checklist-check"></div>
+        <div class="checklist-text">Identificar la Canvas App y extraer su <code>.msapp</code></div>
+      </div>
+      <div class="checklist-item" onclick="this.classList.toggle('done')">
+        <div class="checklist-check"></div>
+        <div class="checklist-text">Resumen funcional: roles, popups, estados</div>
+      </div>
+      <div class="checklist-item" onclick="this.classList.toggle('done')">
+        <div class="checklist-check"></div>
+        <div class="checklist-text">Modelo de datos: cabecera + línea + relación de aprobación</div>
+      </div>
+      <div class="checklist-item" onclick="this.classList.toggle('done')">
+        <div class="checklist-check"></div>
+        <div class="checklist-text">App.OnStart: Studio vs Player, mapeo de roles, semanas</div>
+      </div>
+      <div class="checklist-item" onclick="this.classList.toggle('done')">
+        <div class="checklist-check"></div>
+        <div class="checklist-text">ButtonCanvas_Sources y las 7 colecciones</div>
+      </div>
+      <div class="checklist-item" onclick="this.classList.toggle('done')">
+        <div class="checklist-check"></div>
+        <div class="checklist-text">Validación de celda de horas + duplicación 7×</div>
+      </div>
+      <div class="checklist-item" onclick="this.classList.toggle('done')">
+        <div class="checklist-check"></div>
+        <div class="checklist-text">Diagrama de estados Borrador → Enviado → Aprobado/Rechazado</div>
+      </div>
+      <div class="checklist-item" onclick="this.classList.toggle('done')">
+        <div class="checklist-check"></div>
+        <div class="checklist-text">BulkApprove: cómo funciona y qué riesgo tiene</div>
+      </div>
+      <div class="checklist-item" onclick="this.classList.toggle('done')">
+        <div class="checklist-check"></div>
+        <div class="checklist-text">Auditoría priorizada de deuda técnica</div>
+      </div>
+      <div class="checklist-item" onclick="this.classList.toggle('done')">
+        <div class="checklist-check"></div>
+        <div class="checklist-text">Plan de pruebas de regresión (opcional)</div>
+      </div>
+    </div>
+
+    <h3>Frase de cierre para los alumnos</h3>
+    <div class="callout">
+      <strong>"Hoy hemos hecho en una hora lo que normalmente lleva un día completo de code review:</strong>
+      hemos mapeado un Canvas App de 3.400 líneas, identificado el modelo de datos, encontrado la deuda técnica y generado un plan de mejora.
+      <strong>La diferencia no es que Claude escriba código por nosotros — es que nos quita la fricción de leer YAML.</strong>
+      Lo que viene ahora es decidir qué refactores valen la pena."
+    </div>
+
+    <h3>Encargo opcional para próxima sesión</h3>
+    <p>Pide a un alumno que prepare el componente lienzo para la celda de día (<strong>Prompt 9</strong>) y que traiga el código a revisar entre todos. Así la próxima sesión arranca con un PR real sobre la solución.</p>
+  </div>
+</section>
+
+<footer>
+  <p>Power Fox BI · Curso Claude Code · Sesión 4 — Lunes · 2026-05-05</p>
+  <p style="margin-top: 8px; font-size: 12px;">Caso real: Canvas App "Registro Semanal de Horas" — Cliente Litoclean</p>
+</footer>
+
+<button class="fab" onclick="window.scrollTo({top:0, behavior:'smooth'})" title="Volver arriba">↑</button>
+
+<script>
+function copyPrompt(btn) {
+  const text = btn.parentElement.querySelector('.prompt-text').innerText;
+  navigator.clipboard.writeText(text).then(() => {
+    btn.textContent = '✓ Copiado';
+    btn.classList.add('copied');
+    setTimeout(() => {
+      btn.textContent = 'Copiar';
+      btn.classList.remove('copied');
+    }, 1800);
+  });
+}
+</script>
+
+</body>
+</html>

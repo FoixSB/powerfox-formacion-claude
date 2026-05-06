@@ -1,0 +1,1452 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Power Platform + IA — Caso Real [Sistema] ([Cliente])</title>
+<link href="https://fonts.googleapis.com/css2?family=Source+Code+Pro:wght@400;600&family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #faf9f7;
+  --surface: #ffffff;
+  --surface2: #f3f1ee;
+  --surface3: #e8e5e0;
+  --accent: #c96442;
+  --accent2: #7c6b9e;
+  --accent3: #c49a2a;
+  --green: #3d8b6e;
+  --red: #c0504d;
+  --pink: #b86b8a;
+  --text: #1a1612;
+  --text2: #5c5650;
+  --text3: #8a847c;
+  --radius: 14px;
+  --radius-sm: 8px;
+  --shadow: 0 1px 3px rgba(0,0,0,.06), 0 4px 12px rgba(0,0,0,.04);
+  --shadow-lg: 0 4px 20px rgba(0,0,0,.08);
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body {
+  font-family: 'Inter', -apple-system, system-ui, sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  line-height: 1.7;
+  overflow-x: hidden;
+  font-size: 15px;
+  -webkit-font-smoothing: antialiased;
+}
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: var(--bg); }
+::-webkit-scrollbar-thumb { background: var(--surface3); border-radius: 3px; }
+
+/* HERO */
+.hero {
+  min-height: 85vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  padding: 60px 24px;
+  position: relative;
+  overflow: hidden;
+  background: linear-gradient(170deg, #faf9f7 0%, #f0ece6 40%, #e8dfd4 100%);
+}
+.hero::before {
+  content: '';
+  position: absolute;
+  width: 700px; height: 700px;
+  background: radial-gradient(circle, rgba(201,100,66,.08) 0%, transparent 70%);
+  top: -200px; right: -100px;
+  animation: float 18s ease-in-out infinite;
+}
+.hero::after {
+  content: '';
+  position: absolute;
+  width: 500px; height: 500px;
+  background: radial-gradient(circle, rgba(124,107,158,.07) 0%, transparent 70%);
+  bottom: -100px; left: -100px;
+  animation: float 22s ease-in-out infinite reverse;
+}
+@keyframes float {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  50% { transform: translate(30px, -20px) scale(1.05); }
+}
+.hero-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: rgba(201,100,66,.08);
+  border: 1px solid rgba(201,100,66,.2);
+  padding: 8px 20px;
+  border-radius: 100px;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  color: var(--accent);
+  margin-bottom: 32px;
+  position: relative; z-index: 1;
+  animation: fadeUp .8s ease both;
+}
+.hero h1 {
+  font-size: clamp(38px, 6vw, 76px);
+  font-weight: 900;
+  line-height: 1.08;
+  letter-spacing: -2px;
+  position: relative; z-index: 1;
+  animation: fadeUp .8s ease .15s both;
+  color: var(--text);
+}
+.hero h1 .gradient {
+  background: linear-gradient(135deg, var(--accent) 0%, var(--accent2) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+.hero-sub {
+  font-size: clamp(15px, 2vw, 19px);
+  color: var(--text2);
+  max-width: 720px;
+  margin-top: 24px;
+  font-weight: 400;
+  position: relative; z-index: 1;
+  animation: fadeUp .8s ease .3s both;
+}
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* NAV STICKY */
+.sticky-nav {
+  position: sticky; top: 0; z-index: 100;
+  background: rgba(250,249,247,.88);
+  backdrop-filter: blur(16px);
+  border-bottom: 1px solid var(--surface3);
+  padding: 0 24px;
+  overflow-x: auto;
+}
+.sticky-nav-inner {
+  max-width: 1100px; margin: 0 auto;
+  display: flex; gap: 2px;
+}
+.sticky-nav a {
+  color: var(--text3); text-decoration: none;
+  font-size: 13px; font-weight: 600;
+  padding: 14px 14px;
+  white-space: nowrap;
+  border-bottom: 3px solid transparent;
+  transition: all .2s;
+}
+.sticky-nav a:hover { color: var(--text); }
+.sticky-nav a.active {
+  color: var(--accent);
+  border-bottom-color: var(--accent);
+  background: rgba(201,100,66,.07);
+  border-radius: 6px 6px 0 0;
+  font-weight: 700;
+}
+
+/* PAGE */
+.page { max-width: 1100px; margin: 0 auto; padding: 0 24px; }
+section { padding: 80px 0 50px; }
+.section-label {
+  display: inline-flex; align-items: center; gap: 8px;
+  font-family: 'Source Code Pro', monospace;
+  font-size: 11px; font-weight: 600;
+  letter-spacing: 2px; text-transform: uppercase;
+  color: var(--accent); margin-bottom: 14px;
+}
+.section-label .dot {
+  width: 7px; height: 7px;
+  background: var(--accent); border-radius: 50%;
+}
+section h2 {
+  font-size: clamp(26px, 3.5vw, 42px);
+  font-weight: 800; letter-spacing: -0.5px;
+  margin-bottom: 16px; line-height: 1.15;
+  color: var(--text);
+}
+section .lead {
+  font-size: 16px; color: var(--text2);
+  max-width: 760px; margin-bottom: 36px; line-height: 1.7;
+}
+
+/* STAT GRID */
+.stat-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: 14px; margin: 36px 0;
+}
+.stat-card {
+  background: var(--surface);
+  border: 1px solid var(--surface3);
+  border-radius: var(--radius);
+  padding: 26px 20px; text-align: center;
+  box-shadow: var(--shadow);
+  transition: transform .2s, box-shadow .2s;
+}
+.stat-card:hover { transform: translateY(-3px); box-shadow: var(--shadow-lg); }
+.stat-card .number {
+  font-size: 32px; font-weight: 900;
+  color: var(--accent); line-height: 1;
+  font-family: 'Source Code Pro', monospace;
+}
+.stat-card .label {
+  font-size: 12px; color: var(--text3);
+  margin-top: 8px; font-weight: 500;
+}
+
+/* CARDS */
+.card {
+  background: var(--surface);
+  border: 1px solid var(--surface3);
+  border-radius: var(--radius);
+  padding: 28px; margin-bottom: 14px;
+  box-shadow: var(--shadow);
+  transition: box-shadow .2s;
+}
+.card:hover { box-shadow: var(--shadow-lg); }
+.card-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 14px; margin: 20px 0;
+}
+.card h3 {
+  font-size: 17px; font-weight: 700;
+  margin-bottom: 10px;
+  display: flex; align-items: center; gap: 10px;
+  color: var(--text);
+}
+.card h3 .icon {
+  width: 34px; height: 34px;
+  border-radius: 9px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 16px; flex-shrink: 0;
+}
+.card p, .card li { color: var(--text2); font-size: 14px; line-height: 1.7; }
+.card ul { padding-left: 18px; margin-top: 8px; }
+.card li { margin-bottom: 5px; }
+.card strong { color: var(--text); }
+
+/* PIPELINE */
+.pipeline {
+  display: flex; gap: 0;
+  margin: 36px 0;
+  overflow-x: auto;
+  padding-bottom: 16px;
+}
+.pipeline-step {
+  flex: 0 0 auto;
+  width: 170px;
+  text-align: center;
+  position: relative;
+}
+.pipeline-step::after {
+  content: '→';
+  position: absolute;
+  right: -10px; top: 28px;
+  font-size: 18px; color: var(--text3);
+}
+.pipeline-step:last-child::after { display: none; }
+.pipeline-step .circle {
+  width: 60px; height: 60px;
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 22px; margin: 0 auto 10px;
+  border: 2px solid;
+  background: var(--surface);
+  box-shadow: var(--shadow);
+}
+.pipeline-step .name { font-size: 12px; font-weight: 700; color: var(--text); }
+.pipeline-step .desc { font-size: 11px; color: var(--text3); margin-top: 3px; }
+
+/* PROS / CONS */
+.pros-cons {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px; margin: 28px 0;
+}
+@media (max-width: 768px) { .pros-cons { grid-template-columns: 1fr; } }
+.pros-card, .cons-card {
+  border-radius: var(--radius);
+  padding: 28px; border: 1px solid;
+}
+.pros-card { background: rgba(61,139,110,.05); border-color: rgba(61,139,110,.2); }
+.cons-card { background: rgba(192,80,77,.05); border-color: rgba(192,80,77,.2); }
+.pros-card h3 { color: var(--green); }
+.cons-card h3 { color: var(--red); }
+.pros-card li::marker { color: var(--green); }
+.cons-card li::marker { color: var(--red); }
+.pros-card li, .cons-card li { color: var(--text2); font-size: 14px; margin-bottom: 8px; }
+.pros-card strong, .cons-card strong { color: var(--text); }
+
+/* COMPARISON TABLE */
+.comp-table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  margin: 28px 0;
+  border-radius: var(--radius);
+  overflow: hidden;
+  border: 1px solid var(--surface3);
+  box-shadow: var(--shadow);
+  font-size: 14px;
+}
+.comp-table th {
+  background: var(--surface2);
+  padding: 14px 18px;
+  text-align: left;
+  font-size: 11px; font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: var(--text3);
+  border-bottom: 1px solid var(--surface3);
+}
+.comp-table th:first-child { color: var(--text); }
+.comp-table td {
+  padding: 12px 18px;
+  color: var(--text2);
+  border-bottom: 1px solid var(--surface3);
+  background: var(--surface);
+}
+.comp-table tr:last-child td { border-bottom: none; }
+.comp-table td:first-child { font-weight: 600; color: var(--text); }
+.comp-table .highlight { color: var(--accent); font-weight: 700; }
+.comp-table .winner { background: rgba(201,100,66,.05); }
+
+/* DELEGATION GRID */
+.delegation-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 14px; margin: 28px 0;
+}
+@media (max-width: 900px) { .delegation-grid { grid-template-columns: 1fr; } }
+.deleg-card {
+  border-radius: var(--radius);
+  padding: 24px; border: 1px solid;
+}
+.deleg-green { background: rgba(61,139,110,.04); border-color: rgba(61,139,110,.2); }
+.deleg-yellow { background: rgba(196,154,42,.04); border-color: rgba(196,154,42,.2); }
+.deleg-red { background: rgba(192,80,77,.04); border-color: rgba(192,80,77,.2); }
+.deleg-card h4 { margin-bottom: 10px; font-size: 15px; }
+.deleg-green h4 { color: var(--green); }
+.deleg-yellow h4 { color: var(--accent3); }
+.deleg-red h4 { color: var(--red); }
+.deleg-card li { font-size: 13px; color: var(--text2); margin-bottom: 5px; }
+
+/* ERROR CARDS */
+.error-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 14px; margin: 20px 0;
+}
+.error-card {
+  background: var(--surface);
+  border: 1px solid var(--surface3);
+  border-left: 4px solid var(--red);
+  border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+  padding: 20px;
+  box-shadow: var(--shadow);
+}
+.error-card .tag {
+  display: inline-block;
+  font-size: 10px; font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  padding: 3px 10px;
+  border-radius: 100px;
+  margin-bottom: 8px;
+}
+.error-card .tag-onsave { background: rgba(192,80,77,.12); color: var(--red); }
+.error-card .tag-silent { background: rgba(196,154,42,.12); color: var(--accent3); }
+.error-card .tag-schema { background: rgba(124,107,158,.12); color: var(--accent2); }
+.error-card .tag-portal { background: rgba(184,107,138,.12); color: var(--pink); }
+.error-card h4 { font-size: 14px; margin-bottom: 6px; color: var(--text); }
+.error-card p { font-size: 13px; color: var(--text3); margin-bottom: 6px; }
+.error-card code { background: var(--surface2); padding: 1px 5px; border-radius: 4px; font-family: 'Source Code Pro', monospace; font-size: 12px; color: var(--accent); }
+.error-card .fix {
+  background: rgba(61,139,110,.06);
+  border-left: 3px solid var(--green);
+  padding: 8px 12px;
+  margin-top: 10px;
+  font-size: 12px;
+  color: var(--text2);
+  border-radius: 0 6px 6px 0;
+}
+.error-card .fix strong { color: var(--green); }
+
+/* CODE BLOCKS */
+.code-block {
+  background: var(--surface2);
+  border: 1px solid var(--surface3);
+  border-radius: var(--radius-sm);
+  padding: 20px 24px;
+  margin: 14px 0;
+  overflow-x: auto;
+  font-family: 'Source Code Pro', monospace;
+  font-size: 13px;
+  line-height: 1.8;
+  color: var(--text2);
+}
+.code-block .comment { color: var(--text3); }
+.code-block .keyword { color: var(--accent2); }
+.code-block .string { color: var(--green); }
+.code-block .bad { color: var(--red); text-decoration: line-through; opacity: .6; }
+.code-block .good { color: var(--green); }
+
+/* TABS */
+.tabs {
+  display: flex; gap: 2px;
+  margin-bottom: 0;
+  border-bottom: 1px solid var(--surface3);
+  flex-wrap: wrap;
+}
+.tab-btn {
+  background: none; border: none;
+  color: var(--text3);
+  font-family: 'Inter', sans-serif;
+  font-size: 13px; font-weight: 600;
+  padding: 12px 18px;
+  cursor: pointer;
+  border-bottom: 2px solid transparent;
+  transition: all .2s;
+}
+.tab-btn:hover { color: var(--text); }
+.tab-btn.active { color: var(--accent); border-bottom-color: var(--accent); }
+.tab-content { display: none; padding-top: 20px; }
+.tab-content.active { display: block; }
+
+/* CALLOUT */
+.callout {
+  background: rgba(201,100,66,.05);
+  border: 1px solid rgba(201,100,66,.18);
+  border-radius: var(--radius);
+  padding: 22px 26px;
+  margin: 20px 0;
+  font-size: 14px;
+  color: var(--text2);
+  line-height: 1.7;
+}
+.callout strong { color: var(--accent); }
+.callout-warn { background: rgba(196,154,42,.06); border-color: rgba(196,154,42,.2); }
+.callout-warn strong { color: var(--accent3); }
+.callout-good { background: rgba(61,139,110,.06); border-color: rgba(61,139,110,.2); }
+.callout-good strong { color: var(--green); }
+
+/* TIMELINE */
+.timeline {
+  position: relative;
+  margin: 36px 0;
+  padding-left: 36px;
+}
+.timeline::before {
+  content: '';
+  position: absolute;
+  left: 13px; top: 0; bottom: 0;
+  width: 2px;
+  background: linear-gradient(to bottom, var(--accent), var(--accent2), var(--pink));
+  border-radius: 1px;
+}
+.timeline-item {
+  position: relative;
+  margin-bottom: 28px;
+}
+.timeline-item::before {
+  content: '';
+  position: absolute;
+  left: -30px; top: 6px;
+  width: 12px; height: 12px;
+  border-radius: 50%;
+  background: var(--accent);
+  border: 3px solid var(--bg);
+}
+.timeline-item .time {
+  font-family: 'Source Code Pro', monospace;
+  font-size: 11px;
+  color: var(--accent);
+  font-weight: 600;
+}
+.timeline-item h4 { font-size: 15px; margin: 4px 0; color: var(--text); }
+.timeline-item p { font-size: 13px; color: var(--text3); }
+
+/* ACCORDION */
+.accordion { margin: 20px 0; }
+.accordion-item {
+  background: var(--surface);
+  border: 1px solid var(--surface3);
+  border-radius: var(--radius-sm);
+  margin-bottom: 6px;
+  overflow: hidden;
+  box-shadow: var(--shadow);
+}
+.accordion-header {
+  width: 100%;
+  background: none; border: none;
+  color: var(--text);
+  font-family: 'Inter', sans-serif;
+  font-size: 14px; font-weight: 600;
+  padding: 16px 22px;
+  text-align: left;
+  cursor: pointer;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  transition: background .2s;
+}
+.accordion-header:hover { background: var(--surface2); }
+.accordion-header .chevron {
+  transition: transform .3s;
+  font-size: 11px;
+  color: var(--text3);
+}
+.accordion-item.open .chevron { transform: rotate(180deg); }
+.accordion-body {
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height .4s ease;
+}
+.accordion-body-inner {
+  padding: 0 22px 18px;
+  font-size: 14px;
+  color: var(--text2);
+  line-height: 1.7;
+}
+.accordion-body-inner code {
+  background: var(--surface2); padding: 1px 5px; border-radius: 4px;
+  font-family: 'Source Code Pro', monospace; font-size: 12px; color: var(--accent);
+}
+.accordion-body-inner strong { color: var(--text); }
+
+/* FOOTER */
+.footer {
+  text-align: center;
+  padding: 50px 24px;
+  color: var(--text3);
+  font-size: 13px;
+  border-top: 1px solid var(--surface3);
+  margin-top: 50px;
+}
+.footer strong { color: var(--text2); }
+
+code {
+  background: var(--surface2);
+  padding: 1px 5px;
+  border-radius: 4px;
+  font-family: 'Source Code Pro', monospace;
+  font-size: 12px;
+  color: var(--accent);
+}
+
+@media (max-width: 768px) {
+  .stat-grid { grid-template-columns: repeat(2, 1fr); }
+  .pipeline { flex-wrap: wrap; }
+  .pipeline-step { width: 130px; }
+  section { padding: 50px 0 30px; }
+}
+@media print {
+  .sticky-nav { display: none; }
+  .hero { min-height: auto; padding: 40px; background: #fff; }
+  section { page-break-inside: avoid; }
+}
+</style>
+</head>
+<body>
+
+<!-- HERO -->
+<div class="hero">
+  <div class="hero-badge">⚡ Caso Real · Brownfield · Solución Productiva</div>
+  <h1>Power Platform + <span class="gradient">Claude Code</span></h1>
+  <p class="hero-sub">17 requisitos del cliente sobre el [Sistema] del cliente: schema, JavaScript, Power Automate, roles y FLS. Sin filtro: qué funcionó, qué no, los 12 bugs encontrados en el smoke-test del día del demo, y cómo se arreglaron antes del cliente.</p>
+</div>
+
+<!-- NAV -->
+<div class="sticky-nav">
+  <div class="sticky-nav-inner">
+    <a href="#cifras">Cifras</a>
+    <a href="#contexto">Greenfield vs Brownfield</a>
+    <a href="#inventario">Inventario</a>
+    <a href="#prerequisitos">Prerequisitos</a>
+    <a href="#pipeline">Pipeline</a>
+    <a href="#tokens">Tokens</a>
+    <a href="#pros-cons">Pros / Contras</a>
+    <a href="#bugs">12 Bugs</a>
+    <a href="#delegar">Qué Delegar</a>
+    <a href="#stack">Stack</a>
+    <a href="#docs-gen">Docs Generados</a>
+    <a href="#factor-humano">Factor Humano</a>
+    <a href="#demo">Demo</a>
+    <a href="#qa">Q&amp;A</a>
+  </div>
+</div>
+
+<div class="page">
+
+<!-- 1. CIFRAS CLAVE -->
+<section id="cifras">
+  <div class="section-label"><span class="dot"></span> Resumen ejecutivo</div>
+  <h2>2 sesiones. 17 requisitos. 5 PRs en una mañana.</h2>
+  <p class="lead">Un change-set completo sobre el [Sistema] productivo de [Cliente] —desde los .docx del cliente hasta el demo— en 25-37 horas con IA. Sin IA, el mismo trabajo hubiera costado 75-112 horas. La diferencia entre llegar al demo con bugs o sin ellos: un smoke-test de 30 cards y un script para iterar JS en menos de un minuto.</p>
+
+  <div class="stat-grid">
+    <div class="stat-card">
+      <div class="number">17</div>
+      <div class="label">Requisitos cliente (16 entregados)</div>
+    </div>
+    <div class="stat-card">
+      <div class="number">12</div>
+      <div class="label">Mutations Web API + 1 portal</div>
+    </div>
+    <div class="stat-card">
+      <div class="number">6</div>
+      <div class="label">Power Automate flows nuevos</div>
+    </div>
+    <div class="stat-card">
+      <div class="number">12</div>
+      <div class="label">Bugs en smoke-test (todos fixed)</div>
+    </div>
+    <div class="stat-card">
+      <div class="number">28/30</div>
+      <div class="label">Cards smoke-test pass</div>
+    </div>
+    <div class="stat-card">
+      <div class="number">55-70%</div>
+      <div class="label">Ahorro en horas</div>
+    </div>
+    <div class="stat-card">
+      <div class="number">$10-16</div>
+      <div class="label">Coste en tokens del proyecto</div>
+    </div>
+    <div class="stat-card">
+      <div class="number">v3.1.4</div>
+      <div class="label">JS final tras 5 PRs</div>
+    </div>
+  </div>
+
+  <div class="callout">
+    <strong>Dato crítico:</strong> El smoke-test ocurrió EL DÍA del demo cliente. Los 12 bugs se encontraron y se arreglaron en una sola mañana mediante 5 PRs secuenciales. Sin <code>sync-webresource.ps1</code> (deploy de un JS en menos de 1 minuto) esto hubiera sido imposible. La metodología y el tooling fueron tanto o más decisivos que la IA.
+  </div>
+</section>
+
+<!-- 2. CONTEXTO: GREENFIELD VS BROWNFIELD -->
+<section id="contexto">
+  <div class="section-label"><span class="dot"></span> Contexto del proyecto</div>
+  <h2>Greenfield (Caso A) vs Brownfield ([Sistema])</h2>
+  <p class="lead">Este es el segundo caso de estudio de la serie. El primero fue Caso A (Canvas App + 3 tablas nuevas). Éste es completamente distinto: una solución productiva con usuarios reales que hay que modificar sin romper nada.</p>
+
+  <table class="comp-table">
+    <thead>
+      <tr><th>Dimensión</th><th>Caso A (greenfield)</th><th>[Sistema] 2026 (brownfield)</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>Tipo de proyecto</td><td>Greenfield (nada existía)</td><td class="winner">Brownfield (con usuarios productivos)</td></tr>
+      <tr><td>Foco principal</td><td>Canvas App + 3 tablas nuevas</td><td>Model-Driven JS + Power Automate + schema delta + roles</td></tr>
+      <tr><td>Riesgo de regresión</td><td>Bajo (nadie usaba antes)</td><td class="winner highlight">Alto ([RolA] / Approver / Requester operando)</td></tr>
+      <tr><td>Baseline a preservar</td><td>No aplicaba</td><td class="winner">Crítico: tag <code>baseline/grm/2026-04-24</code></td></tr>
+      <tr><td>Lenguaje de scripts</td><td>Python (azure-identity)</td><td>PowerShell 5.1 (MSAL.PS, Win11 nativo)</td></tr>
+      <tr><td>Volumen IA generada</td><td>~3.134 líneas YAML</td><td>~1.700 JS + 1.000 PS + 6 flows JSON</td></tr>
+      <tr><td>Sesiones efectivas</td><td>3 (8-9 abril)</td><td>2 (build 26-abr + smoke-fix 28-abr)</td></tr>
+      <tr><td>Pain point dominante</td><td>Pegar YAML en PA Studio</td><td class="winner highlight">Bugs sutiles que compilan pero rompen runtime</td></tr>
+      <tr><td>Factor de aceleración</td><td>2-3×</td><td>2-3× (mismo)</td></tr>
+    </tbody>
+  </table>
+
+  <div class="callout-good callout">
+    <strong>Conclusión cruzada:</strong> mismo factor de aceleración aunque el pain point es completamente distinto. <b>La metodología (baseline, branch, fases, handoffs, memorias) compensa la diferencia de stack.</b> El playbook del Caso A adoptado en este sistema demuestra ser portable.
+  </div>
+</section>
+
+<!-- 3. INVENTARIO -->
+<section id="inventario">
+  <div class="section-label"><span class="dot"></span> Qué se construyó</div>
+  <h2>Inventario completo del change-set</h2>
+
+  <div class="card-grid">
+    <div class="card">
+      <h3><span class="icon" style="background:rgba(201,100,66,.1); color:var(--accent);">🗄️</span> Dataverse</h3>
+      <ul>
+        <li><strong>3 tablas modificadas</strong>: Grant, Payment Tracker, DocuSign Contacts</li>
+        <li><strong>12 mutations</strong> vía Web API + 1 manual portal (rename)</li>
+        <li><strong>2 nuevos statuscode</strong> en Grant (More Info Needed + Approved with Conditions)</li>
+        <li><strong>1 statuscode</strong> en Payment (Committed)</li>
+        <li><strong>1 picklist local</strong> Grant Allocation (3 valores)</li>
+        <li><strong>5 nuevas columnas</strong> en Grant + 2 en Payment + 2 en DocuSign Contacts</li>
+        <li>Display rename Payment Tracker → Grant Financial Tracking</li>
+      </ul>
+    </div>
+    <div class="card">
+      <h3><span class="icon" style="background:rgba(124,107,158,.1); color:var(--accent2);">📜</span> JavaScript form scripts</h3>
+      <ul>
+        <li><strong>GMS_Grants.js</strong>: v2.x → v3.1.4 (678 líneas)</li>
+        <li><strong>9 nuevos comportamientos</strong> sobre código pre-existente</li>
+        <li>OnSave guards, OnChange handlers, OnLoad initializers</li>
+        <li>Modernización completa: const + Object.freeze, async/await, JSDoc, "use strict"</li>
+        <li>Eliminados 9 <code>debugger;</code> committeados</li>
+        <li>Migración <code>Xrm.WebApi</code> → <code>Common.Api</code> helpers</li>
+      </ul>
+    </div>
+    <div class="card">
+      <h3><span class="icon" style="background:rgba(61,139,110,.1); color:var(--green);">⚙️</span> Power Automate</h3>
+      <ul>
+        <li><strong>Solución dedicada</strong>: [SolucionPrincipal]</li>
+        <li><strong>3 automated</strong>: Grant Request gate, More Info Needed, Validate Sum</li>
+        <li><strong>2 scheduled</strong>: Weekly DocuSign reminder, Daily 30d Follow-up</li>
+        <li><strong>1 guard</strong>: Multi-Year Prior Followup</li>
+        <li>JSON authored + <code>pac solution pack</code> + <code>import</code> + re-export</li>
+      </ul>
+    </div>
+    <div class="card">
+      <h3><span class="icon" style="background:rgba(196,154,42,.1); color:var(--accent3);">🔐</span> Roles + FLS</h3>
+      <ul>
+        <li><strong>1 Field Security Profile</strong> nuevo: GMS Approved Amount Writers</li>
+        <li>Field permission sobre <code>pfx_approvedamount</code></li>
+        <li><strong>6 role records</strong> modificados (3 roles × 2 BU clones)</li>
+        <li>Privilegio <code>prvCreatepfx_gmsPaymentTracker</code> removido de Approver/[RolA]/Requester</li>
+        <li>Asignación de Members en portal (M:N no scripteable)</li>
+      </ul>
+    </div>
+    <div class="card">
+      <h3><span class="icon" style="background:rgba(184,107,138,.1); color:var(--pink);">📄</span> Documentación generada por IA</h3>
+      <ul>
+        <li><strong>Spec funcional</strong>: 122 líneas con tabla S/J/F/R/D para 17 reqs</li>
+        <li><strong>Progress tracker</strong>: 225 líneas con checklist por fase</li>
+        <li><strong>6 flow specs</strong> MD escritas ANTES de tocar el JSON</li>
+        <li><strong>2 handoffs</strong> (build 103 líneas + smoke-test post-mortem 273 líneas)</li>
+        <li><strong>4 manuales cliente</strong> (HTML+MD)</li>
+        <li><strong>Demo script</strong> + <strong>Smoke-test interactivo</strong> de 30 cards</li>
+      </ul>
+    </div>
+    <div class="card">
+      <h3><span class="icon" style="background:rgba(201,100,66,.1); color:var(--accent);">💻</span> Scripts PowerShell</h3>
+      <ul>
+        <li><strong>grm-phase1-schema.ps1</strong> (406 líneas): 13 mutations</li>
+        <li><strong>grm-phase4-roles-fls.ps1</strong> (289 líneas): FLS + privilege removals</li>
+        <li><strong>sync-webresource.ps1</strong> (178 líneas): DVDT-equivalent backend uploader, reusable cross-solution</li>
+        <li><strong>scripts/pac/</strong> (159 líneas): export/pack/export-all</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- 4. PREREQUISITOS -->
+<section id="prerequisitos">
+  <div class="section-label"><span class="dot"></span> Antes de tocar producción</div>
+  <h2>Lo que nadie te cuenta sobre brownfield</h2>
+  <p class="lead">En proyectos sobre solución productiva, sin esta preparación la IA trabaja a ciegas e inventa logical names que no existen, helpers que no son del proyecto, o peor: rompe regresiones silenciosas. El 80% del éxito está aquí.</p>
+
+  <div class="card-grid">
+    <div class="card">
+      <h3><span class="icon" style="background:rgba(201,100,66,.1); color:var(--accent);">🏷️</span> Baseline tag ANTES de tocar nada</h3>
+      <p><code>git tag baseline/grm/2026-04-24</code> sobre master pre-cambios. Si la cosa explota, vuelves al tag y nadie pierde nada. <strong>Este es el seguro de vida del brownfield.</strong></p>
+    </div>
+    <div class="card">
+      <h3><span class="icon" style="background:rgba(124,107,158,.1); color:var(--accent2);">🌿</span> Branch <code>feat/&lt;scope&gt;</code></h3>
+      <p>Nunca trabajes directo en master. Squash-merge al final con commit message conventional. La rama es desechable; la baseline es sagrada.</p>
+    </div>
+    <div class="card">
+      <h3><span class="icon" style="background:rgba(61,139,110,.1); color:var(--green);">🔧</span> PAC CLI</h3>
+      <p><code>pac solution export/unpack/pack/import</code> entre maker portal y repo. Claude Code lo ejecuta directamente. Resuelto vía <code>$PAC</code> env var con fallback al path Windows.</p>
+    </div>
+    <div class="card">
+      <h3><span class="icon" style="background:rgba(196,154,42,.1); color:var(--accent3);">🔍</span> Dataverse DevTools (VS Code)</h3>
+      <p>Para extraer logical names, record IDs, relationships sin salir del editor. <strong>Manual:</strong> el dev consulta y pasa los nombres reales al prompt — sin esto la IA inventa.</p>
+    </div>
+    <div class="card">
+      <h3><span class="icon" style="background:rgba(184,107,138,.1); color:var(--pink);">📤</span> sync-webresource.ps1</h3>
+      <p><strong>El diferenciador del proyecto.</strong> 178 líneas. Lee <code>dvdt.linker.xml</code>, hace PATCH a <code>webresourceset/content</code>, llama <code>PublishXml</code>. Permite iterar JS en menos de 1 minuto sin DVDT. Decisivo en el smoke-test.</p>
+    </div>
+    <div class="card">
+      <h3><span class="icon" style="background:rgba(201,100,66,.1); color:var(--accent);">⚡</span> PowerShell 5.1 + MSAL.PS</h3>
+      <p>Device-code flow para auth. Token expira a la hora → refresh antes de cada request. <strong>NO</strong> InteractiveBrowser (cuelga en terminales no interactivos).</p>
+    </div>
+  </div>
+
+  <div class="callout-warn callout">
+    <strong>⚠️ Diferencia con Caso A:</strong> aquí no hay Python instalado en el equipo (solo el stub de Windows Store). Misma metodología, distinto lenguaje. PowerShell con <code>Invoke-RestMethod</code> + <code>Get-MsalToken</code> funciona idénticamente bien para Web API mutations. Lección: la metodología es portable, las herramientas son opcionales.
+  </div>
+
+  <h3 style="margin-top:40px; margin-bottom:16px;">Memorias del proyecto que actuaron como contexto persistente</h3>
+  <div class="card">
+    <ul>
+      <li><strong>reference_caso_a_methodology.md</strong> — la metodología importada del repo del Caso A como playbook.</li>
+      <li><strong>feedback_branching.md</strong> — siempre branch antes de tocar archivos.</li>
+      <li><strong>feedback_preserve_before_state.md</strong> — tag baseline ANTES del primer commit.</li>
+      <li><strong>feedback_flows_over_plugins.md</strong> — default a Power Automate; plugins solo si genuinamente complejos.</li>
+      <li><strong>feedback_form_scripts_safety.md</strong> — los 5 antipatrones del smoke test (escrita post-bugs como capitalización del aprendizaje).</li>
+      <li><strong>feedback_always_create_handoff.md</strong> — cada ticket retainer requiere handoff fechado.</li>
+      <li><strong>Knowledge base externa</strong>: <code>C:\Dev\powerfox\power-platform-knowledge-base\</code> con la guía canónica <code>javascript/form-scripts-best-practices.md</code> escrita durante este proyecto.</li>
+    </ul>
+  </div>
+</section>
+
+<!-- 5. PIPELINE -->
+<section id="pipeline">
+  <div class="section-label"><span class="dot"></span> Flujo de trabajo</div>
+  <h2>Pipeline completo del desarrollo</h2>
+
+  <div class="pipeline">
+    <div class="pipeline-step">
+      <div class="circle" style="border-color: var(--accent3); color: var(--accent3); background: rgba(196,154,42,.06);">📑</div>
+      <div class="name">Cliente</div>
+      <div class="desc">.docx requirements</div>
+    </div>
+    <div class="pipeline-step">
+      <div class="circle" style="border-color: var(--accent); color: var(--accent); background: rgba(201,100,66,.06);">💬</div>
+      <div class="name">Claude Chat</div>
+      <div class="desc">Spec MD 17 reqs</div>
+    </div>
+    <div class="pipeline-step">
+      <div class="circle" style="border-color: var(--accent2); color: var(--accent2); background: rgba(124,107,158,.06);">🏷️</div>
+      <div class="name">Baseline + Branch</div>
+      <div class="desc">tag + feat/</div>
+    </div>
+    <div class="pipeline-step">
+      <div class="circle" style="border-color: var(--green); color: var(--green); background: rgba(61,139,110,.06);">⚙️</div>
+      <div class="name">Phase 1 Schema</div>
+      <div class="desc">PowerShell + Web API</div>
+    </div>
+    <div class="pipeline-step">
+      <div class="circle" style="border-color: var(--pink); color: var(--pink); background: rgba(184,107,138,.06);">📜</div>
+      <div class="name">Phase 2 JS</div>
+      <div class="desc">v3.0 + sync</div>
+    </div>
+    <div class="pipeline-step">
+      <div class="circle" style="border-color: var(--accent3); color: var(--accent3); background: rgba(196,154,42,.06);">🔄</div>
+      <div class="name">Phase 3 Flows</div>
+      <div class="desc">6 flows JSON</div>
+    </div>
+    <div class="pipeline-step">
+      <div class="circle" style="border-color: var(--accent); color: var(--accent); background: rgba(201,100,66,.06);">🔐</div>
+      <div class="name">Phase 4 Roles</div>
+      <div class="desc">FLS + privileges</div>
+    </div>
+    <div class="pipeline-step">
+      <div class="circle" style="border-color: var(--red); color: var(--red); background: rgba(192,80,77,.06);">🔬</div>
+      <div class="name">Smoke-test</div>
+      <div class="desc">30 cards → 12 bugs</div>
+    </div>
+    <div class="pipeline-step">
+      <div class="circle" style="border-color: var(--green); color: var(--green); background: rgba(61,139,110,.06);">🚀</div>
+      <div class="name">Demo cliente</div>
+      <div class="desc">28/30 verde</div>
+    </div>
+  </div>
+
+  <h3 style="margin-top:48px; margin-bottom:16px;">Timeline real del repo</h3>
+  <div class="timeline">
+    <div class="timeline-item">
+      <div class="time">2026-04-24 — Día 0</div>
+      <h4>Baseline tag + branch</h4>
+      <p><code>baseline/grm/2026-04-24</code> sobre master commit <code>c32b8b5</code>. Branch <code>feat/grm-client-requirements-2026</code>. Sin cambios funcionales todavía — solo seguro de vida.</p>
+    </div>
+    <div class="timeline-item">
+      <div class="time">2026-04-26 — Sesión build (Phases 0-4)</div>
+      <h4>10 commits secuenciales en una sesión</h4>
+      <p>Phase 0 scaffold → Phase 1 schema (12 mutations) → Phase 1.5 manual rename → Phase 2 JS v3.0 → Phase 2 backend sync → Phase 3 flow specs → Phase 3 flows imported → Phase 4 partial → Phase 4 final.</p>
+    </div>
+    <div class="timeline-item">
+      <div class="time">2026-04-27 — Merge a master</div>
+      <h4>Squash-merge commit <code>92c895d</code></h4>
+      <p>"feat(grm): 2026 client requirements (Phases 0–4) + client manuals". El paquete entero llega a master listo para el smoke-test del día siguiente.</p>
+    </div>
+    <div class="timeline-item">
+      <div class="time">2026-04-28 mañana — Smoke-test</div>
+      <h4>30-card checklist HTML interactivo</h4>
+      <p>Ejecutado live. <strong>12 bugs encontrados durante la ejecución.</strong> Ninguno detectable en revisión estática — todos requerían click real en la model-driven app.</p>
+    </div>
+    <div class="timeline-item">
+      <div class="time">2026-04-28 mediodía — 5 PRs en una mañana</div>
+      <h4>v3.1.0 → v3.1.4 vía sync-webresource.ps1</h4>
+      <p>PR #78 conditional clearing → PR #79 silent typos (4 typos en una pasada) → PR #80 OnSave race → PR #81 statuscode rename → PR #82 docs polish. Cada PR: sync (&lt;1 min) → re-test card → siguiente PR.</p>
+    </div>
+    <div class="timeline-item">
+      <div class="time">2026-04-28 tarde — Demo cliente</div>
+      <h4>28/30 cards verde</h4>
+      <p>Las 2 deferidas son scheduled flows (verificación post-trigger inicial). Cliente satisfecho. Phase 5 (Dashboard) explícitamente deferido hasta que fluyan datos reales por las nuevas automations.</p>
+    </div>
+  </div>
+</section>
+
+<!-- 6. TOKENS -->
+<section id="tokens">
+  <div class="section-label"><span class="dot"></span> Complejidad y tokens</div>
+  <h2>¿Cuánto costó realmente?</h2>
+
+  <table class="comp-table">
+    <thead>
+      <tr><th>Fase</th><th>Tokens entrada</th><th>Tokens salida</th><th>Nota</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>Setup (lectura spec + Entity.xml + JS existente)</td><td>~30-50k</td><td>~2k</td><td>Solo lectura del codebase brownfield</td></tr>
+      <tr><td>Spec en Claude chat (17 reqs)</td><td>~10-15k</td><td>~5-7k</td><td>DOCX cliente + extracción</td></tr>
+      <tr><td>Phase 1 PowerShell schema</td><td>~5-8k</td><td>~12-18k</td><td>2-3 iteraciones por <code>0x80060888</code></td></tr>
+      <tr><td>Phase 2 JS v3.0 (modernización + 9 behaviors)</td><td>~10-15k</td><td>~15-20k</td><td>~700 líneas con modernización</td></tr>
+      <tr><td>Phase 3 flow specs (6 docs MD)</td><td>~3-5k</td><td>~10-15k</td><td></td></tr>
+      <tr><td>Phase 3 flow JSON (6 flows)</td><td>~8-12k</td><td>~25-35k</td><td>Iteraciones por <code>InitializeVariable</code> nesting</td></tr>
+      <tr><td>Phase 4 PowerShell roles+FLS</td><td>~3-5k</td><td>~8-12k</td><td>Iteraciones por <code>RemovePrivilegeRole</code> rejection</td></tr>
+      <tr><td>sync-webresource.ps1</td><td>~3k</td><td>~5-7k</td><td>Una sola iteración casi limpia</td></tr>
+      <tr style="background:rgba(192,80,77,.04);"><td><strong>Smoke-test bug-fix (12 bugs en 5 PRs)</strong></td><td><strong>~25-35k</strong></td><td><strong>~15-25k</strong></td><td>Diagnóstico + fix + sync por bug</td></tr>
+      <tr><td>Handoffs + memorias + manuales cliente</td><td>~5-8k</td><td>~25-35k</td><td>~1.000 líneas MD + HTML manuales</td></tr>
+      <tr style="background:var(--surface2);"><td><strong>TOTAL</strong></td><td class="highlight"><strong>~100-150k</strong></td><td class="highlight"><strong>~120-180k</strong></td><td class="highlight"><strong>≈ 220-330k tokens → $10-16</strong></td></tr>
+    </tbody>
+  </table>
+
+  <h3 style="margin-top:48px; margin-bottom:16px;">Comparativa horas-hombre</h3>
+  <table class="comp-table">
+    <thead>
+      <tr><th>Tarea</th><th>Sin IA</th><th>Con Claude Code</th><th>Ahorro</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>Análisis docs cliente + spec funcional</td><td>6-8 h</td><td>2-3 h</td><td>60-70%</td></tr>
+      <tr><td>Phase 0 scaffold (PAC scripts, docs structure, baseline)</td><td>2-3 h</td><td>0,5-1 h</td><td>60-75%</td></tr>
+      <tr><td>Phase 1 schema (12 mutations + 1 manual)</td><td>6-10 h</td><td>1,5-2,5 h</td><td class="highlight">70-80%</td></tr>
+      <tr><td>Phase 2 JS v3.0 (9 behaviors + modernización)</td><td>12-18 h</td><td>5-7 h</td><td>55-65%</td></tr>
+      <tr><td>Phase 3 6 flows (specs + JSON + import)</td><td>14-20 h</td><td>5-7 h</td><td>60-70%</td></tr>
+      <tr><td>Phase 4 Roles + FLS profile</td><td>3-5 h</td><td>1-1,5 h</td><td>65-75%</td></tr>
+      <tr style="background:rgba(192,80,77,.04);"><td><strong>Smoke-test + bug-fix (12 bugs en 5 PRs)</strong></td><td><strong>20-30 h</strong></td><td><strong>6-9 h</strong></td><td class="highlight"><strong>65-75%</strong></td></tr>
+      <tr><td>Documentación cliente (manuales + demo + smoke)</td><td>12-18 h</td><td>4-6 h</td><td>65-75%</td></tr>
+      <tr style="background:var(--surface2);"><td><strong>TOTAL</strong></td><td><strong>75-112 h</strong></td><td class="highlight"><strong>25-37 h</strong></td><td class="highlight"><strong>~55-70%</strong></td></tr>
+    </tbody>
+  </table>
+
+  <div class="callout">
+    <strong>Donde la IA SUMÓ tiempo (no restó):</strong> los 12 bugs del smoke-test. La IA generó código que compilaba al primer intento pero tenía 4 method-name typos (<code>Common.Api.Update</code> vs <code>Common.Api.UpdateRecord</code>) que sólo se vieron en runtime. Sin un humano que ejecutara las 30 cards del smoke-test, esos bugs hubieran llegado a producción.
+  </div>
+</section>
+
+<!-- 7. PROS / CONTRAS -->
+<section id="pros-cons">
+  <div class="section-label"><span class="dot"></span> Balance real</div>
+  <h2>Pros y Contras honestos en brownfield</h2>
+
+  <div class="pros-cons">
+    <div class="pros-card">
+      <h3>✅ Pros</h3>
+      <ul>
+        <li><strong>Ahorro 55-70% en tiempo total</strong> — de 2-3 semanas a 2 sesiones + smoke-fix day</li>
+        <li><strong>Schema mutations vía Web API casi perfectas</strong> — 12 de 13 OK al primer intento, ratio 92%</li>
+        <li><strong>Modernización masiva de JS legacy</strong> — refactor a const/freeze/strict + JSDoc en una pasada sin perder lógica</li>
+        <li><strong>Power Automate flows estructurados</strong> — JSON verboso pero la IA lo genera bien con specs MD primero</li>
+        <li><strong>Smoke-test post-mortem espectacular</strong> — 273 líneas con symptom/root cause/fix/lesson por bug, escrito en una sesión</li>
+        <li><strong>sync-webresource.ps1 reusable cross-solution</strong> — 178 líneas que sustituyen DVDT y permiten iterar JS desde CLI</li>
+        <li><strong>Memoria persistente entre sesiones</strong> — el bug 8 (statuscode rename) se documentó como regla y no volverá a pasar</li>
+        <li><strong>Coste en tokens despreciable</strong> — $10-16 todo el proyecto</li>
+        <li><strong>Manuales y demo HTML para el cliente</strong> — el cliente puede operar sin reuniones de soporte</li>
+      </ul>
+    </div>
+    <div class="cons-card">
+      <h3>❌ Contras</h3>
+      <ul>
+        <li><strong>12 bugs en el smoke-test</strong> — ninguno detectable en revisión estática, todos requerían runtime real</li>
+        <li><strong>4 method-name typos silenciosos en una pasada</strong> — <code>Common.Api.Update</code> vs <code>UpdateRecord</code> repetido 4 veces</li>
+        <li><strong>OnSave race en HandleApproverResponse</strong> — la IA propuso un patrón que rompía + duplicaba emails</li>
+        <li><strong>Web API rechaza ciertas mutaciones</strong> — display rename + FLS toggle requieren portal manual</li>
+        <li><strong>State mapping inmutable de status reasons</strong> — cambio mid-project costó delete-and-recreate con cascade</li>
+        <li><strong>Phase 1.5 (form layout sync) gap</strong> — schema script no añade columnas al form layout, ese paso es manual</li>
+        <li><strong>Power Fx command library cache ciega a nuevos values</strong> — issue de Microsoft abierta desde 2021</li>
+        <li><strong>Connection references atadas a UNA solución</strong> — la solución secundaria solo puede referenciarlas</li>
+        <li><strong>Sin smoke-test exhaustivo, no hay seguridad</strong> — la IA no detecta sus propios bugs runtime</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- 8. 12 BUGS DEL SMOKE TEST -->
+<section id="bugs">
+  <div class="section-label"><span class="dot"></span> Los 12 bugs del 28-abr</div>
+  <h2>Pain points reales: el smoke-test del día del demo</h2>
+  <p class="lead">Esta es la sección más valiosa para la formación. Son los 12 bugs reales encontrados durante la ejecución live del smoke-test el día del demo cliente. Todos compilaban perfectamente — todos requerían click real en la model-driven app para detectarse. Cada uno tiene su PR, su lección, y vive ahora en la memoria del proyecto.</p>
+
+  <div class="tabs">
+    <button class="tab-btn active" onclick="switchTab(event, 'tab-onsave')">OnSave / Race</button>
+    <button class="tab-btn" onclick="switchTab(event, 'tab-silent')">Errores Silenciosos</button>
+    <button class="tab-btn" onclick="switchTab(event, 'tab-schema')">Schema / State</button>
+    <button class="tab-btn" onclick="switchTab(event, 'tab-portal')">Portal / Flow / Cache</button>
+  </div>
+
+  <div class="tab-content active" id="tab-onsave">
+    <div class="error-grid">
+      <div class="error-card">
+        <span class="tag tag-onsave">Bug 7 · v3.1.3</span>
+        <h4>OnSave race con UpdateRecord + ReLoad</h4>
+        <p>Approver picks "Approved with Conditions" + Save → <strong>"Something has gone wrong"</strong> + [RolA] recibe DOS emails. Dos PATCHes contra el mismo record → evento Modified disparado dos veces.</p>
+        <div class="fix"><strong>Fix:</strong> Reemplazar <code>UpdateRecord + ReLoad</code> por <code>SetValue("statecode", X)</code>. El form's native save commitea status + comment en un único PATCH.</div>
+      </div>
+      <div class="error-card">
+        <span class="tag tag-onsave">Bug 2 · v3.1.0</span>
+        <h4>Conditional fields: visibility ≠ value</h4>
+        <p>Usuario llena ECC Meeting Date → cambia Grant Allocation a Outside Meeting → field se oculta pero <strong>el value persiste</strong> y se guarda con el record.</p>
+        <div class="fix"><strong>Fix:</strong> Split en dos funciones. <code>ApplyVisibility</code> (OnLoad — preserve) vs <code>HandleChange</code> (OnChange — clear). Nunca el mismo handler para ambos lifecycles.</div>
+      </div>
+    </div>
+    <div class="callout-warn callout">
+      <strong>Regla canónica:</strong> Inside OnSave, <strong>never make an external API call that updates the same record being saved</strong>. Siempre racea. Use <code>SetValue</code> to dirty the attributes; let the form's save commit them. Si necesitas un external call (otro record), usa <code>addOnPostSave</code>. Este es el patrón más importante de form scripts del proyecto.
+    </div>
+  </div>
+
+  <div class="tab-content" id="tab-silent">
+    <div class="error-grid">
+      <div class="error-card">
+        <span class="tag tag-silent">Bug 3-6 · v3.1.1+v3.1.2</span>
+        <h4>4 typos en Common.Api swallowed by catch</h4>
+        <p><code>Common.Api.Update</code> (no existe) × 3 + <code>Common.Api.RetrieveMultiple</code> (no existe) × 1. Los 4 dentro de <code>try { ... } catch { console.error }</code>. El form parecía "saved" mientras el server-side state nunca cambiaba.</p>
+        <div class="fix"><strong>Fix:</strong> rename a <code>UpdateRecord</code> y <code>RetrieveMultipleRecords</code>. Y añadir <code>Xrm.Navigation.openErrorDialog</code> en cada catch para que el usuario vea cuando algo falla.</div>
+      </div>
+      <div class="error-card">
+        <span class="tag tag-silent">Síntomas observados</span>
+        <h4>4 paths funcionales rotos en silencio</h4>
+        <p>"Grant Request document missing" disparaba con doc adjuntado · "Send to Approve" no transicionaba el status · Approver decisions no transicionaban · "Send Notification" no disparaba el flow.</p>
+        <div class="fix"><strong>Lección:</strong> <code>try/catch + console.error</code> como único error handler es peligroso en form scripts del navegador. No hay compile-time check, no hay test runner.</div>
+      </div>
+    </div>
+    <div class="callout-warn callout">
+      <strong>Tres opciones para hacer estos errores ruidosos:</strong>
+      <ul style="margin-top: 8px;">
+        <li>Re-throw user-visible via <code>Xrm.Navigation.openErrorDialog({ message: error.message })</code></li>
+        <li>Cancel save con <code>executionContext.getEventArgs().preventDefault()</code></li>
+        <li>Form notification roja: <code>formContext.ui.setFormNotification('ERROR', ...)</code></li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="tab-content" id="tab-schema">
+    <div class="error-grid">
+      <div class="error-card">
+        <span class="tag tag-schema">Bug 8 · v3.1.4</span>
+        <h4>Status reason state mapping is immutable</h4>
+        <p>Spec original: "Approved with Conditions = state Inactive". Business semantics: necesita Active. <code>891380004</code> con state=1 → server rejection. Recreación obtuvo <strong>nuevo value 891380006</strong> — Dataverse won't reuse el viejo.</p>
+        <div class="fix"><strong>Fix:</strong> Delete-and-recreate en portal. Cascade: JS constant + flow filter + Power Fx Visibility formula. Total 5 archivos tocados, 1 PR, ~30 minutos.</div>
+      </div>
+      <div class="error-card">
+        <span class="tag tag-schema">Bug 1 (Phase 1.5)</span>
+        <h4>Form layout gap — script no añade campos al form</h4>
+        <p>Phase 1 script creó las 5 columnas nuevas pero NO modificó el form layout. Cada JS function que las referenciaba <strong>fallaba silenciosamente</strong> porque los controles no existían en el form.</p>
+        <div class="fix"><strong>Fix:</strong> Maker portal Form Designer — 2 minutos por field. <strong>Lección:</strong> añadir "Phase 1.5 — form layout sync" al playbook del Caso A.</div>
+      </div>
+      <div class="error-card">
+        <span class="tag tag-schema">Bug 11</span>
+        <h4>Power Fx button Visibility no incluye nuevo value</h4>
+        <p>Approver retornó Grant con "More Information Needed". [RolA] abrió → <strong>no Resubmit button visible</strong>. La Visibility formula no incluía el nuevo statuscode.</p>
+        <div class="fix"><strong>Fix:</strong> Audit de los 5 commands. Resubmit, Invoice Paid actualizados. <strong>Regla:</strong> al añadir option-set value, audit Visibility formulas + flow filters + FetchXml + view definitions.</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="tab-content" id="tab-portal">
+    <div class="error-grid">
+      <div class="error-card">
+        <span class="tag tag-portal">Bug 9</span>
+        <h4>Power Fx command library cache</h4>
+        <p>Visibility formula del Resubmit → autocomplete dropdown muestra solo las 5 opciones originales. Las nuevas <strong>missing</strong>. Issue conocida <a href="https://github.com/microsoft/Power-Fx/issues/33" target="_blank">microsoft/Power-Fx#33</a>, abierta desde 2021.</p>
+        <div class="fix"><strong>Fix:</strong> Command library → View → Data sources → ... → Refresh → Save. Si Refresh es finicky, remove + re-add el data source.</div>
+      </div>
+      <div class="error-card">
+        <span class="tag tag-portal">Bug 10</span>
+        <h4>Trigger body en Delete está stripped</h4>
+        <p>Calculate Yearly Budget flow tenía trigger Add/Mod/<strong>Delete</strong>. Cuando otro flow auto-eliminaba un payment, este disparaba con body null → <code>formatDateTime(null, 'yyyy')</code> rompía → admin email.</p>
+        <div class="fix"><strong>Fix:</strong> Cambiar trigger Change Type a Add/Mod solo. <strong>Alternativa:</strong> null-guard al inicio: <code>if triggerOutputs body is null, terminate succeeded</code>.</div>
+      </div>
+      <div class="error-card">
+        <span class="tag tag-portal">Web API gotcha · Phase 1</span>
+        <h4>EntityDefinitions PATCH rechazado</h4>
+        <p>Display rename via <code>MSCRM.MergeLabels</code> body devuelve <code>0x80060888 "Operation not supported on EntityMetadata"</code>. Same family que el FLS toggle on attribute (devuelve 405).</p>
+        <div class="fix"><strong>Regla:</strong> No re-debugar. Default to maker portal one-click rename / one-click "Enable column security".</div>
+      </div>
+      <div class="error-card">
+        <span class="tag tag-portal">Phase 4 gotcha</span>
+        <h4>FLS profiles M:N con Users/Teams, no Roles</h4>
+        <p><code>POST /fieldsecurityprofiles/roleids/$ref</code> devuelve <code>0x80060888</code>. No hay manera limpia de scriptearlo.</p>
+        <div class="fix"><strong>Workaround:</strong> Asignar Members en portal Tab. Posible scriptearlo enumerando users-with-role + per-user POST, pero team-based en portal es cleaner (un solo record).</div>
+      </div>
+      <div class="error-card">
+        <span class="tag tag-portal">Phase 3 gotcha</span>
+        <h4>InitializeVariable nesting prohibido</h4>
+        <p>Primera versión del payment-sum flow puso <code>InitializeVariable</code> dentro de <code>Scope_-_Try</code>. PA rechazó el import: "cannot be nested in an action of type 'Condition...'".</p>
+        <div class="fix"><strong>Fix:</strong> Mover al outermost <code>actions</code> level. Usar <code>SetVariable</code> para resetear per-run dentro de scopes.</div>
+      </div>
+      <div class="error-card">
+        <span class="tag tag-portal">Bug 12</span>
+        <h4>Smoke-test card impractical</h4>
+        <p>Card H2 decía "click el dropdown de Status" pero Status Reason en Grant Financial Tracking está locked en el form by design.</p>
+        <div class="fix"><strong>Fix:</strong> Verificar via maker portal Tables → ... → Status Reason. <strong>Lección:</strong> smoke tests deben verificar reachability, no metadata existence.</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="callout-warn callout" style="margin-top: 30px;">
+    <strong>Moraleja para la formación:</strong> la IA es una máquina de producir código sintácticamente correcto que puede ser funcionalmente incorrecto. Los 12 bugs nunca fueron cosas obvias tipo "se olvidó un punto y coma". Siempre fueron cosas que <strong>compilaban perfectamente</strong> y requerían conocimiento del comportamiento de Dataverse runtime para detectar. <strong>El smoke-test exhaustivo en runtime es no-negotiable.</strong>
+  </div>
+</section>
+
+<!-- 9. QUÉ DELEGAR -->
+<section id="delegar">
+  <div class="section-label"><span class="dot"></span> Guía práctica</div>
+  <h2>Qué delegar y qué NO delegar a la IA</h2>
+  <p class="lead">Esta es la guía que se llevan a casa. Refinada con las lecciones de los dos casos (Caso A Canvas + [Sistema] Model-Driven brownfield).</p>
+
+  <div class="delegation-grid">
+    <div class="deleg-card deleg-green">
+      <h4>🟢 Delegar con los ojos cerrados</h4>
+      <ul>
+        <li>Schema mutations Web API (12 OK / 13 = 92%)</li>
+        <li>Generación de specs desde docs cliente</li>
+        <li>Modernización de JS legacy (var → const, freeze)</li>
+        <li>Specs de Power Automate flows (MD ANTES del JSON)</li>
+        <li>PowerShell helpers reusables (sync-webresource)</li>
+        <li>Documentación cliente (manuales, demo, smoke-test)</li>
+        <li>Bug post-mortem en handoffs</li>
+      </ul>
+    </div>
+    <div class="deleg-card deleg-yellow">
+      <h4>🟡 Delegar con supervisión</h4>
+      <ul>
+        <li>Form scripts JS con lifecycle (OnLoad/OnSave/OnChange)</li>
+        <li>Flow JSON con scopes anidados</li>
+        <li>Role privilege manipulation (multi-BU)</li>
+        <li>Status reason additions (cascade downstream)</li>
+        <li>Field Security Profile (parte scripteable, parte portal)</li>
+      </ul>
+    </div>
+    <div class="deleg-card deleg-red">
+      <h4>🔴 NO delegar</h4>
+      <ul>
+        <li>Smoke test execution (clicks reales)</li>
+        <li>Form layout edits (drag fields, tabs)</li>
+        <li>Connection reference binding</li>
+        <li>FLS profile Members assignment</li>
+        <li>Decisiones de UX (required vs conditional required)</li>
+        <li>Decisiones de gobernanza ALM</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- 10. STACK COMPARATIVE -->
+<section id="stack">
+  <div class="section-label"><span class="dot"></span> Comparativa de stack</div>
+  <h2>Canvas (Caso A) vs Model-Driven JS ([Sistema])</h2>
+  <p class="lead">¿Qué cambia entre los dos casos? El pain point dominante es completamente distinto, pero el factor de aceleración resulta ser el mismo.</p>
+
+  <table class="comp-table">
+    <thead>
+      <tr><th>Dimensión</th><th>Caso A (Canvas greenfield)</th><th>[Sistema] 2026 (Model-Driven brownfield)</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>Pain point dominante</td><td>Pegar YAML en PA Studio (~15 paste errors)</td><td>Bugs sutiles que compilan pero rompen runtime (12 bugs)</td></tr>
+      <tr><td>% código IA correcto al 1er intento</td><td>~80-85% tras Find &amp; Replace</td><td class="winner">~95% sintáctico / ~70-75% funcional</td></tr>
+      <tr><td>Iteraciones por entregable</td><td>2-4 paste por chunk YAML</td><td>5-7 iteraciones JS hasta pasar smoke test</td></tr>
+      <tr><td>Testing crítico</td><td>Pruebas en dispositivo</td><td class="winner">Smoke-test dirigido en runtime (HTML 30 cards)</td></tr>
+      <tr><td>Memoria que más sumó</td><td>feedback_canvas_app_powerfx.md (15 paste errors)</td><td>feedback_form_scripts_safety.md (5 antipatrones runtime)</td></tr>
+      <tr><td>Idioma de scripts</td><td>Python (azure-identity DeviceCode)</td><td>PowerShell 5.1 (MSAL.PS, native Win11)</td></tr>
+      <tr><td>LOC vs horas</td><td>3.134 YAML → 24-35 h</td><td>2.873 (PS+JS+JSON) → 25-37 h</td></tr>
+      <tr style="background:rgba(201,100,66,.05);"><td><strong>Factor de aceleración</strong></td><td><strong>2-3×</strong></td><td class="highlight"><strong>2-3× (mismo)</strong></td></tr>
+    </tbody>
+  </table>
+
+  <div class="callout-good callout">
+    <strong>Conclusión cruzada:</strong> mismo factor de aceleración aunque el pain point es completamente distinto. La metodología (baseline, branch, fases, handoffs, memorias) compensa la diferencia de stack. El playbook del Caso A adoptado en este sistema demuestra ser portable a un escenario brownfield muy distinto al greenfield Canvas original.
+  </div>
+</section>
+
+<!-- 11. DOCS GENERADOS -->
+<section id="docs-gen">
+  <div class="section-label"><span class="dot"></span> Valor oculto</div>
+  <h2>Documentación generada: el superpoder que nadie menciona</h2>
+  <p class="lead">La IA no solo escribe código. Los documentos que genera aceleran demos, reducen reuniones de soporte y permiten que el cliente testee solo. En este proyecto fueron decisivos para llegar al demo con 28/30 cards verde.</p>
+
+  <div class="card-grid">
+    <div class="card" style="border-left: 4px solid var(--green);">
+      <h3><span class="icon" style="background:rgba(61,139,110,.1); color:var(--green);">📋</span> Smoke-test interactivo (30 cards)</h3>
+      <p>HTML con 30 cards exhaustivas, una por requisito y path, con checkboxes clickables. <strong>Atrapó los 12 bugs en una mañana.</strong> Sin esta checklist los bugs hubieran llegado a producción y se hubieran descubierto cuando un usuario real intentara aprobar un Grant.</p>
+    </div>
+    <div class="card" style="border-left: 4px solid var(--accent);">
+      <h3><span class="icon" style="background:rgba(201,100,66,.1); color:var(--accent);">🎤</span> Demo script de 15 minutos</h3>
+      <p>HTML para client showcase con 8 pasos + "Considerations" callouts apropiadas para mostrar al cliente. <strong>Sin Watch out callouts ni Q&amp;A prep</strong> (esos son para presenter notes, no para la pantalla compartida).</p>
+    </div>
+    <div class="card" style="border-left: 4px solid var(--accent2);">
+      <h3><span class="icon" style="background:rgba(124,107,158,.1); color:var(--accent2);">📘</span> Manuales user + admin</h3>
+      <p>Cada uno en HTML + MD. El cliente abre el HTML como tutorial visual. El MD vive en el repo como referencia versionada. <strong>Ambos generados en ~30 minutos cada uno.</strong></p>
+    </div>
+    <div class="card" style="border-left: 4px solid var(--accent3);">
+      <h3><span class="icon" style="background:rgba(196,154,42,.1); color:var(--accent3);">📝</span> Spec funcional + Progress tracker</h3>
+      <p>122 líneas de spec con tabla "current → change → where" para los 17 reqs + 225 líneas de progress tracker con checklist granular por fase. <strong>El "contrato" que evita malentendidos</strong> y permite arrancar cada sesión sabiendo exactamente qué falta.</p>
+    </div>
+    <div class="card" style="border-left: 4px solid var(--pink);">
+      <h3><span class="icon" style="background:rgba(184,107,138,.1); color:var(--pink);">📜</span> Handoff post-mortem (273 líneas)</h3>
+      <p>Cada uno de los 12 bugs documentado con symptom → root cause → fix → lesson. <strong>Lo que la IA aprendió ese día queda capitalizado en memoria</strong>. La próxima sesión arranca sin esos bugs.</p>
+    </div>
+    <div class="card" style="border-left: 4px solid var(--green);">
+      <h3><span class="icon" style="background:rgba(61,139,110,.1); color:var(--green);">⚡</span> Knowledge base canónica</h3>
+      <p><code>form-scripts-best-practices.md</code> en la KB centralizada de PowerFox. <strong>Reglas técnicas extraídas del proyecto</strong> que se aplican a todos los demás clientes. Lo aprendido en este sistema beneficia al resto del portfolio de proyectos.</p>
+    </div>
+  </div>
+
+  <div class="callout">
+    <strong>Impacto real:</strong> Estos documentos no son "nice to have". Son los que diferenciaron llegar al demo con 28/30 cards verde vs llegar con bugs a la vista del cliente. El smoke-test interactivo solo es lo que atrapó los 12 bugs antes del demo. Sin él habría sido un día desastroso.
+  </div>
+</section>
+
+<!-- 12. FACTOR HUMANO -->
+<section id="factor-humano">
+  <div class="section-label"><span class="dot"></span> La pregunta difícil</div>
+  <h2>¿Se puede hacer sin saber Power Platform brownfield?</h2>
+
+  <div class="card" style="border-left: 4px solid var(--red); margin-bottom: 24px;">
+    <h3 style="color: var(--red);">Respuesta honesta: No. Y aún más en brownfield que en greenfield.</h3>
+    <p style="margin-top: 12px;">La IA <strong>multiplica por 2-3×</strong> a un dev experto en Power Platform brownfield. Al principiante lo pone a generar 12 bugs que tú no sabes diagnosticar — coste negativo, demo cliente catastrófico, frustración alta.</p>
+  </div>
+
+  <div class="accordion">
+    <div class="accordion-item">
+      <button class="accordion-header" onclick="toggleAccordion(this)">Sin experiencia en Dataverse <span class="chevron">▼</span></button>
+      <div class="accordion-body"><div class="accordion-body-inner">No detectas que <code>Common.Api.Update</code> no existe (existe <code>UpdateRecord</code>) hasta que un Approver real intenta aprobar y nada pasa. La IA generará 4 typos del mismo método y los 4 te van a llegar a producción sin un humano que pruebe. <strong>Esto pasó en este proyecto.</strong></div></div>
+    </div>
+    <div class="accordion-item">
+      <button class="accordion-header" onclick="toggleAccordion(this)">Sin entender el lifecycle de form scripts <span class="chevron">▼</span></button>
+      <div class="accordion-body"><div class="accordion-body-inner">No sabes que llamar <code>UpdateRecord</code> dentro de OnSave racea el native commit. La IA propone el código y compila perfectamente. El platform error dialog "Something has gone wrong" no es self-explanatory: hay que entender que el <code>ReLoad()</code> está disparando mientras la transacción de save aún está en vuelo.</div></div>
+    </div>
+    <div class="accordion-item">
+      <button class="accordion-header" onclick="toggleAccordion(this)">Sin haber operado el maker portal <span class="chevron">▼</span></button>
+      <div class="accordion-body"><div class="accordion-body-inner">No sabes que existen "Phase 1.5" gaps (campos creados pero no en form), "FLS profile assignment" gaps (profile creado pero sin Members), "Power Fx cache" gaps (autocomplete ciego a nuevos option-set values). Te frustras pensando que la IA miente cuando en realidad estás en un gap conocido del ecosystem.</div></div>
+    </div>
+    <div class="accordion-item">
+      <button class="accordion-header" onclick="toggleAccordion(this)">Sin ALM / solutions experience <span class="chevron">▼</span></button>
+      <div class="accordion-body"><div class="accordion-body-inner">No sabes que las connection references viven en una solución y no se pueden re-declarar. No sabes cuándo crear una solución dedicada para flows vs incluirlos en la entity solution. No sabes que un display rename preserva el logical name. Te quedas atascado en imports con errores crípticos del tipo "Cannot add a Root Component...".</div></div>
+    </div>
+    <div class="accordion-item">
+      <button class="accordion-header" onclick="toggleAccordion(this)">Diferencia con Caso A (greenfield) <span class="chevron">▼</span></button>
+      <div class="accordion-body"><div class="accordion-body-inner">En brownfield la IA además requiere <strong>conocimiento del codebase específico</strong> (cómo se llama <code>Common.Api.UpdateRecord</code>, cómo se inicializa <code>Common.FormContext</code>, qué memorias del proyecto existen). El dev experto en Power Platform pero nuevo al codebase pierde 1-2 horas leyendo <code>GMS_Commons.js</code> antes de poder revisar lo que la IA genera. Las memorias del proyecto reducen ese coste — pero requieren mantenimiento.</div></div>
+    </div>
+    <div class="accordion-item">
+      <button class="accordion-header" onclick="toggleAccordion(this)">Perfil ideal para este workflow <span class="chevron">▼</span></button>
+      <div class="accordion-body"><div class="accordion-body-inner">Desarrollador con <strong>2-3 años de experiencia</strong> en Dataverse + Model-Driven + Power Automate + JS clásico de Xrm que quiere acelerarse. Conoce el lifecycle de form scripts. Ha desplegado solutions vía ALM. Domina <code>FetchXml</code> y entiende los privilege levels en roles. La IA es su copiloto, no su piloto.</div></div>
+    </div>
+  </div>
+</section>
+
+<!-- 13. DEMO -->
+<section id="demo">
+  <div class="section-label"><span class="dot"></span> Demo en vivo</div>
+  <h2>3 prompts para demostrar la diferencia</h2>
+
+  <div class="tabs">
+    <button class="tab-btn active" onclick="switchTab(event, 'tab-bad')">❌ Prompt malo</button>
+    <button class="tab-btn" onclick="switchTab(event, 'tab-good')">✅ Prompt bueno</button>
+    <button class="tab-btn" onclick="switchTab(event, 'tab-surgical')">🔪 Edición quirúrgica</button>
+  </div>
+
+  <div class="tab-content active" id="tab-bad">
+    <div class="code-block">
+      <span class="comment">// Prompt MALO — vago, sin contexto</span><br><br>
+      <span class="bad">Añade al [Sistema] una validación que bloquee al [RolA]<br>
+      cuando intenta enviar un Grant a aprobación si no<br>
+      hay un Grant Request document adjuntado.</span>
+    </div>
+    <div class="callout-warn callout">
+      <strong>Resultado:</strong> La IA inventa nombres de tabla (<code>Grants</code>, <code>Documents</code>), inventa logical names (<code>pfx_grant_id</code>, <code>pfx_doc_type</code>), genera código en <code>Xrm.WebApi</code> directo sin usar el helper del proyecto, mete la validación en el lugar wrong (OnSave en vez de en el button command). Nada se puede pegar en <code>GMS_Grants.js</code> sin 2 horas de adaptación.
+    </div>
+  </div>
+
+  <div class="tab-content" id="tab-good">
+    <div class="code-block">
+      <span class="comment">// Prompt BUENO — con contexto completo</span><br><br>
+      <span class="good">Necesito implementar el Req #3 del spec<br>
+      docs/specs/grm-client-requirements-2026-spec.md:<br>
+      "Block notify [RolA] unless ≥1 pfx_grantdocuments<br>
+      with pfx_documenttype=100 exists for this Grant".<br><br>
+      Contexto del entorno:<br>
+      - Tabla: pfx_gmsGrant. Flag: pfx_sendnotificationtodirector (bit).<br>
+      - Tabla relacionada: pfx_grantdocuments.<br>
+      &nbsp;&nbsp;Lookup back: _pfx_grant_id_value.<br>
+      &nbsp;&nbsp;Picklist: pfx_documenttype (100=Grant Request, ...).<br>
+      - Helper: Common.Api.RetrieveMultipleRecords(entity, query)<br>
+      &nbsp;&nbsp;NO usar Xrm.WebApi directo.<br>
+      - Helper: Common.FormContext.SetValue(field, value)<br>
+      &nbsp;&nbsp;NO usar formContext.getAttribute().setValue().<br>
+      - Function naming: PascalCase con verbo al inicio.<br>
+      - Style guide: form-scripts-best-practices.md<br>
+      - Statuscodes (frozen const): GrantStatusCode.Draft=1, ...<br>
+      - IMPORTANT: catch blocks must call openErrorDialog AND<br>
+      &nbsp;&nbsp;preventDefault if inside OnSave handler.<br>
+      - The flow does the authoritative check;<br>
+      &nbsp;&nbsp;the JS shows a UX dialog before Save.<br><br>
+      Genera SOLO la función SendNotificationTo[RolA] +<br>
+      helper HasGrantRequestDocument. Async/await con try/catch<br>
+      que re-throw con openErrorDialog.</span>
+    </div>
+    <div class="callout-good callout">
+      <strong>Resultado:</strong> JS que pasa al primer intento smoke-test card #5 (sin los 4 typos del bug histórico). La diferencia es la información que le das.
+    </div>
+  </div>
+
+  <div class="tab-content" id="tab-surgical">
+    <div class="code-block">
+      <span class="comment">// Prompt de EDICIÓN QUIRÚRGICA (smoke-test fix Bug 7)</span><br><br>
+      <span class="good">En GMS_Grants.js, la función HandleApproverResponse hace:<br><br>
+      &nbsp;&nbsp;await Common.Api.UpdateRecord("pfx_gmsgrant", grantId,<br>
+      &nbsp;&nbsp;&nbsp;&nbsp;{ statecode, statuscode });<br>
+      &nbsp;&nbsp;Common.FormContext.ReLoad();<br><br>
+      Esto se ejecuta dentro de un OnSave handler.<br>
+      Está produciendo dos bugs:<br>
+      1. "Something has gone wrong" platform error dialog<br>
+      &nbsp;&nbsp;&nbsp;(ReLoad mientras save in-flight).<br>
+      2. Doble email "More Information Needed"<br>
+      &nbsp;&nbsp;&nbsp;(dos PATCHes contra el mismo record disparan<br>
+      &nbsp;&nbsp;&nbsp;el evento Modified dos veces).<br><br>
+      Reemplaza esas dos líneas por SetValue calls —<br>
+      Common.FormContext.SetValue("statecode", X) y<br>
+      Common.FormContext.SetValue("statuscode", Y) — para que<br>
+      el form's native save commitee status + comment + response<br>
+      en un solo PATCH.<br><br>
+      NO toques nada más en la función.<br>
+      NO toques otras funciones.<br>
+      Muéstrame el diff antes de aplicar.</span>
+    </div>
+    <div class="callout">
+      <strong>Técnica:</strong> Diagnóstico explícito + constraint explícito + petición de diff antes de aplicar = evita el "ya que estoy aquí refactorizo otras cositas" que destroza ficheros largos. <strong>Esto es lo que produjo el PR #80 (v3.1.3) en menos de 5 minutos.</strong>
+    </div>
+  </div>
+</section>
+
+<!-- 14. Q&A -->
+<section id="qa">
+  <div class="section-label"><span class="dot"></span> Preguntas frecuentes</div>
+  <h2>Q&amp;A preparado</h2>
+
+  <div class="accordion">
+    <div class="accordion-item">
+      <button class="accordion-header" onclick="toggleAccordion(this)">¿Cuánto cuesta usar Claude Code al mes? <span class="chevron">▼</span></button>
+      <div class="accordion-body"><div class="accordion-body-inner">Suscripción Claude Max ~$100-200/mes cubre este volumen sin problema. En pago por uso, este proyecto entero costó ~$10-16 en tokens. El coste real no son los tokens — es la hora del desarrollador que supervisa. Mil veces más caro que los tokens, mil veces más valioso.</div></div>
+    </div>
+    <div class="accordion-item">
+      <button class="accordion-header" onclick="toggleAccordion(this)">¿Qué cambia entre Canvas App y Model-Driven con IA? <span class="chevron">▼</span></button>
+      <div class="accordion-body"><div class="accordion-body-inner">Cambia el pain point. Canvas App = paste/format gotchas (la IA genera YAML que falla en PA Studio). Model-Driven JS = bugs sutiles que compilan pero rompen en runtime (4 method-name typos en este proyecto). En ambos casos <strong>el ahorro real es ~2-3×</strong> y en ambos casos hace falta un dev senior. Ver sección Stack para la comparativa detallada.</div></div>
+    </div>
+    <div class="accordion-item">
+      <button class="accordion-header" onclick="toggleAccordion(this)">¿Funciona en proyectos donde ya hay código legacy y usuarios productivos? <span class="chevron">▼</span></button>
+      <div class="accordion-body"><div class="accordion-body-inner">Sí — este proyecto es exactamente eso. Las claves: (a) <strong>baseline tag</strong> antes de tocar; (b) <strong>branch <code>feat/</code></strong> y nunca master directo; (c) <strong>fases en orden</strong>; (d) <strong>re-export cadence</strong>; (e) <strong>smoke test exhaustivo</strong>. La IA genera el código, la metodología protege contra regresiones. En este proyecto: cero regresiones detectadas, 12 bugs nuevos atrapados antes del demo.</div></div>
+    </div>
+    <div class="accordion-item">
+      <button class="accordion-header" onclick="toggleAccordion(this)">¿Cómo evitas los bugs sutiles del runtime que compilan? <span class="chevron">▼</span></button>
+      <div class="accordion-body"><div class="accordion-body-inner">
+        Tres herramientas combinadas:
+        <ol style="margin-top:8px;">
+          <li><strong>Memoria persistente del proyecto</strong>: cada bug nuevo va a <code>feedback_*.md</code>. La memoria <code>feedback_form_scripts_safety.md</code> documenta los 5 antipatrones — la próxima sesión arranca sabiéndolos.</li>
+          <li><strong>Smoke test HTML interactivo</strong>: 30 cards exhaustivas, una por requisito, ejecutables por humano. Atrapó 12 bugs en una mañana.</li>
+          <li><strong>Style guide centralizada</strong>: <code>form-scripts-best-practices.md</code> impone patterns (const frozen, async/await, openErrorDialog, preventDefault).</li>
+        </ol>
+      </div></div>
+    </div>
+    <div class="accordion-item">
+      <button class="accordion-header" onclick="toggleAccordion(this)">¿Sirve para Power Automate solo, o solo Canvas Apps? <span class="chevron">▼</span></button>
+      <div class="accordion-body"><div class="accordion-body-inner">Sirve mejor para <strong>mezcla</strong>. La IA es excelente generando schema mutations (95%), specs técnicas, flow JSON estructurado. Es media en JS form scripts (compilación 95% / runtime 70-75%). Es mediocre en Canvas YAML (paste 80-85%). Para PA puro: 60-70% ahorro; mixto como este: 50-60%; Canvas-heavy: 50-60%.</div></div>
+    </div>
+    <div class="accordion-item">
+      <button class="accordion-header" onclick="toggleAccordion(this)">¿Y con Copilot Studio / Copilot en Power Apps no es suficiente? <span class="chevron">▼</span></button>
+      <div class="accordion-body"><div class="accordion-body-inner">Copilot en Power Apps es excelente para generar un primer draft de un screen sencillo dentro del Studio. Lo que NO hace: trabajar con el repo fuera del Studio, versionar con git, razonar sobre múltiples scripts a la vez, generar PowerShell para 12 mutations en lote, escribir specs de 17 reqs, mantener memoria entre sesiones, escribir un session handoff de 273 líneas con post-mortem. Claude Code complementa a Copilot; no compite con él.</div></div>
+    </div>
+    <div class="accordion-item">
+      <button class="accordion-header" onclick="toggleAccordion(this)">¿Qué pasa cuando el cliente cambia de opinión a mitad de proyecto? <span class="chevron">▼</span></button>
+      <div class="accordion-body"><div class="accordion-body-inner">Pasó en este proyecto. Spec original decía "Approved with Conditions = state Inactive". Business semantics necesitaban Active. <strong>Coste del cambio:</strong> delete-and-recreate la option (nuevo value 891380006), update JS constant, update flow filter, update Power Fx Visibility, update docs. Total: 5 archivos tocados, 1 PR (#81), ~30 minutos. Sin la metodología y la memoria, ese cambio hubiera tardado 3-4 horas y hubiera roto algo silenciosamente.</div></div>
+    </div>
+  </div>
+</section>
+
+<!-- RECOMENDACIONES -->
+<section>
+  <div class="section-label"><span class="dot"></span> Para llevarse a casa</div>
+  <h2>15 recomendaciones para proyectos brownfield Power Platform con IA</h2>
+
+  <div class="card">
+    <ol style="padding-left: 20px;">
+      <li style="margin-bottom: 10px; color: var(--text2);"><strong style="color:var(--text);">Tag baseline ANTES del primer commit.</strong> <code>git tag baseline/&lt;solution&gt;/&lt;YYYY-MM-DD&gt;</code>. Si la cosa explota, vuelves al tag.</li>
+      <li style="margin-bottom: 10px; color: var(--text2);"><strong style="color:var(--text);">Branch <code>feat/&lt;scope&gt;</code></strong> desde master. Squash-merge al final. Nunca directo en master.</li>
+      <li style="margin-bottom: 10px; color: var(--text2);"><strong style="color:var(--text);">Spec primero, en Claude chat (no Claude Code).</strong> 17 reqs en una tabla de 122 líneas valen 40 horas de desarrollo.</li>
+      <li style="margin-bottom: 10px; color: var(--text2);"><strong style="color:var(--text);">Inventario de la solución existente</strong> ANTES del prompt. Pasa los logical names reales, los helpers del proyecto, las naming conventions.</li>
+      <li style="margin-bottom: 10px; color: var(--text2);"><strong style="color:var(--text);">Fases en orden estricto:</strong> schema → JS → flows → roles → docs → dashboard. Cada fase termina con re-export + commit.</li>
+      <li style="margin-bottom: 10px; color: var(--text2);"><strong style="color:var(--text);">Re-export cadence cada 2-3 commits.</strong> Mensaje shape: <code>Sync &lt;solution&gt;: &lt;3 bullets&gt;</code>.</li>
+      <li style="margin-bottom: 10px; color: var(--text2);"><strong style="color:var(--text);">Smoke test HTML interactivo dirigido por reqs</strong> (no por feature). 30 cards mínimo para 17 reqs. Ejecuta TÚ las cards el día del demo.</li>
+      <li style="margin-bottom: 10px; color: var(--text2);"><strong style="color:var(--text);">Memoria del proyecto viva.</strong> Cada bug nuevo → <code>feedback_*.md</code>. Cada decisión no-obvia → memoria. La siguiente sesión arranca sabiendo lo que ésta sufrió.</li>
+      <li style="margin-bottom: 10px; color: var(--text2);"><strong style="color:var(--text);"><code>sync-webresource.ps1</code> o equivalente</strong> para iterar JS sin DVDT. 5 sync iterations en una mañana fue lo que diferenció arreglar 12 bugs vs llegar al demo con bugs.</li>
+      <li style="margin-bottom: 10px; color: var(--text2);"><strong style="color:var(--text);">Post-demo handoff con post-mortem.</strong> Cada bug: symptom → root cause → fix → lesson.</li>
+      <li style="margin-bottom: 10px; color: var(--text2);"><strong style="color:var(--text);">No mezcles cambios de schema con cambios de roles en el mismo commit.</strong> Mata los rollbacks.</li>
+      <li style="margin-bottom: 10px; color: var(--text2);"><strong style="color:var(--text);">Documenta los workarounds manuales en la spec.</strong> Phase 1.5 (form layout sync), FLS profile Members, connection reference binding, flow activation.</li>
+      <li style="margin-bottom: 10px; color: var(--text2);"><strong style="color:var(--text);">Para flows: spec MD ANTES del JSON.</strong> Una doc por flow: trigger, condition, actions, error handling.</li>
+      <li style="margin-bottom: 10px; color: var(--text2);"><strong style="color:var(--text);">Auditar buttons/flows/Visibility cada vez que añadas un option-set value.</strong> Bug 11 fue exactamente esto.</li>
+      <li style="margin-bottom: 10px; color: var(--text2);"><strong style="color:var(--text);">Refresh data sources en command libraries después de cualquier schema change.</strong> Issue conocida de Power Fx desde 2021.</li>
+    </ol>
+  </div>
+</section>
+
+</div><!-- end .page -->
+
+<div class="footer">
+  <strong>Power Fox Solutions</strong> · Caso de estudio [Sistema] [Cliente] · Formación Power Platform + IA · 2026-04-30<br>
+  <span style="opacity:.5; font-size:11px;">Datos basados en un proyecto real entregado en producción. Estimaciones marcadas como tal.</span>
+</div>
+
+<script>
+function switchTab(e, tabId) {
+  const tabs = e.target.parentElement;
+  tabs.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  e.target.classList.add('active');
+  let el = tabs.nextElementSibling;
+  while (el && el.classList.contains('tab-content')) {
+    el.classList.remove('active');
+    el = el.nextElementSibling;
+  }
+  document.getElementById(tabId).classList.add('active');
+}
+
+function toggleAccordion(btn) {
+  const item = btn.parentElement;
+  const body = item.querySelector('.accordion-body');
+  const inner = body.querySelector('.accordion-body-inner');
+  if (item.classList.contains('open')) {
+    item.classList.remove('open');
+    body.style.maxHeight = '0';
+  } else {
+    item.parentElement.querySelectorAll('.accordion-item.open').forEach(other => {
+      other.classList.remove('open');
+      other.querySelector('.accordion-body').style.maxHeight = '0';
+    });
+    item.classList.add('open');
+    body.style.maxHeight = inner.scrollHeight + 'px';
+  }
+}
+
+const sections = document.querySelectorAll('section[id]');
+const navLinks = document.querySelectorAll('.sticky-nav a');
+window.addEventListener('scroll', () => {
+  let current = '';
+  sections.forEach(section => {
+    const top = section.offsetTop - 120;
+    if (scrollY >= top) current = section.id;
+  });
+  navLinks.forEach(link => {
+    link.classList.remove('active');
+    if (link.getAttribute('href') === '#' + current) link.classList.add('active');
+  });
+});
+
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      entry.target.style.opacity = '1';
+      entry.target.style.transform = 'translateY(0)';
+    }
+  });
+}, { threshold: 0.1 });
+
+document.querySelectorAll('.stat-card, .card, .error-card, .deleg-card, .pros-card, .cons-card').forEach(el => {
+  el.style.opacity = '0';
+  el.style.transform = 'translateY(16px)';
+  el.style.transition = 'opacity .5s ease, transform .5s ease';
+  observer.observe(el);
+});
+</script>
+
+</body>
+</html>

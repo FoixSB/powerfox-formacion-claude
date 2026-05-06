@@ -1,0 +1,503 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Microsoft Graph API — La superpotencia detrás de M365 | Power Fox</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700&family=JetBrains+Mono:wght@400;500&display=swap');
+  :root{--navy:#0B1D3A;--blue:#1565C0;--blue-light:#42A5F5;--accent:#FF6D00;--accent-soft:#FFF3E0;--bg:#F5F7FA;--card:#FFF;--text:#1A2332;--text-mid:#546E7A;--text-light:#90A4AE;--border:#E8EDF2;--code-bg:#1E1E2E;--green:#2E7D32;--green-soft:#E8F5E9;--red:#C62828;--red-soft:#FFEBEE;--purple:#6A1B9A;--purple-soft:#F3E5F5;--claude:#7C3AED;--gold:#B8860B;--gold-soft:#FFF8E1;--graph:#0078D4;--graph-soft:#E5F1FB;--r:12px}
+  *{margin:0;padding:0;box-sizing:border-box}body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);line-height:1.7}
+  .nav{display:flex;justify-content:space-between;align-items:center;padding:.75rem 1.5rem;background:var(--card);border-bottom:1px solid var(--border);position:sticky;top:0;z-index:100}.nav-logo{font-weight:700;font-size:.9rem;color:var(--navy);letter-spacing:1px}.nav-links{display:flex;gap:1rem;flex-wrap:wrap}.nav-links a{font-size:.8rem;color:var(--text-mid);text-decoration:none;font-weight:500}.nav-links a:hover{color:var(--graph)}
+  .hero{background:var(--navy);color:#fff;padding:3rem 2rem 2.5rem;position:relative;overflow:hidden}.hero::after{content:'';position:absolute;top:0;right:0;width:40%;height:100%;background:linear-gradient(135deg,transparent,rgba(0,120,212,.25),rgba(124,58,237,.15))}.hero-meta{display:flex;gap:1.5rem;flex-wrap:wrap;align-items:center;margin-bottom:1rem;position:relative;z-index:1}.hero-badge{background:var(--graph);color:#fff;padding:.25rem .75rem;border-radius:4px;font-size:.75rem;font-weight:700;letter-spacing:1.5px;text-transform:uppercase}.hero-week{font-size:.85rem;opacity:.7}.hero h1{font-size:2.2rem;font-weight:700;line-height:1.2;margin-bottom:.5rem;position:relative;z-index:1}.hero-sub{font-size:1rem;opacity:.8;position:relative;z-index:1;max-width:780px}.hero-time{display:inline-flex;align-items:center;gap:.4rem;background:rgba(255,255,255,.1);padding:.3rem .75rem;border-radius:6px;font-size:.85rem;margin-top:.75rem;position:relative;z-index:1}
+  .container{max-width:1100px;margin:0 auto;padding:2rem 1.5rem}
+  .section{margin-bottom:3rem}.section-header{display:flex;align-items:center;gap:.75rem;margin-bottom:1.25rem;padding-bottom:.75rem;border-bottom:2px solid var(--border);flex-wrap:wrap}.section-num{width:36px;height:36px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:.9rem;color:#fff;flex-shrink:0}.section-header h2{font-size:1.3rem;font-weight:700}.section-header .duration{margin-left:auto;font-size:.8rem;color:var(--text-light);font-weight:500}
+  .content-grid{display:grid;grid-template-columns:1fr 1fr;gap:1.25rem}@media(max-width:768px){.content-grid{grid-template-columns:1fr}}
+  .triple-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1rem}@media(max-width:900px){.triple-grid{grid-template-columns:1fr}}
+  .card{background:var(--card);border-radius:var(--r);padding:1.5rem;box-shadow:0 1px 4px rgba(0,0,0,.05);border:1px solid var(--border)}.card h3{font-size:1.05rem;font-weight:700;margin-bottom:.75rem;display:flex;align-items:center;gap:.5rem}.card p,.card li{font-size:.88rem;color:var(--text-mid)}.card ul{padding-left:1.25rem}.card li{margin-bottom:.35rem}.card-full{grid-column:1/-1}
+  .highlight-box{border-left:4px solid var(--accent);background:var(--accent-soft);padding:1rem 1.25rem;border-radius:0 var(--r) var(--r) 0;margin:1rem 0}.highlight-box p{font-size:.88rem;color:var(--text)}.tip-box{border-left:4px solid var(--green);background:var(--green-soft);padding:1rem 1.25rem;border-radius:0 var(--r) var(--r) 0;margin:1rem 0}.tip-box p{font-size:.88rem}.warn-box{border-left:4px solid var(--red);background:var(--red-soft);padding:1rem 1.25rem;border-radius:0 var(--r) var(--r) 0;margin:1rem 0}.warn-box p{font-size:.88rem}.info-box{border-left:4px solid var(--graph);background:var(--graph-soft);padding:1rem 1.25rem;border-radius:0 var(--r) var(--r) 0;margin:1rem 0}.info-box p{font-size:.88rem}
+  .code-block{background:var(--code-bg);color:#CDD6F4;border-radius:8px;padding:1.25rem;font-family:'JetBrains Mono',monospace;font-size:.78rem;overflow-x:auto;margin:1rem 0;line-height:1.6;white-space:pre}.comment{color:#6C7086}.keyword{color:#CBA6F7}.string{color:#A6E3A1}.func{color:#89B4FA}.num{color:#FAB387}.prop{color:#F9E2AF}.method{color:#F38BA8;font-weight:700}
+  .table-wrap{overflow-x:auto;margin:1rem 0}table{width:100%;border-collapse:collapse;font-size:.85rem}th{background:var(--navy);color:#fff;padding:.6rem 1rem;text-align:left;font-size:.78rem;text-transform:uppercase;letter-spacing:.5px}td{padding:.6rem 1rem;border-bottom:1px solid var(--border);vertical-align:top}tr:hover td{background:#F8FAFC}td code{background:var(--graph-soft);color:var(--graph);padding:.1rem .35rem;border-radius:3px;font-size:.78rem;font-family:'JetBrains Mono',monospace}
+  .footer{text-align:center;padding:2rem;font-size:.8rem;color:var(--text-light);border-top:1px solid var(--border);margin-top:2rem}.footer strong{color:var(--navy)}
+  .endpoint-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:.6rem;margin:1rem 0}.endpoint-pill{padding:.55rem .85rem;border-radius:6px;font-size:.78rem;font-weight:600;text-align:left;border:1px solid var(--graph);background:var(--graph-soft);color:var(--graph);font-family:'JetBrains Mono',monospace}
+  .channel-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:1.25rem;margin:1rem 0}@media(max-width:768px){.channel-grid{grid-template-columns:1fr}}
+  .channel-card{border-radius:var(--r);padding:1.5rem;border:2px solid;position:relative;background:var(--card)}.channel-pa{border-color:var(--blue)}.channel-http{border-color:var(--accent)}.channel-sdk{border-color:var(--green)}.channel-claude{border-color:var(--claude)}.channel-card .channel-tag{position:absolute;top:-12px;left:1rem;padding:.25rem .8rem;border-radius:4px;font-size:.7rem;font-weight:700;letter-spacing:1.5px;color:#fff}.channel-pa .channel-tag{background:var(--blue)}.channel-http .channel-tag{background:var(--accent)}.channel-sdk .channel-tag{background:var(--green)}.channel-claude .channel-tag{background:var(--claude)}.channel-card h3{font-size:1.1rem;font-weight:700;margin:.5rem 0 .25rem;color:var(--text)}.channel-card .channel-sub{font-size:.85rem;color:var(--text-mid);margin-bottom:.85rem;font-weight:500}.channel-card ul{padding-left:1.2rem;font-size:.85rem;color:var(--text-mid)}.channel-card li{margin-bottom:.35rem}.channel-card li strong{color:var(--text)}
+  .example-card{background:var(--card);border-radius:var(--r);padding:1.5rem;border:1px solid var(--border);margin-bottom:1.25rem;border-left:4px solid var(--graph)}.example-card .ex-title{display:flex;align-items:center;gap:.6rem;margin-bottom:.75rem;flex-wrap:wrap}.example-card .ex-num{width:30px;height:30px;border-radius:6px;background:var(--graph);color:#fff;font-weight:700;font-size:.85rem;display:flex;align-items:center;justify-content:center;flex-shrink:0}.example-card h3{font-size:1.05rem;font-weight:700;color:var(--text);margin:0}.example-card .ex-tag{font-size:.65rem;padding:.15rem .5rem;border-radius:4px;font-weight:700;letter-spacing:.5px;text-transform:uppercase;background:var(--graph-soft);color:var(--graph);margin-left:auto}
+  .flow-steps{counter-reset:step;list-style:none;padding:0;margin:.75rem 0}.flow-steps li{counter-increment:step;position:relative;padding:.5rem 0 .5rem 2.25rem;font-size:.86rem;color:var(--text-mid);border-bottom:1px dashed var(--border)}.flow-steps li::before{content:counter(step);position:absolute;left:0;top:.45rem;width:1.6rem;height:1.6rem;background:var(--graph);color:#fff;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:.75rem}.flow-steps li:last-child{border-bottom:none}.flow-steps li strong{color:var(--text)}.flow-steps .action-pill{display:inline-block;background:var(--accent-soft);color:var(--accent);padding:.05rem .4rem;border-radius:3px;font-family:'JetBrains Mono',monospace;font-size:.75rem;font-weight:600}
+  .ai-spotlight{background:linear-gradient(135deg,#1A1A2E,#2D2D4E);color:#fff;border-radius:var(--r);padding:2rem;margin:1.5rem 0;position:relative;overflow:hidden}.ai-spotlight::before{display:block;font-size:.7rem;font-weight:700;letter-spacing:2px;color:#A78BFA;margin-bottom:.75rem;content:'BLOQUE CLAVE — CLAUDE CODE + GRAPH'}.ai-spotlight h3{font-size:1.3rem;font-weight:700;margin-bottom:.75rem;color:#fff}.ai-spotlight p{font-size:.95rem;color:#CDD6F4;margin-bottom:.5rem}.ai-spotlight ul{padding-left:1.5rem;color:#CDD6F4;font-size:.9rem}.ai-spotlight li{margin-bottom:.4rem}.ai-spotlight code{background:rgba(124,58,237,.25);padding:.1rem .4rem;border-radius:3px;color:#E0CFFF;font-family:'JetBrains Mono',monospace;font-size:.82rem}
+  .pipeline{display:flex;align-items:center;justify-content:center;gap:.5rem;flex-wrap:wrap;background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:1.25rem;margin:1rem 0}.pipeline-step{padding:.6rem 1rem;border-radius:8px;font-size:.8rem;font-weight:600;text-align:center;min-width:130px;color:#fff}.ps-blue{background:var(--blue)}.ps-purple{background:var(--claude)}.ps-orange{background:var(--accent)}.ps-green{background:var(--green)}.ps-graph{background:var(--graph)}.pipeline-arrow{color:var(--text-light);font-size:1.2rem;font-weight:700}
+  .scope-grid{display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin:1rem 0}@media(max-width:768px){.scope-grid{grid-template-columns:1fr}}.scope-card{padding:1.25rem;border-radius:var(--r);border:2px solid}.scope-delegated{border-color:var(--blue);background:#E3F2FD}.scope-app{border-color:var(--gold);background:var(--gold-soft)}.scope-card h4{font-size:1rem;font-weight:700;margin-bottom:.5rem}.scope-card p{font-size:.85rem;color:var(--text-mid);margin-bottom:.5rem}.scope-card ul{padding-left:1.2rem;font-size:.84rem;color:var(--text-mid)}.scope-card li{margin-bottom:.3rem}
+  .qa-card{background:var(--purple-soft);border-radius:var(--r);padding:1.25rem;border:1px solid #CE93D8;margin:1rem 0}.qa-card p{font-size:.88rem;color:var(--claude);font-weight:500}
+  .toc{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:1.25rem 1.5rem;margin:1.5rem 0;display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:.5rem 1.5rem}.toc a{font-size:.85rem;color:var(--text-mid);text-decoration:none;display:block;padding:.25rem 0}.toc a:hover{color:var(--graph)}.toc strong{color:var(--navy);font-size:.7rem;letter-spacing:1px;text-transform:uppercase;display:block;grid-column:1/-1;margin-bottom:.25rem}
+</style>
+</head>
+<body>
+
+<nav class="nav"><div class="nav-logo">POWER FOX — Formación</div><div class="nav-links"><a href="#anatomia">Anatomía</a><a href="#auth">Autenticación</a><a href="#caminos">4 Caminos</a><a href="#capacidades">Capacidades</a><a href="#odata">OData</a><a href="#claude-mcp">Claude + MCP</a></div></nav>
+
+<div class="hero">
+  <div class="hero-meta"><span class="hero-badge">Microsoft Graph API</span><span class="hero-week">Material complementario · Power Platform &amp; Claude Code</span></div>
+  <h1>Microsoft Graph API — La superpotencia detrás de M365</h1>
+  <p class="hero-sub">Una sola API REST para hablar con Outlook, Calendar, OneDrive, SharePoint, Teams, Excel, Planner, To Do, OneNote y el directorio entero de Entra ID. Aquí ves qué es Graph, cómo se autentica, qué puedes pedirle, y cómo combinarlo con Power Automate, llamadas externas (Python / Node / Postman) y Claude Code para sacarle todo el jugo.</p>
+  <div class="hero-time">Material de referencia · 9 secciones · Ejemplos prácticos para los 4 canales de uso</div>
+</div>
+
+<div class="container">
+
+  <div class="toc">
+    <strong>Contenido</strong>
+    <a href="#que-es">01 · Qué es Graph y por qué importa</a>
+    <a href="#anatomia">02 · Anatomía: endpoints, versiones, recursos</a>
+    <a href="#auth">03 · Autenticación, scopes y permisos</a>
+    <a href="#caminos">04 · Los 4 caminos para hablar con Graph</a>
+    <a href="#capacidades">05 · Mapa de capacidades por servicio</a>
+    <a href="#odata">06 · OData — los superpoderes de la query</a>
+    <a href="#avanzado">07 · Patrones avanzados (batch, delta, webhooks)</a>
+    <a href="#claude-mcp">08 · Claude Code + MCP de M365</a>
+    <a href="#trampas">09 · Trampas habituales y cierre</a>
+  </div>
+
+  <!-- ========== BLOQUE 1: QUÉ ES ========== -->
+  <div class="section" id="que-es">
+    <div class="section-header"><div class="section-num" style="background:var(--graph)">01</div><h2>Qué es Microsoft Graph y por qué importa</h2></div>
+    <div class="content-grid">
+      <div class="card">
+        <h3>La idea base</h3>
+        <p>Microsoft Graph es <strong>una única API REST unificada</strong> que expone los datos y la inteligencia de Microsoft 365: usuarios, grupos, correo, calendario, archivos, chats, equipos, tareas, notas, dispositivos, identidades de Entra ID y señales de productividad.</p>
+        <p style="margin-top:.5rem">Antes de Graph cada producto tenía su propia API (EWS para Outlook, CSOM para SharePoint, Skype API…). Hoy todo entra por <code>https://graph.microsoft.com/v1.0/</code> con un único token de Entra ID.</p>
+      </div>
+      <div class="card">
+        <h3>Por qué te importa como integrador</h3>
+        <ul>
+          <li><strong>Es lo que hay debajo de Power Automate.</strong> Cada conector de Office 365, Teams, SharePoint o Planner es Graph envuelto. Si entiendes Graph, entiendes los conectores.</li>
+          <li><strong>Cubre huecos del low-code.</strong> Donde el conector estándar no llega (filtros complejos, batch, delta), Graph sí llega.</li>
+          <li><strong>Es portable.</strong> Lo mismo que llamas desde Power Automate lo puedes llamar desde Python, Node, C#, Postman o Claude Code.</li>
+          <li><strong>Es la base del MCP de M365.</strong> El servidor MCP que ya tienes activado expone Graph como tools usables por Claude.</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="info-box">
+      <p><strong>Una frase para recordar:</strong> "Si está en M365, está en Graph". Mail, archivos, calendarios, equipos, listas, libros de Excel, planes, contactos, presencias, reuniones y grabaciones — todo se lee y se modifica por la misma API.</p>
+    </div>
+  </div>
+
+  <!-- ========== BLOQUE 2: ANATOMÍA ========== -->
+  <div class="section" id="anatomia">
+    <div class="section-header"><div class="section-num" style="background:var(--blue)">02</div><h2>Anatomía de Graph — endpoints, versiones, recursos</h2></div>
+
+    <div class="content-grid">
+      <div class="card">
+        <h3>Forma de las URLs</h3>
+        <div class="code-block"><span class="comment">// Estructura general</span>
+https://graph.microsoft.com/<span class="prop">{version}</span>/<span class="prop">{recurso}</span>?<span class="prop">{query}</span>
+
+<span class="comment">// Ejemplos reales</span>
+GET  /v1.0/me
+GET  /v1.0/me/messages?$top=10&$select=subject,from
+POST /v1.0/me/sendMail
+GET  /v1.0/sites/root/lists
+GET  /v1.0/teams/{id}/channels
+GET  /v1.0/users/{upn}/drive/root/children</div>
+      </div>
+      <div class="card">
+        <h3>Dos versiones — v1.0 y beta</h3>
+        <ul>
+          <li><strong>v1.0</strong> — estable, soportado en producción, contrato versionado.</li>
+          <li><strong>beta</strong> — funcionalidad nueva, sin garantías. Útil para prototipos pero <strong>nunca para producción crítica</strong>.</li>
+        </ul>
+        <div class="warn-box">
+          <p><strong>Regla práctica:</strong> empieza siempre con <code>/v1.0/</code>. Solo salta a <code>/beta/</code> si el campo o endpoint que necesitas no existe en v1.0 y puedes asumir el riesgo.</p>
+        </div>
+      </div>
+    </div>
+
+    <h3 style="margin-top:1.5rem;font-size:1rem;color:var(--text-mid);font-weight:500">Recursos top que vas a usar el 90% del tiempo</h3>
+    <div class="endpoint-grid">
+      <div class="endpoint-pill">/me</div>
+      <div class="endpoint-pill">/users/{id|upn}</div>
+      <div class="endpoint-pill">/me/messages</div>
+      <div class="endpoint-pill">/me/events</div>
+      <div class="endpoint-pill">/me/drive</div>
+      <div class="endpoint-pill">/sites/{id}</div>
+      <div class="endpoint-pill">/teams/{id}</div>
+      <div class="endpoint-pill">/chats/{id}/messages</div>
+      <div class="endpoint-pill">/me/planner/tasks</div>
+      <div class="endpoint-pill">/me/todo/lists</div>
+      <div class="endpoint-pill">/me/onenote/notebooks</div>
+      <div class="endpoint-pill">/groups/{id}</div>
+      <div class="endpoint-pill">/me/contacts</div>
+      <div class="endpoint-pill">/me/presence</div>
+      <div class="endpoint-pill">/communications/onlineMeetings</div>
+      <div class="endpoint-pill">/search/query</div>
+    </div>
+  </div>
+
+  <!-- ========== BLOQUE 3: AUTENTICACIÓN ========== -->
+  <div class="section" id="auth">
+    <div class="section-header"><div class="section-num" style="background:var(--gold)">03</div><h2>Autenticación, scopes y permisos</h2></div>
+
+    <p style="font-size:.92rem;color:var(--text-mid);margin-bottom:1rem">Toda llamada a Graph va con un <strong>access token</strong> emitido por Entra ID (antes Azure AD). El token codifica <em>quién hace la llamada</em> y <em>qué le está permitido</em>. La elección de tipo de permiso determina qué puedes hacer y cómo se monta la integración.</p>
+
+    <div class="scope-grid">
+      <div class="scope-card scope-delegated">
+        <h4>Delegated permissions</h4>
+        <p>La app actúa <strong>en nombre de un usuario</strong>. El usuario inicia sesión y consiente. Es lo que ocurre con los conectores Office 365 de Power Automate y con los MCP de M365 que usas en Claude Code.</p>
+        <ul>
+          <li>Sirve para apps interactivas, asistentes, Power Automate, Outlook add-ins.</li>
+          <li>Solo accede a datos a los que ese usuario ya puede acceder.</li>
+          <li>Scopes ejemplo: <code>Mail.Read</code>, <code>Calendars.ReadWrite</code>, <code>Files.ReadWrite</code>.</li>
+        </ul>
+      </div>
+      <div class="scope-card scope-app">
+        <h4>Application permissions</h4>
+        <p>La app actúa <strong>como ella misma</strong> sin usuario presente. Requiere consentimiento de un admin global. Es lo que necesitas para servicios desatendidos, jobs nocturnos, integraciones backend.</p>
+        <ul>
+          <li>Sirve para daemons, ETLs, integraciones server-to-server.</li>
+          <li>Por defecto ve <strong>todo el tenant</strong> — peligroso si no aplicas Application Access Policies.</li>
+          <li>Scopes ejemplo: <code>Mail.Read</code>, <code>Sites.Selected</code>, <code>User.Read.All</code>.</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="warn-box">
+      <p><strong>Trampa frecuente:</strong> registrar una app con permiso <code>Mail.Read</code> Application — eso te da acceso al correo <em>de toda la organización</em>. Para limitarlo a un buzón concreto se usan <a href="https://learn.microsoft.com/graph/auth-limit-mailbox-access" style="color:var(--red);font-weight:600">Application Access Policies</a>. Para SharePoint se usa <code>Sites.Selected</code>.</p>
+    </div>
+
+    <h3 style="margin-top:1.5rem;font-size:1rem;color:var(--text-mid);font-weight:500">Flujos de obtención de token según escenario</h3>
+    <div class="table-wrap">
+      <table>
+        <tr><th>Escenario</th><th>Flujo OAuth</th><th>Permiso</th><th>Dónde se usa</th></tr>
+        <tr><td>App web con login</td><td>Authorization code + PKCE</td><td>Delegated</td><td>SPA, web tradicional</td></tr>
+        <tr><td>Backend/daemon</td><td>Client credentials</td><td>Application</td><td>Funciones, jobs, ETLs</td></tr>
+        <tr><td>CLI / dispositivo sin teclado</td><td>Device code</td><td>Delegated</td><td>Scripts, dispositivos IoT</td></tr>
+        <tr><td>Power Automate</td><td>Conexión gestionada por la plataforma</td><td>Delegated o Application</td><td>Conectores Office 365 y HTTP</td></tr>
+      </table>
+    </div>
+  </div>
+
+  <!-- ========== BLOQUE 4: 4 CAMINOS ========== -->
+  <div class="section" id="caminos">
+    <div class="section-header"><div class="section-num" style="background:var(--accent)">04</div><h2>Los 4 caminos para hablar con Graph</h2></div>
+
+    <p style="font-size:.92rem;color:var(--text-mid);margin-bottom:1.25rem">No hay un único "camino correcto" para llamar a Graph — hay <strong>cuatro perfiles típicos</strong>, cada uno con un sweet spot. Lo más potente suele ser <strong>combinarlos</strong>: Claude Code para diseñar y validar, Power Automate para orquestar, una API externa para batch pesado, y HTTP directo cuando el conector se queda corto.</p>
+
+    <div class="channel-grid">
+      <div class="channel-card channel-pa">
+        <span class="channel-tag">CAMINO 1</span>
+        <h3>Power Automate — conectores Office 365</h3>
+        <p class="channel-sub">Standard, sin coste extra si tienes M365</p>
+        <ul>
+          <li><strong>Cuándo:</strong> automatizaciones interactivas, aprobaciones, notificaciones, pequeñas integraciones entre apps M365.</li>
+          <li><strong>Pros:</strong> visual, low-code, mantenimiento delegable a equipos no-dev.</li>
+          <li><strong>Contras:</strong> los conectores cubren ~70% de Graph. Casos avanzados (batch, delta, custom filtering) los limita.</li>
+          <li><strong>Tip:</strong> cuando un conector no expone el campo que necesitas, salta al camino 2 (HTTP directo).</li>
+        </ul>
+      </div>
+
+      <div class="channel-card channel-http">
+        <span class="channel-tag">CAMINO 2</span>
+        <h3>Power Automate — HTTP a Graph</h3>
+        <p class="channel-sub">Premium · acción "HTTP" o "Send an HTTP request to Microsoft 365 / SharePoint"</p>
+        <ul>
+          <li><strong>Cuándo:</strong> el conector se queda corto y necesitas el endpoint exacto, batch, o una query OData a medida.</li>
+          <li><strong>Pros:</strong> 100% de la superficie de Graph desde un flujo low-code.</li>
+          <li><strong>Contras:</strong> requiere licencia Premium y registrar la app o usar conexión Microsoft Graph.</li>
+          <li><strong>Tip:</strong> "Send an HTTP request to SharePoint" usa el contexto del usuario sin app registrada — útil para cosas SharePoint-only.</li>
+        </ul>
+      </div>
+
+      <div class="channel-card channel-sdk">
+        <span class="channel-tag">CAMINO 3</span>
+        <h3>API externa — Python / Node / C# / Postman</h3>
+        <p class="channel-sub">Backend, scripts, jobs, ETL, prototipos</p>
+        <ul>
+          <li><strong>Cuándo:</strong> cargas grandes, jobs programados, integración con tu propia API, prototipos rápidos.</li>
+          <li><strong>Pros:</strong> control total, retries, logging, gestión de tokens fina.</li>
+          <li><strong>Contras:</strong> mantienes tú el código, las credenciales y los certificados.</li>
+          <li><strong>Tip:</strong> usa los SDK oficiales (<code>msgraph-sdk</code> para Python, <code>@microsoft/microsoft-graph-client</code> para Node) — gestionan el token, paginación y batch por ti.</li>
+        </ul>
+      </div>
+
+      <div class="channel-card channel-claude">
+        <span class="channel-tag">CAMINO 4</span>
+        <h3>Claude Code — MCP de M365</h3>
+        <p class="channel-sub">Asistente que descubre, ejecuta y razona sobre Graph</p>
+        <ul>
+          <li><strong>Cuándo:</strong> exploración, análisis ad-hoc, diseño de flujos, conversaciones tipo "léeme los últimos 20 mails y resúmemelos por proyecto".</li>
+          <li><strong>Pros:</strong> traduce intención de negocio en llamadas Graph correctas, encadena varias en una sesión, te explica los resultados.</li>
+          <li><strong>Contras:</strong> no es un job programado — es un canal interactivo. Para algo recurrente, lo usas para diseñar y luego pasas el flujo a Power Automate o a un script.</li>
+          <li><strong>Tip:</strong> deja que Claude prototipe la query OData; luego copia esa misma query a Power Automate o Postman.</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="pipeline">
+      <div class="pipeline-step ps-purple">Claude Code<br><small style="opacity:.85">diseña + valida</small></div>
+      <div class="pipeline-arrow">→</div>
+      <div class="pipeline-step ps-graph">Microsoft Graph<br><small style="opacity:.85">capa de datos</small></div>
+      <div class="pipeline-arrow">←</div>
+      <div class="pipeline-step ps-blue">Power Automate<br><small style="opacity:.85">orquesta</small></div>
+      <div class="pipeline-arrow">←</div>
+      <div class="pipeline-step ps-orange">API externa<br><small style="opacity:.85">batch/ETL</small></div>
+    </div>
+  </div>
+
+  <!-- ========== BLOQUE 5: CAPACIDADES ========== -->
+  <div class="section" id="capacidades">
+    <div class="section-header"><div class="section-num" style="background:var(--blue)">05</div><h2>Mapa de capacidades por servicio</h2></div>
+
+    <p style="font-size:.92rem;color:var(--text-mid);margin-bottom:1rem">Esta tabla es la chuleta que vas a tener abierta el 80% del tiempo. Cada fila te dice <em>qué puedes hacer</em>, <em>con qué endpoint</em>, y <em>qué scope mínimo</em> necesitas para hacerlo desde una app o un conector.</p>
+
+    <div class="table-wrap">
+      <table>
+        <tr><th>Servicio</th><th>Capacidad típica</th><th>Endpoint base</th><th>Scope mínimo</th></tr>
+        <tr><td><strong>Mail</strong></td><td>Listar, leer, enviar, mover, marcar, adjuntos</td><td><code>/me/messages</code><br><code>/me/sendMail</code></td><td><code>Mail.Read</code>, <code>Mail.Send</code></td></tr>
+        <tr><td><strong>Calendar</strong></td><td>Crear/listar eventos, find times, reuniones online</td><td><code>/me/events</code><br><code>/me/calendar/getSchedule</code></td><td><code>Calendars.ReadWrite</code></td></tr>
+        <tr><td><strong>OneDrive / Files</strong></td><td>Subir, descargar, compartir, mover, versiones</td><td><code>/me/drive/root/children</code></td><td><code>Files.ReadWrite</code></td></tr>
+        <tr><td><strong>SharePoint</strong></td><td>Sites, listas, items, columnas, permisos</td><td><code>/sites/{id}/lists</code></td><td><code>Sites.Read.All</code> o <code>Sites.Selected</code></td></tr>
+        <tr><td><strong>Excel</strong></td><td>Leer rangos, escribir tablas, fórmulas, charts</td><td><code>/me/drive/items/{id}/workbook</code></td><td><code>Files.ReadWrite</code></td></tr>
+        <tr><td><strong>Teams</strong></td><td>Equipos, canales, mensajes, miembros</td><td><code>/teams/{id}/channels</code></td><td><code>ChannelMessage.Send</code></td></tr>
+        <tr><td><strong>Chats 1:1 y grupales</strong></td><td>Listar, enviar, reaccionar, fijar</td><td><code>/chats/{id}/messages</code></td><td><code>Chat.ReadWrite</code></td></tr>
+        <tr><td><strong>Planner</strong></td><td>Planes, buckets, tareas, asignaciones</td><td><code>/me/planner/tasks</code></td><td><code>Group.ReadWrite.All</code></td></tr>
+        <tr><td><strong>To Do</strong></td><td>Listas, tareas, recursos vinculados</td><td><code>/me/todo/lists</code></td><td><code>Tasks.ReadWrite</code></td></tr>
+        <tr><td><strong>OneNote</strong></td><td>Notebooks, secciones, páginas, contenido HTML</td><td><code>/me/onenote/pages</code></td><td><code>Notes.ReadWrite</code></td></tr>
+        <tr><td><strong>Reuniones online</strong></td><td>Crear meetings, transcripciones, grabaciones</td><td><code>/communications/onlineMeetings</code></td><td><code>OnlineMeetings.ReadWrite</code></td></tr>
+        <tr><td><strong>Identidad / Directorio</strong></td><td>Usuarios, grupos, manager, miembros</td><td><code>/users</code> · <code>/groups</code></td><td><code>User.Read.All</code></td></tr>
+        <tr><td><strong>Search</strong></td><td>Búsqueda KQL global (mail, files, sites)</td><td><code>/search/query</code></td><td>Según recurso</td></tr>
+      </table>
+    </div>
+
+    <div class="info-box">
+      <p><strong>Pista mental:</strong> si un endpoint contiene <code>/me</code> es delegated. Si contiene <code>/users/{id}</code> o <code>/sites/{id}</code> y lo llamas sin sesión de usuario, casi seguro estás en Application — y necesitas Application Access Policies o <code>Sites.Selected</code> para limitar el alcance.</p>
+    </div>
+  </div>
+
+  <!-- ========== BLOQUE 6: ODATA ========== -->
+  <div class="section" id="odata">
+    <div class="section-header"><div class="section-num" style="background:var(--accent)">06</div><h2>OData — los superpoderes de la query</h2></div>
+
+    <p style="font-size:.92rem;color:var(--text-mid);margin-bottom:1rem">Graph habla OData. Eso quiere decir que cualquier <code>GET</code> de colección admite una serie de query parameters que te ahorran <strong>filtrar, paginar, ordenar y proyectar en el cliente</strong>. Es la diferencia entre traerte 500 mails y filtrar en Power Automate (lento, gasta cuota) o pedirle a Graph los 5 que importan (instantáneo).</p>
+
+    <div class="table-wrap">
+      <table>
+        <tr><th>Parámetro</th><th>Qué hace</th><th>Ejemplo</th></tr>
+        <tr><td><code>$select</code></td><td>Devuelve solo los campos pedidos</td><td><code>$select=subject,from,receivedDateTime</code></td></tr>
+        <tr><td><code>$filter</code></td><td>Filtra registros por condición</td><td><code>$filter=receivedDateTime ge 2026-05-01T00:00:00Z</code></td></tr>
+        <tr><td><code>$orderby</code></td><td>Ordena resultados</td><td><code>$orderby=receivedDateTime desc</code></td></tr>
+        <tr><td><code>$top</code> / <code>$skip</code></td><td>Paginación</td><td><code>$top=25&amp;$skip=50</code></td></tr>
+        <tr><td><code>$expand</code></td><td>Trae relaciones embebidas</td><td><code>$expand=attachments</code></td></tr>
+        <tr><td><code>$search</code></td><td>Búsqueda full-text (KQL)</td><td><code>$search="from:cliente AND factura"</code></td></tr>
+        <tr><td><code>$count</code></td><td>Devuelve total de coincidencias</td><td><code>$count=true</code></td></tr>
+      </table>
+    </div>
+
+    <div class="code-block"><span class="comment">// Los 10 mails más recientes con adjuntos, solo 4 campos</span>
+GET /v1.0/me/messages
+  ?$top=10
+  &$select=subject,from,receivedDateTime,hasAttachments
+  &$filter=hasAttachments eq true
+  &$orderby=receivedDateTime desc
+
+<span class="comment">// Eventos de calendario de la próxima semana</span>
+GET /v1.0/me/calendarView
+  ?startDateTime=2026-05-12T00:00:00Z
+  &endDateTime=2026-05-19T00:00:00Z
+  &$select=subject,start,end,attendees
+
+<span class="comment">// Items de una lista de SharePoint con expand de campos</span>
+GET /v1.0/sites/{site-id}/lists/{list-id}/items
+  ?$expand=fields($select=Title,Estado,Prioridad)
+  &$filter=fields/Estado eq 'Abierto'
+  &$top=50</div>
+
+    <div class="warn-box">
+      <p><strong>Detalle de Graph que sorprende:</strong> no puedes combinar <code>$filter</code> y <code>$search</code> en la misma llamada. Y algunos <code>$filter</code> sobre <code>/users</code> o <code>/groups</code> requieren la cabecera <code>ConsistencyLevel: eventual</code> + <code>$count=true</code>.</p>
+    </div>
+  </div>
+
+  <!-- ========== BLOQUE 7: AVANZADO ========== -->
+  <div class="section" id="avanzado">
+    <div class="section-header"><div class="section-num" style="background:var(--purple)">07</div><h2>Patrones avanzados — batch, delta y cambios en tiempo real</h2></div>
+
+    <div class="triple-grid">
+      <div class="card">
+        <h3>Batch — 20 llamadas en una</h3>
+        <p>El endpoint <code>/$batch</code> agrupa hasta 20 requests en una sola petición HTTP. Reduce drásticamente la latencia y el consumo de cuota cuando necesitas pedir varios recursos a la vez.</p>
+        <div class="code-block" style="font-size:.72rem">POST /v1.0/$batch
+{
+  "requests": [
+    { "id":"1", "method":"GET",
+      "url":"/me" },
+    { "id":"2", "method":"GET",
+      "url":"/me/messages?$top=5" },
+    { "id":"3", "method":"GET",
+      "url":"/me/events?$top=5" }
+  ]
+}</div>
+      </div>
+      <div class="card">
+        <h3>Delta — solo lo que cambió</h3>
+        <p>En vez de releer toda una colección, <code>/delta</code> te devuelve únicamente lo que cambió desde tu última llamada gracias a un <strong>delta token</strong>. Ideal para sincronización incremental.</p>
+        <ul>
+          <li>Disponible en mail, calendar, drive, sharepoint, users, groups.</li>
+          <li>Primera llamada = full snapshot + token. Siguientes = solo deltas.</li>
+          <li>Reduce de minutos a segundos los jobs de "qué cambió hoy".</li>
+        </ul>
+      </div>
+      <div class="card">
+        <h3>Change notifications (webhooks)</h3>
+        <p>En lugar de <em>polling</em>, Graph empuja eventos a tu endpoint con <code>POST /subscriptions</code>. Cuando algo cambia, recibes una notificación.</p>
+        <ul>
+          <li>Cubre mail, calendar, drive, lists, chats, presencias.</li>
+          <li>Caduca cada pocas horas o días — hay que renovar.</li>
+          <li>Rich notifications llevan el payload encriptado.</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="highlight-box">
+      <p><strong>Cuándo usar cuál:</strong> <em>Batch</em> cuando necesitas N cosas <strong>ahora</strong>. <em>Delta</em> cuando ejecutas un job <strong>periódicamente</strong> y solo quieres lo nuevo. <em>Webhooks</em> cuando necesitas reaccionar <strong>en tiempo real</strong> a un cambio sin malgastar peticiones de polling.</p>
+    </div>
+  </div>
+
+  <!-- ========== BLOQUE 8: CLAUDE + MCP ========== -->
+  <div class="section" id="claude-mcp">
+    <div class="section-header"><div class="section-num" style="background:var(--claude)">08</div><h2>Claude Code + MCP de M365 — el atajo definitivo</h2></div>
+
+    <div class="ai-spotlight">
+      <h3>Lo que cambia cuando Claude habla Graph por ti</h3>
+      <p>El servidor <code>ms365</code> que ya está enchufado en este entorno expone <strong>cientos de tools</strong> que envuelven Graph: <code>list-mail-messages</code>, <code>create-calendar-event</code>, <code>send-channel-message</code>, <code>create-planner-task</code>, <code>get-excel-range</code>, <code>search-onedrive-files</code>, <code>graph-batch</code>, etc.</p>
+      <p>Eso significa que <strong>no tienes que escribir las URLs ni gestionar tokens</strong>. Le pides a Claude lo que quieres en lenguaje natural y él elige el tool, lo invoca, paginá si hace falta y te devuelve la respuesta razonada.</p>
+      <ul>
+        <li><strong>Exploración</strong> — "Lista los 10 últimos mails con adjuntos PDF y dime de qué proyecto son".</li>
+        <li><strong>Acción puntual</strong> — "Crea una reunión mañana 10:00 con Foix y Renny y manda invitación".</li>
+        <li><strong>Análisis cruzado</strong> — "Cruza las tareas de Planner del proyecto X con las horas en mi calendario y avísame de huecos".</li>
+        <li><strong>Generación de flujos</strong> — "Diseña la query OData que me pediría los archivos modificados esta semana en SharePoint y pásamela lista para pegar en Power Automate".</li>
+      </ul>
+    </div>
+
+    <h3 style="margin-top:1.5rem;font-size:1rem;color:var(--text-mid);font-weight:500">Patrón recomendado — diseñar con Claude, ejecutar en producción</h3>
+
+    <div class="example-card">
+      <div class="ex-title">
+        <div class="ex-num">A</div>
+        <h3>Claude Code prototipa la query, Power Automate la ejecuta a diario</h3>
+        <span class="ex-tag">Combo recomendado</span>
+      </div>
+      <ol class="flow-steps">
+        <li><strong>Conversación con Claude:</strong> "Quiero los items de la lista 'Incidencias' de SharePoint que llevan más de 5 días sin tocar y son de prioridad alta. Pásame el endpoint y la query OData exactos."</li>
+        <li><strong>Claude responde</strong> con el endpoint <code>/sites/{id}/lists/{id}/items?$expand=fields&amp;$filter=...</code> y te lo prueba en vivo con el MCP para validar el resultado.</li>
+        <li><strong>Pegas la URL</strong> en una acción <span class="action-pill">Send an HTTP request to SharePoint</span> en Power Automate.</li>
+        <li><strong>Programación:</strong> trigger <span class="action-pill">Recurrence</span> diaria + envío a Teams del resumen.</li>
+        <li><strong>Iteración:</strong> si mañana cambia el criterio, vuelves a Claude, ajustas la query, copias y pegas. Sin tocar el resto del flujo.</li>
+      </ol>
+      <div class="tip-box"><p><strong>Por qué funciona:</strong> Claude es brutal diseñando filtros OData y validándolos contra datos reales. Power Automate es brutal ejecutando en horario y con permisos del tenant. Cada uno hace lo que hace mejor.</p></div>
+    </div>
+
+    <div class="example-card">
+      <div class="ex-title">
+        <div class="ex-num">B</div>
+        <h3>Análisis cruzado en una sola sesión sin tocar Power Automate</h3>
+        <span class="ex-tag">Sesión interactiva</span>
+      </div>
+      <p style="font-size:.88rem;color:var(--text-mid);margin-bottom:.5rem">Hay tareas que <strong>no compensa programar</strong> — son ad-hoc. Para esas, Claude + Graph es directamente la herramienta:</p>
+      <ul style="font-size:.88rem;color:var(--text-mid);padding-left:1.25rem">
+        <li>"De los 50 mails sin contestar más antiguos, agrúpame por remitente y dime cuáles son de clientes activos según mi lista de SharePoint 'Cuentas'."</li>
+        <li>"Mira mi calendario de la semana, identifica reuniones sin agenda en el cuerpo y prepárame una propuesta de agenda para cada una."</li>
+        <li>"Saca de Planner las tareas vencidas de mi equipo y mándame un resumen al chat de Teams del proyecto."</li>
+      </ul>
+      <div class="info-box"><p>Estos análisis serían un flujo de Power Automate de 30+ acciones. En Claude Code son 1-2 prompts y 5 minutos.</p></div>
+    </div>
+
+    <h3 style="margin-top:1.5rem;font-size:1rem;color:var(--text-mid);font-weight:500">Tools del MCP que más usarás</h3>
+    <div class="endpoint-grid">
+      <div class="endpoint-pill">list-mail-messages</div>
+      <div class="endpoint-pill">send-mail</div>
+      <div class="endpoint-pill">create-calendar-event</div>
+      <div class="endpoint-pill">find-meeting-times</div>
+      <div class="endpoint-pill">list-folder-files</div>
+      <div class="endpoint-pill">search-onedrive-files</div>
+      <div class="endpoint-pill">get-excel-range</div>
+      <div class="endpoint-pill">create-excel-table</div>
+      <div class="endpoint-pill">list-channel-messages</div>
+      <div class="endpoint-pill">send-chat-message</div>
+      <div class="endpoint-pill">create-planner-task</div>
+      <div class="endpoint-pill">create-todo-task</div>
+      <div class="endpoint-pill">create-onenote-page</div>
+      <div class="endpoint-pill">get-meeting-transcript</div>
+      <div class="endpoint-pill">graph-batch</div>
+      <div class="endpoint-pill">search-query</div>
+    </div>
+  </div>
+
+  <!-- ========== BLOQUE 9: TRAMPAS ========== -->
+  <div class="section" id="trampas">
+    <div class="section-header"><div class="section-num" style="background:var(--red)">09</div><h2>Trampas habituales y cosas que se aprenden a base de golpes</h2></div>
+
+    <div class="content-grid">
+      <div class="card">
+        <h3>Throttling</h3>
+        <p>Graph aplica límites por aplicación, por usuario y por servicio. Si los pasas, devuelve <code>429 Too Many Requests</code> con un header <code>Retry-After</code>.</p>
+        <ul>
+          <li>Implementa retries con backoff exponencial — no machaques.</li>
+          <li>Usa <code>$select</code> para reducir payload y <code>$batch</code> para reducir número de llamadas.</li>
+          <li>Para SharePoint y Outlook hay límites por buzón / sitio que escalan rápido.</li>
+        </ul>
+      </div>
+      <div class="card">
+        <h3>Paginación</h3>
+        <p>Graph rara vez devuelve todo en una llamada. Cuando hay más, devuelve <code>@odata.nextLink</code> al final.</p>
+        <ul>
+          <li>Repite GET sobre <code>nextLink</code> hasta que desaparezca.</li>
+          <li>Los SDK oficiales lo hacen por ti — los conectores HTTP de Power Automate <strong>no</strong>.</li>
+          <li>Si solo quieres N, usa <code>$top=N</code> y olvídate del paginado.</li>
+        </ul>
+      </div>
+      <div class="card">
+        <h3>Permisos vs scope reales</h3>
+        <p>Que tu app tenga <code>Mail.Read</code> no significa que el usuario haya consentido. La primera vez que llamas, si falta consentimiento, el token te dará <code>403</code>.</p>
+        <ul>
+          <li>Distingue <strong>permisos configurados</strong> (en el portal) de <strong>permisos consentidos</strong> (por usuario/admin).</li>
+          <li>Para Application: revisa que el admin haya hecho "Grant admin consent".</li>
+        </ul>
+      </div>
+      <div class="card">
+        <h3>Tipos de IDs que importan</h3>
+        <p>Graph mezcla varios identificadores. No los confundas:</p>
+        <ul>
+          <li><code>userPrincipalName</code> (<em>email-like</em>) y <code>id</code> (GUID) — ambos sirven en <code>/users/{id}</code>.</li>
+          <li><code>siteId</code> tiene formato <code>{hostname},{spsite-guid},{spweb-guid}</code> — no es un GUID simple.</li>
+          <li>Los <code>messageId</code> son largos, base64 y dependen del buzón.</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="warn-box">
+      <p><strong>Tres consejos que ahorran horas:</strong></p>
+      <p>1) Antes de pegarte con <code>$filter</code>, pruébalo en <strong>Graph Explorer</strong> (<code>developer.microsoft.com/graph/graph-explorer</code>) — autenticado con tu cuenta y con la respuesta JSON visible en pantalla.</p>
+      <p>2) Cuando un conector estándar de Power Automate devuelve campos vacíos o falta info, el endpoint Graph equivalente casi siempre los expone. Salta a HTTP.</p>
+      <p>3) Para reuniones, transcripciones y grabaciones de Teams hay endpoints específicos en <code>/communications/onlineMeetings</code> y <code>/users/{id}/onlineMeetings/{id}/transcripts</code> — son joya pura para automatizaciones de productividad.</p>
+    </div>
+  </div>
+
+  <!-- ========== CIERRE ========== -->
+  <div class="section">
+    <div class="section-header"><div class="section-num" style="background:var(--green)">10</div><h2>Cierre — qué hacer mañana mismo</h2></div>
+    <div class="qa-card">
+      <p><strong>Tarea de 30 minutos:</strong> abre Graph Explorer con tu cuenta, ejecuta tres llamadas (<code>/me</code>, <code>/me/messages?$top=5&amp;$select=subject,from</code>, <code>/me/events?$top=5</code>) y observa cómo cambia la respuesta cuando metes <code>$select</code> o <code>$filter</code>. Luego replica la misma query desde un flujo de Power Automate con HTTP. En esa hora ya entiendes el 80% del valor de Graph.</p>
+    </div>
+    <div class="info-box">
+      <p><strong>Y mientras tanto en Claude Code:</strong> abre una sesión y dile "lista mis 5 últimos mails con adjuntos y dime el remitente". Eso ejecuta una llamada Graph real desde el MCP. Cuando funcione, ya tienes prueba viva de los cuatro caminos en menos de una jornada.</p>
+    </div>
+  </div>
+
+</div>
+
+<div class="footer">
+  <p><strong>POWER FOX BI — Formación Claude Code</strong></p>
+  <p>Material complementario · Microsoft Graph API · Power Automate · Claude Code MCP</p>
+</div>
+
+</body>
+</html>

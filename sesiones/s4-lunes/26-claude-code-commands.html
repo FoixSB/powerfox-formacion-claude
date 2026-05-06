@@ -1,0 +1,581 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Claude Code Commands — Referencia rápida</title>
+<link href="https://fonts.googleapis.com/css2?family=Source+Code+Pro:wght@400;500;600;700&family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #faf9f7;
+  --surface: #ffffff;
+  --surface2: #f3f1ee;
+  --surface3: #e8e5e0;
+  --accent: #c96442;
+  --accent2: #7c6b9e;
+  --accent3: #c49a2a;
+  --green: #3d8b6e;
+  --red: #c0504d;
+  --pink: #b86b8a;
+  --text: #1a1612;
+  --text2: #5c5650;
+  --text3: #8a847c;
+  --radius: 14px;
+  --radius-sm: 8px;
+  --shadow: 0 1px 3px rgba(0,0,0,.06), 0 4px 12px rgba(0,0,0,.04);
+  --shadow-lg: 0 4px 20px rgba(0,0,0,.08);
+}
+* { margin: 0; padding: 0; box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body {
+  font-family: 'Inter', -apple-system, system-ui, sans-serif;
+  background: var(--bg); color: var(--text); line-height: 1.7;
+  font-size: 15px; -webkit-font-smoothing: antialiased;
+}
+::-webkit-scrollbar { width: 8px; }
+::-webkit-scrollbar-track { background: var(--bg); }
+::-webkit-scrollbar-thumb { background: var(--surface3); border-radius: 3px; }
+
+/* HERO */
+.hero {
+  min-height: 60vh;
+  display: flex; flex-direction: column; justify-content: center;
+  padding: 60px 24px;
+  background: linear-gradient(170deg, #faf9f7 0%, #f0ece6 40%, #e8dfd4 100%);
+  position: relative; overflow: hidden;
+}
+.hero::before {
+  content: ''; position: absolute;
+  width: 700px; height: 700px;
+  background: radial-gradient(circle, rgba(201,100,66,.08) 0%, transparent 70%);
+  top: -200px; right: -100px;
+}
+.hero::after {
+  content: '✶'; position: absolute;
+  font-size: 220px; color: rgba(201,100,66,.10);
+  bottom: -40px; left: -10px; line-height: 1;
+  transform: rotate(-12deg);
+}
+.hero-inner { max-width: 1100px; margin: 0 auto; width: 100%; position: relative; z-index: 1; }
+.kicker {
+  display: inline-block; font-size: 12px; font-weight: 600;
+  letter-spacing: .15em; text-transform: uppercase;
+  color: var(--accent); margin-bottom: 20px;
+  padding: 6px 14px; background: rgba(201,100,66,.08);
+  border-radius: 20px;
+}
+h1 {
+  font-size: clamp(40px, 6vw, 68px); font-weight: 800;
+  line-height: 1.05; margin-bottom: 18px; letter-spacing: -.025em;
+}
+h1 em { font-style: normal; color: var(--accent); }
+.lead {
+  font-size: 19px; color: var(--text2); max-width: 780px;
+  margin-bottom: 26px;
+}
+.meta-row {
+  display: flex; flex-wrap: wrap; gap: 12px; margin-top: 16px;
+}
+.meta-pill {
+  background: var(--surface); border: 1px solid var(--surface3);
+  padding: 8px 16px; border-radius: 20px; font-size: 13px;
+  font-weight: 500; color: var(--text2);
+}
+.meta-pill strong { color: var(--text); }
+
+/* CONTAINER */
+.container { max-width: 1100px; margin: 0 auto; padding: 0 24px; }
+section { padding: 60px 0; }
+section.alt { background: var(--surface2); }
+
+h2 {
+  font-size: 30px; font-weight: 700; margin-bottom: 10px;
+  letter-spacing: -.01em;
+  display: flex; align-items: center; gap: 14px;
+}
+h2 .cat-num {
+  display: inline-flex; align-items: center; justify-content: center;
+  font-size: 13px; font-weight: 700;
+  color: white; background: var(--accent);
+  width: 32px; height: 32px; border-radius: 8px;
+  flex-shrink: 0;
+}
+h2 .cat-count {
+  font-size: 13px; font-weight: 500;
+  color: var(--text3); margin-left: auto;
+  background: var(--surface); padding: 4px 12px;
+  border-radius: 20px; border: 1px solid var(--surface3);
+}
+.section-lead {
+  font-size: 16px; color: var(--text2); margin-bottom: 30px;
+  max-width: 800px;
+}
+
+/* TOC pills (categorías) */
+.cat-pills {
+  display: flex; flex-wrap: wrap; gap: 10px;
+  margin-top: 28px;
+}
+.cat-pill {
+  background: var(--surface); border: 1px solid var(--surface3);
+  padding: 10px 16px; border-radius: var(--radius-sm);
+  font-size: 13px; font-weight: 600; color: var(--text2);
+  text-decoration: none; transition: all .15s;
+  display: inline-flex; align-items: center; gap: 8px;
+}
+.cat-pill:hover {
+  background: var(--accent); color: white; border-color: var(--accent);
+  transform: translateY(-1px);
+}
+.cat-pill .cat-pill-num {
+  font-family: 'Source Code Pro', monospace;
+  font-weight: 700; font-size: 11px;
+  background: var(--surface2); color: var(--accent);
+  padding: 2px 6px; border-radius: 4px;
+  transition: all .15s;
+}
+.cat-pill:hover .cat-pill-num {
+  background: rgba(255,255,255,.2); color: white;
+}
+
+/* COMMAND CARD */
+.cmd-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 14px;
+  margin-top: 18px;
+}
+.cmd {
+  background: var(--surface);
+  border: 1px solid var(--surface3);
+  border-radius: var(--radius);
+  padding: 18px 20px;
+  box-shadow: var(--shadow);
+  transition: all .15s;
+  display: flex; flex-direction: column; gap: 8px;
+  position: relative;
+}
+.cmd:hover {
+  border-color: var(--accent);
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-lg);
+}
+.cmd-name {
+  font-family: 'Source Code Pro', monospace;
+  font-size: 18px; font-weight: 700;
+  color: var(--accent);
+  display: inline-flex; align-items: center; gap: 6px;
+}
+.cmd-name::before {
+  content: '$'; color: var(--text3); font-weight: 500;
+  font-size: 14px; opacity: .6;
+}
+.cmd-desc {
+  font-size: 14px; color: var(--text2);
+  line-height: 1.55;
+}
+.cmd-tag {
+  position: absolute; top: 14px; right: 14px;
+  font-size: 10px; font-weight: 700;
+  letter-spacing: .1em; text-transform: uppercase;
+  color: var(--text3);
+}
+
+/* CALLOUT */
+.callout {
+  background: rgba(124,107,158,.07);
+  border: 1px solid rgba(124,107,158,.2);
+  border-left: 4px solid var(--accent2);
+  border-radius: var(--radius-sm);
+  padding: 16px 20px; margin: 20px 0;
+  font-size: 14.5px; color: var(--text2);
+}
+.callout strong { color: var(--accent2); }
+.callout.tip {
+  background: rgba(60,139,110,.07);
+  border-color: rgba(60,139,110,.2);
+  border-left-color: var(--green);
+}
+.callout.tip strong { color: var(--green); }
+
+code {
+  font-family: 'Source Code Pro', monospace;
+  background: var(--surface2);
+  padding: 2px 6px; border-radius: 4px;
+  font-size: .9em; color: var(--accent);
+}
+
+/* FOOTER */
+footer {
+  background: var(--text); color: var(--surface2);
+  padding: 50px 24px; text-align: center; margin-top: 0;
+}
+footer p { color: rgba(255,255,255,.7); font-size: 14px; }
+footer p strong { color: white; }
+
+/* FAB */
+.fab {
+  position: fixed; bottom: 24px; right: 24px;
+  background: var(--accent); color: white; border: none;
+  width: 50px; height: 50px; border-radius: 50%;
+  font-size: 22px; cursor: pointer; box-shadow: var(--shadow-lg);
+  z-index: 100; transition: transform .15s;
+}
+.fab:hover { transform: scale(1.08); }
+
+/* SECCIÓN EXTRA — review */
+section.extra {
+  background: linear-gradient(170deg, #f5efe8 0%, #ede4d6 100%);
+  border-top: 1px solid var(--surface3);
+  border-bottom: 1px solid var(--surface3);
+  position: relative; overflow: hidden;
+}
+section.extra::before {
+  content: ''; position: absolute;
+  width: 500px; height: 500px;
+  background: radial-gradient(circle, rgba(124,107,158,.10) 0%, transparent 70%);
+  bottom: -150px; right: -100px;
+}
+section.extra .container { position: relative; z-index: 1; }
+section.extra h2 .cat-num { background: var(--accent2); }
+section.extra .cmd-name { color: var(--accent2); }
+section.extra .cmd:hover { border-color: var(--accent2); }
+.extra-banner {
+  display: inline-block; font-size: 11px; font-weight: 700;
+  letter-spacing: .15em; text-transform: uppercase;
+  color: var(--accent2); background: rgba(124,107,158,.1);
+  padding: 5px 12px; border-radius: 20px; margin-bottom: 14px;
+}
+
+@media (max-width: 768px) {
+  h1 { font-size: 36px; }
+  h2 { font-size: 22px; }
+  .cmd-grid { grid-template-columns: 1fr; }
+}
+</style>
+</head>
+<body>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-inner">
+    <span class="kicker">Referencia rápida · Claude Code CLI</span>
+    <h1>Comandos de <em>Claude Code</em></h1>
+    <p class="lead">
+      Comandos del <strong>terminal</strong> para la CLI de Claude Code — no del chat de claude.ai.
+      Los 26 oficiales agrupados por categoría, más una sección extra de comandos de <strong>review y análisis</strong>
+      que te ayudan a mejorar lo que ya has escrito.
+    </p>
+    <div class="meta-row">
+      <span class="meta-pill">⌨️ <strong>Contexto:</strong> CLI</span>
+      <span class="meta-pill">📦 <strong>Oficiales:</strong> 26</span>
+      <span class="meta-pill">🔍 <strong>Review &amp; análisis:</strong> 5</span>
+      <span class="meta-pill">📅 <strong>Sesión 4 · Lunes</strong></span>
+    </div>
+
+    <div class="cat-pills">
+      <a class="cat-pill" href="#session"><span class="cat-pill-num">01</span>Session control</a>
+      <a class="cat-pill" href="#model"><span class="cat-pill-num">02</span>Model &amp; usage</a>
+      <a class="cat-pill" href="#project"><span class="cat-pill-num">03</span>Project setup</a>
+      <a class="cat-pill" href="#code"><span class="cat-pill-num">04</span>Code operations</a>
+      <a class="cat-pill" href="#agent"><span class="cat-pill-num">05</span>Agent layer</a>
+      <a class="cat-pill" href="#interface"><span class="cat-pill-num">06</span>Interface</a>
+      <a class="cat-pill" href="#review"><span class="cat-pill-num">07</span>Review &amp; análisis</a>
+    </div>
+  </div>
+</section>
+
+<!-- SESSION CONTROL -->
+<section id="session">
+  <div class="container">
+    <h2><span class="cat-num">01</span>Session Control <span class="cat-count">6 comandos</span></h2>
+    <p class="section-lead">
+      Gestionar el ciclo de vida de tu conversación: limpiar, retomar, ramificar, retroceder, renombrar y exportar.
+    </p>
+
+    <div class="cmd-grid">
+      <div class="cmd">
+        <span class="cmd-tag">historia</span>
+        <div class="cmd-name">/clear</div>
+        <div class="cmd-desc">Limpia el historial de la conversación actual y arranca de cero sin perder el contexto del repo.</div>
+      </div>
+      <div class="cmd">
+        <span class="cmd-tag">reanudar</span>
+        <div class="cmd-name">/resume</div>
+        <div class="cmd-desc">Retoma una sesión previa exactamente donde la dejaste, con todo el contexto cargado.</div>
+      </div>
+      <div class="cmd">
+        <span class="cmd-tag">ramificar</span>
+        <div class="cmd-name">/branch</div>
+        <div class="cmd-desc">Crea una conversación nueva a partir del punto actual — útil para explorar caminos sin perder el principal.</div>
+      </div>
+      <div class="cmd">
+        <span class="cmd-tag">deshacer</span>
+        <div class="cmd-name">/rewind</div>
+        <div class="cmd-desc">Retrocede a un punto anterior de la conversación. Perfecto cuando Claude se ha ido por una mala vía.</div>
+      </div>
+      <div class="cmd">
+        <span class="cmd-tag">organizar</span>
+        <div class="cmd-name">/rename</div>
+        <div class="cmd-desc">Renombra la sesión actual para encontrarla más tarde por un nombre descriptivo.</div>
+      </div>
+      <div class="cmd">
+        <span class="cmd-tag">exportar</span>
+        <div class="cmd-name">/export</div>
+        <div class="cmd-desc">Exporta los datos de la conversación — práctico para documentar, compartir o auditar lo que se hizo.</div>
+      </div>
+    </div>
+
+    <div class="callout tip">
+      <strong>Tip de uso:</strong> usa <code>/clear</code> entre tareas grandes en la misma sesión. Mantiene el coste bajo
+      sin perder el repo. Reserva <code>/resume</code> para retomar al día siguiente.
+    </div>
+  </div>
+</section>
+
+<!-- MODEL & USAGE -->
+<section class="alt" id="model">
+  <div class="container">
+    <h2><span class="cat-num">02</span>Model &amp; Usage <span class="cat-count">4 comandos</span></h2>
+    <p class="section-lead">
+      Saber qué modelo estás usando y cuánto te está costando — clave para no llevarte sustos a final de mes.
+    </p>
+
+    <div class="cmd-grid">
+      <div class="cmd">
+        <span class="cmd-tag">modelo</span>
+        <div class="cmd-name">/model</div>
+        <div class="cmd-desc">Muestra o cambia el modelo Claude activo (Opus, Sonnet, Haiku).</div>
+      </div>
+      <div class="cmd">
+        <span class="cmd-tag">coste</span>
+        <div class="cmd-name">/cost</div>
+        <div class="cmd-desc">Estima el coste de la sesión actual en dólares. Buen reflejo en directo del peso de cada prompt.</div>
+      </div>
+      <div class="cmd">
+        <span class="cmd-tag">resumen</span>
+        <div class="cmd-name">/usage</div>
+        <div class="cmd-desc">Resumen del uso del modelo y coste agregado.</div>
+      </div>
+      <div class="cmd">
+        <span class="cmd-tag">detalle</span>
+        <div class="cmd-name">/extra-usage</div>
+        <div class="cmd-desc">Desglose detallado del consumo: tokens de entrada, salida, cache, herramientas.</div>
+      </div>
+    </div>
+
+    <div class="callout">
+      <strong>Por qué importa:</strong> en sesiones largas Opus puede costar 10-20× más que Haiku.
+      Cambiar a <code>/model haiku</code> para tareas mecánicas (renombrar, mover, formatear) ahorra mucho sin perder calidad.
+    </div>
+  </div>
+</section>
+
+<!-- PROJECT SETUP -->
+<section id="project">
+  <div class="container">
+    <h2><span class="cat-num">03</span>Project Setup <span class="cat-count">4 comandos</span></h2>
+    <p class="section-lead">
+      Cómo Claude conoce tu proyecto: inicialización, memoria, directorios extra y configuración.
+    </p>
+
+    <div class="cmd-grid">
+      <div class="cmd">
+        <span class="cmd-tag">inicializar</span>
+        <div class="cmd-name">/init</div>
+        <div class="cmd-desc">Inicializa Claude Code en el directorio actual y genera un <code>CLAUDE.md</code> base con la documentación del repo.</div>
+      </div>
+      <div class="cmd">
+        <span class="cmd-tag">memoria</span>
+        <div class="cmd-name">/memory</div>
+        <div class="cmd-desc">Configura o consulta la memoria del proyecto (instrucciones persistentes que Claude recuerda entre sesiones).</div>
+      </div>
+      <div class="cmd">
+        <span class="cmd-tag">directorios</span>
+        <div class="cmd-name">/add-dir</div>
+        <div class="cmd-desc">Indexa directorios adicionales fuera del workspace actual — útil para repos múltiples o monorepos.</div>
+      </div>
+      <div class="cmd">
+        <span class="cmd-tag">config</span>
+        <div class="cmd-name">/config</div>
+        <div class="cmd-desc">Ver o actualizar ajustes de configuración (tema, modelo por defecto, hooks, permisos).</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CODE OPERATIONS -->
+<section class="alt" id="code">
+  <div class="container">
+    <h2><span class="cat-num">04</span>Code Operations <span class="cat-count">5 comandos</span></h2>
+    <p class="section-lead">
+      Trabajar directamente con el código: ver cambios, revisar seguridad, planificar, gestionar permisos y comprimir contexto.
+    </p>
+
+    <div class="cmd-grid">
+      <div class="cmd">
+        <span class="cmd-tag">cambios</span>
+        <div class="cmd-name">/diff</div>
+        <div class="cmd-desc">Muestra los cambios actuales respecto al codebase. Como un <code>git diff</code> consciente de la sesión.</div>
+      </div>
+      <div class="cmd">
+        <span class="cmd-tag">seguridad</span>
+        <div class="cmd-name">/security-review</div>
+        <div class="cmd-desc">Lanza un análisis de seguridad sobre el código — busca secrets, OWASP top 10, malas prácticas.</div>
+      </div>
+      <div class="cmd">
+        <span class="cmd-tag">planificar</span>
+        <div class="cmd-name">/plan</div>
+        <div class="cmd-desc">Genera un plan estructurado para una tarea o proyecto antes de tocar código.</div>
+      </div>
+      <div class="cmd">
+        <span class="cmd-tag">permisos</span>
+        <div class="cmd-name">/permissions</div>
+        <div class="cmd-desc">Gestiona qué archivos puede leer y escribir Claude. Clave para repos con datos sensibles.</div>
+      </div>
+      <div class="cmd">
+        <span class="cmd-tag">contexto</span>
+        <div class="cmd-name">/compact</div>
+        <div class="cmd-desc">Comprime el contexto de la sesión liberando memoria sin perder lo importante. Antídoto al "context window full".</div>
+      </div>
+    </div>
+
+    <div class="callout">
+      <strong>Combo útil:</strong> <code>/plan</code> antes de empezar, <code>/diff</code> para revisar lo hecho,
+      <code>/security-review</code> antes del PR. Tres comandos que evitan el 80% de los problemas en producción.
+    </div>
+  </div>
+</section>
+
+<!-- AGENT LAYER -->
+<section id="agent">
+  <div class="container">
+    <h2><span class="cat-num">05</span>Agent Layer <span class="cat-count">5 comandos</span></h2>
+    <p class="section-lead">
+      La capa donde Claude se extiende: agentes especializados, skills, plugins y MCP servers.
+    </p>
+
+    <div class="cmd-grid">
+      <div class="cmd">
+        <span class="cmd-tag">agentes</span>
+        <div class="cmd-name">/agents</div>
+        <div class="cmd-desc">Lista los agentes especializados disponibles (revisores, generadores, auditores...).</div>
+      </div>
+      <div class="cmd">
+        <span class="cmd-tag">skills</span>
+        <div class="cmd-name">/skills</div>
+        <div class="cmd-desc">Ver o gestionar las skills cargadas — capacidades específicas que Claude puede invocar bajo demanda.</div>
+      </div>
+      <div class="cmd">
+        <span class="cmd-tag">plugins</span>
+        <div class="cmd-name">/plugin</div>
+        <div class="cmd-desc">Gestiona los plugins del sistema (instalar, listar, configurar).</div>
+      </div>
+      <div class="cmd">
+        <span class="cmd-tag">recargar</span>
+        <div class="cmd-name">/reload-plugins</div>
+        <div class="cmd-desc">Recarga los plugins instalados sin reiniciar la sesión. Útil tras editar uno.</div>
+      </div>
+      <div class="cmd">
+        <span class="cmd-tag">integración</span>
+        <div class="cmd-name">/mcp</div>
+        <div class="cmd-desc">Integración con Model Context Protocol — conecta Claude a sistemas externos (Jira, Notion, Supabase, M365).</div>
+      </div>
+    </div>
+
+    <div class="callout tip">
+      <strong>El salto de productividad real</strong> está aquí: una vez tienes 3-4 skills tuyas y 2-3 MCP servers
+      conectados a tus sistemas, Claude deja de ser un asistente genérico y se convierte en un colega que conoce tu stack.
+    </div>
+  </div>
+</section>
+
+<!-- INTERFACE -->
+<section class="alt" id="interface">
+  <div class="container">
+    <h2><span class="cat-num">06</span>Interface <span class="cat-count">2 comandos</span></h2>
+    <p class="section-lead">
+      Personalización visual de la terminal — pequeños detalles que mejoran sesiones largas.
+    </p>
+
+    <div class="cmd-grid">
+      <div class="cmd">
+        <span class="cmd-tag">tema</span>
+        <div class="cmd-name">/theme</div>
+        <div class="cmd-desc">Cambia el tema de la interfaz del terminal (claro, oscuro, alto contraste).</div>
+      </div>
+      <div class="cmd">
+        <span class="cmd-tag">colores</span>
+        <div class="cmd-name">/color</div>
+        <div class="cmd-desc">Modifica el esquema de colores del terminal.</div>
+      </div>
+    </div>
+
+    <div class="callout">
+      <strong>Recordatorio importante:</strong> todos estos comandos viven dentro del terminal de Claude Code,
+      <em>no</em> en el chat de claude.ai. Si escribes <code>/init</code> en la web, no pasa nada.
+    </div>
+  </div>
+</section>
+
+<!-- REVIEW & ANÁLISIS -->
+<section class="extra" id="review">
+  <div class="container">
+    <span class="extra-banner">No están en la imagen original</span>
+    <h2><span class="cat-num">07</span>Review &amp; análisis <span class="cat-count">5 comandos</span></h2>
+    <p class="section-lead">
+      Los comandos que la cheat sheet no cubre y que en realidad usas más en el día a día: pedirle a Claude que revise lo que ya está hecho
+      y te diga qué mejorar. Algunos son built-in, otros vienen de plugins o skills instalados.
+    </p>
+
+    <div class="cmd-grid">
+      <div class="cmd">
+        <span class="cmd-tag">PR review</span>
+        <div class="cmd-name">/review</div>
+        <div class="cmd-desc">Revisa una pull request o los cambios de la rama actual: calidad, claridad, bugs potenciales y sugerencias concretas de mejora. <strong>El más usado</strong>.</div>
+      </div>
+      <div class="cmd">
+        <span class="cmd-tag">cloud</span>
+        <div class="cmd-name">/ultrareview</div>
+        <div class="cmd-desc">Review multi-agente en cloud sobre la rama actual o un PR de GitHub. Varios agentes revisan en paralelo y consolidan hallazgos. Lo lanza el usuario, no Claude — y consume créditos.</div>
+      </div>
+      <div class="cmd">
+        <span class="cmd-tag">seguridad</span>
+        <div class="cmd-name">/security-review</div>
+        <div class="cmd-desc">Análisis de seguridad: secrets expuestos, OWASP top 10, malas prácticas. Más estrecho que <code>/review</code> pero crítico antes de un deploy.</div>
+      </div>
+      <div class="cmd">
+        <span class="cmd-tag">simplificar</span>
+        <div class="cmd-name">/simplify</div>
+        <div class="cmd-desc">Revisa el código que has cambiado buscando reuso, calidad y eficiencia, y arregla lo que detecte. Útil después de una sesión larga donde acumulas duplicación sin querer.</div>
+      </div>
+      <div class="cmd">
+        <span class="cmd-tag">permisos</span>
+        <div class="cmd-name">/fewer-permission-prompts</div>
+        <div class="cmd-desc">Escanea tus transcripciones y propone una allowlist de comandos read-only (Bash, MCP) en <code>.claude/settings.json</code> para que Claude pregunte menos. No revisa código, pero mejora <em>cómo trabajas</em>.</div>
+      </div>
+    </div>
+
+    <div class="callout">
+      <strong>¿Cuál uso cuándo?</strong> Para el día a día, <code>/review</code>. Antes de mergear a main, <code>/security-review</code>.
+      Para una auditoría profunda de una rama compleja, <code>/ultrareview</code>. Después de horas escribiendo código rápido,
+      <code>/simplify</code> para que Claude limpie lo obvio.
+    </div>
+
+    <div class="callout tip">
+      <strong>Truco:</strong> si no quieres usar un comando, dentro de cualquier sesión normal puedes pedírselo a Claude con un prompt
+      como <em>"hazme una auditoría completa de los cambios de esta rama: tabla con prioridad, hallazgo, impacto, refactor sugerido y esfuerzo"</em>.
+      Es el patrón del <strong>Prompt 12</strong> de la guía Time Tracker.
+    </div>
+  </div>
+</section>
+
+<footer>
+  <p><strong>Power Fox BI</strong> · Curso Claude Code · Sesión 4 — Lunes · 2026-05-05</p>
+  <p style="margin-top: 8px; font-size: 12px;">Referencia visual de los 26 comandos del CLI + 5 de review · Fuente original: Dustin Hauer</p>
+</footer>
+
+<button class="fab" onclick="window.scrollTo({top:0, behavior:'smooth'})" title="Volver arriba">↑</button>
+
+</body>
+</html>

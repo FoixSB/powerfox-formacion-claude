@@ -1,0 +1,907 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Caso de estudio nº 2 — Mantenimiento en producción de un módulo Canvas App + Dataverse asistido por IA</title>
+<style>
+  :root{
+    --bg:#0f1115;
+    --panel:#161a22;
+    --panel-2:#1d2230;
+    --ink:#e8ecf3;
+    --ink-dim:#a9b3c4;
+    --ink-faint:#6f7a8c;
+    --accent:#3860b2;
+    --accent-2:#5b8def;
+    --accent-3:#7ab8a1;
+    --good:#3aa46a;
+    --warn:#d8a23e;
+    --bad:#c45656;
+    --line:#2a3140;
+    --code-bg:#0b0e14;
+    --pill:#243149;
+  }
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{
+    margin:0;
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Inter,system-ui,sans-serif;
+    background:var(--bg);
+    color:var(--ink);
+    line-height:1.62;
+    font-size:15.5px;
+  }
+  .wrap{max-width:1080px;margin:0 auto;padding:48px 28px 96px}
+  header.cover{
+    margin-bottom:48px;
+    padding:36px 32px;
+    background:linear-gradient(135deg,#1a2e2a 0%,#0f1115 100%);
+    border:1px solid var(--line);
+    border-radius:14px;
+    position:relative;
+    overflow:hidden;
+  }
+  header.cover::before{
+    content:"";
+    position:absolute;top:-40px;right:-40px;
+    width:220px;height:220px;
+    background:radial-gradient(circle,rgba(122,184,161,.18) 0%,transparent 70%);
+    pointer-events:none;
+  }
+  .eyebrow{
+    text-transform:uppercase;
+    letter-spacing:.18em;
+    font-size:11px;
+    color:var(--accent-3);
+    font-weight:600;
+    margin-bottom:8px;
+  }
+  h1{
+    font-size:28px;
+    line-height:1.25;
+    margin:0 0 14px;
+    font-weight:700;
+    letter-spacing:-.01em;
+  }
+  .sub{
+    color:var(--ink-dim);
+    font-size:15px;
+    max-width:780px;
+  }
+  .meta-row{
+    display:flex;flex-wrap:wrap;gap:8px;
+    margin-top:20px;
+  }
+  .pill{
+    display:inline-flex;align-items:center;gap:6px;
+    padding:5px 11px;
+    background:var(--pill);
+    color:var(--ink);
+    border-radius:999px;
+    font-size:12.5px;
+    font-weight:500;
+  }
+  .pill .dot{width:6px;height:6px;border-radius:50%;background:var(--accent-3)}
+  nav.toc{
+    background:var(--panel);
+    border:1px solid var(--line);
+    border-radius:12px;
+    padding:18px 22px;
+    margin-bottom:36px;
+  }
+  nav.toc h3{
+    margin:0 0 10px;
+    font-size:13px;
+    text-transform:uppercase;
+    letter-spacing:.12em;
+    color:var(--ink-dim);
+    font-weight:600;
+  }
+  nav.toc ol{margin:0;padding-left:22px;column-count:2;column-gap:32px}
+  nav.toc li{padding:3px 0;break-inside:avoid}
+  nav.toc a{color:var(--ink);text-decoration:none}
+  nav.toc a:hover{color:var(--accent-3)}
+  h2{
+    font-size:22px;
+    margin:48px 0 14px;
+    padding-bottom:8px;
+    border-bottom:1px solid var(--line);
+    font-weight:700;
+    letter-spacing:-.005em;
+  }
+  h3{
+    font-size:17px;
+    margin:28px 0 10px;
+    font-weight:600;
+    color:#dde4f0;
+  }
+  h4{
+    font-size:15px;
+    margin:22px 0 8px;
+    font-weight:600;
+    color:var(--ink-dim);
+  }
+  p{margin:10px 0}
+  a{color:var(--accent-3)}
+  ul,ol{padding-left:22px}
+  li{margin:5px 0}
+  blockquote{
+    margin:14px 0;
+    padding:12px 18px;
+    background:var(--panel-2);
+    border-left:3px solid var(--accent-3);
+    border-radius:0 8px 8px 0;
+    color:var(--ink-dim);
+    font-style:italic;
+  }
+  table{
+    width:100%;
+    border-collapse:collapse;
+    margin:14px 0;
+    background:var(--panel);
+    font-size:14px;
+    border:1px solid var(--line);
+    border-radius:8px;
+    overflow:hidden;
+  }
+  th{
+    background:var(--panel-2);
+    color:var(--ink);
+    font-weight:600;
+    text-align:left;
+    padding:10px 12px;
+    border-bottom:1px solid var(--line);
+    font-size:13px;
+  }
+  td{
+    padding:9px 12px;
+    border-bottom:1px solid var(--line);
+    color:var(--ink-dim);
+    vertical-align:top;
+  }
+  tr:last-child td{border-bottom:none}
+  td strong, td b{color:var(--ink)}
+  code{
+    font-family:"SF Mono",Menlo,Consolas,monospace;
+    font-size:13px;
+    background:var(--code-bg);
+    color:#cfe7ff;
+    padding:1.5px 6px;
+    border-radius:4px;
+    border:1px solid var(--line);
+  }
+  pre{
+    background:var(--code-bg);
+    border:1px solid var(--line);
+    border-radius:8px;
+    padding:14px 16px;
+    overflow-x:auto;
+    font-size:13px;
+    line-height:1.55;
+    margin:14px 0;
+  }
+  pre code{background:transparent;border:0;padding:0;color:#cfe7ff}
+  .callout{
+    border:1px solid var(--line);
+    background:var(--panel);
+    padding:14px 18px;
+    border-radius:10px;
+    margin:18px 0;
+  }
+  .callout.warn{border-left:3px solid var(--warn)}
+  .callout.good{border-left:3px solid var(--good)}
+  .callout.bad{border-left:3px solid var(--bad)}
+  .callout.info{border-left:3px solid var(--accent-3)}
+  .stat-grid{
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(170px,1fr));
+    gap:12px;
+    margin:16px 0;
+  }
+  .stat{
+    background:var(--panel);
+    border:1px solid var(--line);
+    border-radius:10px;
+    padding:14px 16px;
+  }
+  .stat .v{font-size:20px;font-weight:700;color:var(--accent-3);line-height:1.2}
+  .stat .k{font-size:12px;color:var(--ink-dim);margin-top:4px;text-transform:uppercase;letter-spacing:.05em}
+  .est{
+    display:inline-block;
+    font-size:11px;
+    background:var(--warn);
+    color:#1a1100;
+    padding:1px 7px;
+    border-radius:4px;
+    font-weight:600;
+    letter-spacing:.03em;
+    margin-right:4px;
+    vertical-align:middle;
+  }
+  .footer{
+    margin-top:60px;
+    padding-top:24px;
+    border-top:1px solid var(--line);
+    color:var(--ink-faint);
+    font-size:13px;
+  }
+  hr{border:0;border-top:1px solid var(--line);margin:32px 0}
+  details{
+    background:var(--panel);
+    border:1px solid var(--line);
+    border-radius:8px;
+    padding:10px 14px;
+    margin:12px 0;
+  }
+  summary{cursor:pointer;font-weight:600;color:var(--ink)}
+  .ascii{
+    background:var(--code-bg);
+    border:1px solid var(--line);
+    padding:14px 16px;
+    border-radius:8px;
+    font-family:"SF Mono",Menlo,Consolas,monospace;
+    font-size:12.5px;
+    line-height:1.45;
+    color:#cfe7ff;
+    overflow-x:auto;
+    white-space:pre;
+  }
+  .badge{
+    display:inline-block;
+    font-size:11px;
+    padding:2px 8px;
+    border-radius:4px;
+    font-weight:600;
+    margin-left:6px;
+    vertical-align:middle;
+  }
+  .badge.fix{background:#3a7150;color:#dff5e7}
+  .badge.refactor{background:#3860b2;color:#e7eefb}
+  .bug-card{
+    background:var(--panel);
+    border:1px solid var(--line);
+    border-left:3px solid var(--bad);
+    border-radius:8px;
+    padding:14px 18px;
+    margin:14px 0;
+  }
+  .bug-card h4{margin-top:0;color:var(--ink)}
+  @media print{
+    body{background:#fff;color:#222;font-size:11pt}
+    .wrap{max-width:none;padding:1.5cm}
+    header.cover{background:#f3f8f5;border:1px solid #ccc;color:#222;page-break-after:avoid}
+    h1,h2,h3,h4{color:#0a4a3a;page-break-after:avoid}
+    h2{border-bottom:2px solid #7ab8a1}
+    table,pre,.callout,.ascii,.stat,nav.toc,details,.bug-card{break-inside:avoid;background:#fff;border:1px solid #ccc;color:#222}
+    th{background:#eef5f1;color:#0a4a3a}
+    td{color:#222}
+    .pill{background:#eef5f1;color:#0a4a3a}
+    code{background:#f5f7fa;color:#0a3a8a;border:1px solid #ddd}
+    pre code,.ascii{color:#222}
+    a{color:#0a4a3a;text-decoration:underline}
+    .stat .v{color:#0a4a3a}
+    blockquote{background:#f5f7fa;border-left-color:#7ab8a1;color:#333}
+    nav.toc ol{column-count:2}
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header class="cover">
+  <div class="eyebrow">Caso de estudio · Continuación · Sesión de formación</div>
+  <h1>Mantenimiento en producción de un módulo Canvas App + Dataverse asistido por IA</h1>
+  <div class="sub">Continuación del caso de estudio inicial sobre el desarrollo de un módulo Canvas App con Claude Code. Mientras que el primer documento cubre el <em>go-live</em>, este se centra en la <strong>fase de mantenimiento real</strong>: ~3 semanas en producción, dos sesiones efectivas de fix (un refactor funcional + cuatro bugfixes en una sola tarde de triage con cliente). Material para la sesión de formación práctica sobre Power Apps + IA, anonimizado para uso en otros clientes.</div>
+  <div class="meta-row">
+    <span class="pill"><span class="dot"></span>Stack · Power Apps Canvas · Dataverse · PAC CLI · Git</span>
+    <span class="pill"><span class="dot"></span>Asistente · Claude Code (Opus)</span>
+    <span class="pill"><span class="dot"></span>Periodo · 3 semanas, 2 sesiones efectivas</span>
+    <span class="pill"><span class="dot"></span>Idioma · Español</span>
+  </div>
+</header>
+
+<div class="callout info">
+<strong>Convención.</strong> A lo largo del documento se usa <strong>"el módulo"</strong> para referirse al subsistema funcional (digitalización de un proceso industrial maestro-detalle dentro de una Canvas App existente), <strong>"el cliente"</strong> para el sponsor de negocio y <strong>"el operador"</strong> para el usuario final.
+</div>
+
+<nav class="toc">
+  <h3>Tabla de contenidos</h3>
+  <ol>
+    <li><a href="#sec0">Posición de este documento</a></li>
+    <li><a href="#sec1">Resumen ejecutivo</a></li>
+    <li><a href="#sec2">Inventario de cambios reales</a></li>
+    <li><a href="#sec3">Sesión 1 — Refactor "búsqueda agregada"</a></li>
+    <li><a href="#sec4">Sesión 2 — Triage de 4 bugs en producción</a></li>
+    <li><a href="#sec5">Patrones reutilizables</a></li>
+    <li><a href="#sec6">Lo que la IA NO hizo</a></li>
+    <li><a href="#sec7">Métricas honestas</a></li>
+    <li><a href="#sec8">Adaptaciones a otros clientes</a></li>
+    <li><a href="#sec9">Q&amp;A preparado</a></li>
+    <li><a href="#sec10">Lecciones cerrando el ciclo de vida</a></li>
+    <li><a href="#secA">Apéndices</a></li>
+  </ol>
+</nav>
+
+<section id="sec0">
+<h2>0. Posición de este documento dentro de la formación</h2>
+<table>
+<thead><tr><th>Documento</th><th>Cubre</th><th>Audiencia</th></tr></thead>
+<tbody>
+<tr><td>Caso de estudio nº 1 (go-live)</td><td>Diseño de tablas, generación de YAML por chunks, errores típicos de pegado, ROI del MVP</td><td>Devs evaluando si adoptar IA para Power Apps</td></tr>
+<tr><td><strong>Caso de estudio nº 2 (este)</strong></td><td><strong>Vida del módulo después del deploy: cómo se manifiestan los bugs en producción, cómo se fixean con IA + cliente en la misma llamada, qué memorias reusables salieron</strong></td><td><strong>Devs que ya han hecho un MVP con IA y necesitan operarlo</strong></td></tr>
+</tbody>
+</table>
+
+<div class="callout good">
+<strong>La tesis del documento.</strong> Donde la IA brilla en mantenimiento no es replicando el rendimiento del go-live, sino en <strong>comprimir el ciclo "el cliente reporta → el dev reproduce → el dev fixea → el dev publica"</strong> de horas/días a minutos. La condición para que ese ciclo funcione es haber dejado el go-live <strong>bien instrumentado</strong>: handoffs con fecha, memorias del proyecto con las reglas Power Fx descubiertas, plan ejecutable como contrato. Sin ese andamiaje, el LLM en mantenimiento es ruido, no señal.
+</div>
+</section>
+
+<section id="sec1">
+<h2>1. Resumen ejecutivo</h2>
+<p>Tras el deploy del módulo a producción, el cliente reportó dos tandas de incidencias separadas en el tiempo:</p>
+
+<ol>
+<li><strong>2026-04-27 — Refactor funcional<span class="badge refactor">refactor</span></strong>: la búsqueda de "lote agrupado" creaba registros con datos parciales (cogía solo la primera fila de N filas con el mismo número de lote). Se reescribió la lógica de búsqueda con un patrón <code>Filter + Sum</code>, se añadió una columna <em>fingerprint</em> (<code>fechacierre…</code>) para trazabilidad, y se desplegó tras un <em>smoke test</em> con un caso real (lote <code>LOTE-XXXXX</code> con 18 filas). <strong>1 sesión efectiva.</strong></li>
+<li><strong>2026-04-29 — Triage de 4 bugs en producción<span class="badge fix">4 fixes</span></strong> (sesión en vivo con el cliente): (1) lookups de Empresa/Usuario guardando <code>null</code> por capitalización en <code>DataField</code>; (2) error "campo X obligatorio" al usar la búsqueda agregada porque las columnas seguían marcadas Required en Dataverse; (3) galería mostrando "registros fantasma" al crear un registro nuevo porque la variable de estado no se reseteaba; (4) limpieza de ~64 registros huérfanos heredados de pruebas anteriores. <strong>1 sesión efectiva, 4 fixes desplegados, validación end-to-end con el cliente al cierre.</strong></li>
+</ol>
+
+<h3>Cifras clave de la fase de mantenimiento</h3>
+<div class="stat-grid">
+  <div class="stat"><div class="v">2</div><div class="k">Sesiones efectivas</div></div>
+  <div class="stat"><div class="v">5</div><div class="k">Bugs / refactors arreglados</div></div>
+  <div class="stat"><div class="v">2</div><div class="k">Commits del periodo</div></div>
+  <div class="stat"><div class="v">544</div><div class="k">LOC plan ejecutable</div></div>
+  <div class="stat"><div class="v">~300</div><div class="k">LOC handoffs nuevos</div></div>
+  <div class="stat"><div class="v">3</div><div class="k">Memorias promovidas a KB</div></div>
+  <div class="stat"><div class="v">~95-97%</div><div class="k">YAML del go-live aún válido</div></div>
+  <div class="stat"><div class="v">~6-9 h</div><div class="k">Tiempo total con IA</div></div>
+</div>
+
+<div class="callout good">
+<strong>Tiempo total invertido en mantenimiento de las 3 semanas: ~6–9 h efectivas con IA</strong> <span class="est">Estimación</span>. Sin IA, el equipo lo cifra en ~14–22 h. <strong>Ahorro estimado: 50–60%</strong> — ligeramente inferior al 60–70% del go-live, lo que es esperable: en mantenimiento el cuello de botella se desplaza de "generar código" a "razonar sobre estado vivo en producción", donde la IA ayuda menos.
+</div>
+</section>
+
+<section id="sec2">
+<h2>2. Inventario de los cambios reales (qué tocamos)</h2>
+
+<h3>2.1 Cambios de schema en Dataverse</h3>
+<table>
+<thead><tr><th>Tabla</th><th>Cambio</th><th>Razón</th></tr></thead>
+<tbody>
+<tr>
+  <td><code>&lt;prefijo&gt;_LineaProceso</code> (tabla hija)</td>
+  <td><strong>Nueva columna</strong> <code>&lt;prefijo&gt;_fechacierrelote</code> (DateTime, User Local, Optional)</td>
+  <td><em>Fingerprint</em> para trazabilidad — combinado con el campo <code>Nº Lote Ref</code> ya existente identifica unívocamente las filas origen del agregado</td>
+</tr>
+<tr>
+  <td><code>&lt;prefijo&gt;_LineaProceso</code></td>
+  <td>3 columnas (<code>&lt;prefijo&gt;_ancho</code>, <code>&lt;prefijo&gt;_largo</code>, <code>&lt;prefijo&gt;_grueso</code>): <code>RequiredLevel: required → none</code></td>
+  <td>El nuevo Patch de "búsqueda agregada" intencionadamente NO envía dimensiones (decisión de cliente). Mantenerlas Required generaba el error #2 del 2026-04-29</td>
+</tr>
+</tbody>
+</table>
+<p>Ningún cambio en las tablas maestras o de catálogo. El cambio de <code>RequiredLevel</code> requirió <strong>re-export</strong> de la solución para capturar el ajuste en el repo (commit <code>69c34cc</code>); el campo nuevo se añadió en el commit <code>5bf716a</code>.</p>
+
+<h3>2.2 Cambios en la Canvas App</h3>
+<p>Todos los cambios fueron <strong>directamente en PA Studio (web)</strong>, sin re-export del <code>.msapp</code>. Esta es una regla del proyecto, formalizada como memoria reutilizable: el <code>.msapp</code> binario en producción es la fuente de verdad. <strong>Los fixes de PA Studio no aparecen en Git</strong>: solo aparecen los chunks YAML que servimos como <em>contrato de cambio</em>.</p>
+
+<table>
+<thead><tr><th>Pantalla / Control</th><th>Tipo de cambio</th><th>Líneas en chunk YAML</th><th>Reescritas a mano en PA Studio</th></tr></thead>
+<tbody>
+<tr><td><code>…Form_Screen</code> → <code>btn_Buscar.OnSelect</code></td><td>Refactor (LookUp → Filter+Sum)</td><td>~55</td><td>0 — pegado tras Find&amp;Replace</td></tr>
+<tr><td><code>…Form_Screen</code> → <code>lbl_FoundInfo.Text</code></td><td>Update del banner</td><td>~3</td><td>0</td></tr>
+<tr><td><code>…Form_Screen</code> → <code>btn_AgregarLote.OnSelect</code></td><td>Patch reescrito (agregados, lookups null)</td><td>~25</td><td>0</td></tr>
+<tr><td><code>Empresa_DataCard.DataField</code></td><td>Lowercase del schema name</td><td>N/A</td><td>1</td></tr>
+<tr><td><code>Usuario_DataCard.DataField</code></td><td>Lowercase del schema name</td><td>N/A</td><td>1</td></tr>
+<tr><td><code>…Lista_Screen</code> → <code>btn_NuevoRegistro.OnSelect</code></td><td>Reset de variable de estado</td><td>N/A</td><td>1 línea añadida</td></tr>
+</tbody>
+</table>
+
+<div class="callout info">
+<strong>Distribución del esfuerzo en mantenimiento:</strong>
+<div class="ascii">Cambios desplegados via "paste de YAML"        ~3 controles  (refactor del 2026-04-27)
+Cambios desplegados via "edición manual"       ~3 controles  (bugfixes del 2026-04-29)
+─────
+Conclusión: en mantenimiento, la edición manual en PA Studio empata con
+el paste de YAML. En el go-live era ~10–20% manual, ~80–90% paste.</div>
+</div>
+
+<h3>2.3 Documentación generada</h3>
+<table>
+<thead><tr><th>Documento</th><th>LOC</th><th>Rol</th></tr></thead>
+<tbody>
+<tr><td><code>docs/plans/&lt;fecha&gt;-aggregation.md</code></td><td>544</td><td>Plan ejecutable paso a paso, con checkboxes y rollback</td></tr>
+<tr><td><code>&lt;fecha&gt;-aggregation-handoff.md</code> (start)</td><td>~140</td><td>"Punto de guardado" antes de empezar la sesión</td></tr>
+<tr><td><code>&lt;fecha&gt;-aggregation.md</code> (end)</td><td>~80</td><td>Resumen de ejecución + smoke test + pendientes</td></tr>
+<tr><td><code>&lt;fecha&gt;-production-bugfixes.md</code></td><td>~115</td><td>Log de la sesión de triage con cliente</td></tr>
+</tbody>
+</table>
+<p><strong>Total de docs nuevas en mantenimiento: ~880 líneas.</strong> El plan ejecutable es el documento más voluminoso porque sirve dos roles: (a) contrato cliente-dev, (b) entrada para que la IA ejecute sin re-preguntar el contexto.</p>
+</section>
+
+<section id="sec3">
+<h2>3. Sesión 1 — Refactor "búsqueda agregada" (2026-04-27)</h2>
+
+<h3>3.1 El bug, contado por el cliente</h3>
+<blockquote>"Cuando buscamos el lote LOTE-XXXXX, que tiene 18 filas en el catálogo de paquetes, el sistema crea <strong>una</strong> Línea de Proceso con los datos de UNA fila — sale ~0,12 m³, pero el lote real son ~5 m³."</blockquote>
+<p>Diagnóstico inmediato: el <code>OnSelect</code> del botón Buscar usaba <code>LookUp</code> (que devuelve el primer registro coincidente). Hacía falta <code>Filter</code> + <code>Sum</code> y un Patch que metiera totales en lugar de campos directos.</p>
+
+<h3>3.2 El plan como contrato</h3>
+<p>El plan ejecutable (544 líneas) tiene una estructura que es la pieza más reutilizable de toda esta fase:</p>
+<div class="ascii">1. Goal             ── 1 frase de propósito
+2. Architecture     ── 4 bullets de la decisión técnica
+3. Out of scope     ── lo que NO se va a tocar (importante con cliente vivo)
+4. File Structure   ── tabla de archivos modificados / creados
+5. Tasks 1..N       ── cada task con:
+                       • Files
+                       • Steps con checkboxes
+                       • Comandos exactos a ejecutar
+                       • Output esperado
+                       • Comando de verificación
+                       • Comando de commit
+6. Verification     ── smoke test scripted
+7. Rollback         ── cómo deshacer si rompe algo
+8. Risks            ── decisiones a verificar durante ejecución</div>
+
+<div class="callout info">
+<strong>Por qué esa estructura.</strong> Cada <code>Task N</code> es una unidad atómica que (a) un humano puede leer en 30 s, (b) la IA puede ejecutar sin volver a preguntar el contexto. Si la sesión se corta a mitad, el siguiente run lee desde la primera checkbox sin marcar y reanuda. <strong>Sin checkboxes, no hay "punto de retorno"</strong> — y los ciclos de "explica de nuevo qué llevamos hecho" se comen 20-30 minutos de cada sesión nueva.
+</div>
+
+<h3>3.3 Decisiones tomadas en sesión (y NO re-litigadas durante la ejecución)</h3>
+<table>
+<thead><tr><th>#</th><th>Decisión</th><th>Por qué importa</th></tr></thead>
+<tbody>
+<tr><td>Q1</td><td>Solo agregamos <code>Sum(Filas)</code> y <code>Sum(Volumen m³)</code>. Largo/Ancho/Grueso quedan vacíos</td><td>Una sola dimensión sobre 18 filas distintas es data engañosa</td></tr>
+<tr><td>Q2</td><td>Lookups de "Lote Producto Ref" / "Origen Ref" quedan <code>null</code> cuando se agrega multi-fila</td><td>Apuntar a <code>First(rows)</code> sería data engañosa también</td></tr>
+<tr><td>Q3</td><td>Trazabilidad vía nueva columna DateTime (<code>fechacierrelote</code>)</td><td>El par <code>Nº Lote Ref</code> + <code>Fecha Cierre Lote</code> identifica unívocamente el grupo origen</td></tr>
+<tr><td>Q4</td><td>Filtrar solo lotes con <code>Cierre</code> no nulo (ya estaba así)</td><td>Mantener</td></tr>
+<tr><td>Q5</td><td>Mantener regla actual de duplicados</td><td>Decisión previa, no re-litigar</td></tr>
+<tr><td>Q6</td><td>Sin backfill de datos antiguos mal cargados</td><td>Eran datos de prueba, el cliente los borra y vuelve a meter</td></tr>
+<tr><td>Q7</td><td>Otra pantalla con el mismo bug → ticket separado, NO tocar</td><td>Scope hygiene</td></tr>
+</tbody>
+</table>
+
+<div class="callout good">
+<strong>Por qué documentar las decisiones DESCARTADAS.</strong> En la sesión de ejecución, la IA volvió a sugerir 2 veces "y de paso podríamos…" — el plan tenía la respuesta lista ("decisión Q2: no lo hacemos, ya se decidió"), y la sesión no se desvió. Sin esa lista, cada propuesta de la IA habría exigido una mini-discusión.
+</div>
+
+<h3>3.4 Ajustes durante el paste (los que NO previó el plan)</h3>
+<p>El plan tenía 5 asunciones que PA Studio rechazó. Las correcciones aplicadas y los commits que las trazaron:</p>
+
+<table>
+<thead><tr><th>#</th><th>Asunción del plan</th><th>Realidad en PA Studio</th><th>Regla del proyecto reforzada</th></tr></thead>
+<tbody>
+<tr><td>1</td><td><code>Set(_loteCierre, Blank())</code> para tipar la variable</td><td>Da warning "No type found"; las propiedades fallan después</td><td><strong>Typed Blank obligatorio</strong>: <code>Set(_var, LookUp(&lt;DataSource&gt;, false).&lt;Campo&gt;)</code></td></tr>
+<tr><td>2</td><td>Campo se llama <code>'Cierre de Lote'</code></td><td>El campo real se llama <code>Cierre</code> a secas</td><td><strong>Display names canónicos</strong> — siempre verificar contra el schema real</td></tr>
+<tr><td>3</td><td><code>'Origen'.LoteExistente</code> no existe</td><td>El valor real es <code>'Lote Existente'</code> (con espacio, requiere comillas)</td><td><strong>Option sets</strong>: la columna y el valor pueden tener nombres distintos</td></tr>
+<tr><td>4</td><td><code>_loteEncontrado.Producto.Producto</code></td><td>Ambiguo — schema-qualificar a <code>.Producto.'Producto (&lt;schema&gt;_productoid)'</code></td><td><strong>Cuando el campo primario coincide con el nombre de la tabla, schema name obligatorio</strong></td></tr>
+<tr><td>5</td><td><code>Text(value, "[$-es-ES]#,##0.000")</code></td><td>El prefijo <code>[$-es-ES]</code> rompía el render (<code>.897.000</code> en vez de <code>0.897</code>)</td><td><strong>Locales en <code>Text()</code></strong>: NO añadir prefijos por reflejo</td></tr>
+</tbody>
+</table>
+
+<div class="callout warn">
+Las 5 reglas estaban en la memoria del proyecto antes de la sesión, <strong>pero el plan las violó porque fue redactado con la abstracción correcta y la sintaxis incorrecta</strong>. Lección operativa: el plan es para el HUMANO + LA IA; la IA durante la ejecución sigue siendo el filtro final que detecta cuando el plan miente. <strong>Nunca el plan reemplaza la sesión interactiva, solo la prepara.</strong>
+</div>
+
+<h3>3.5 Smoke test</h3>
+<p>Cliente y dev probaron en la misma llamada un caso real:</p>
+<table>
+<thead><tr><th>Caso</th><th>Resultado</th></tr></thead>
+<tbody>
+<tr><td>Lote multi-fila LOTE-XXXXX (18 filas) → banner + Agregar</td><td>✅ Banner: <code>LOTE-XXXXX — 18 registros — 55 uds — 0.897 m³</code>. Una sola línea creada.</td></tr>
+<tr><td>Trazabilidad (<code>Nº Lote Ref</code> + <code>Fecha Cierre Lote</code> en MDA)</td><td>✅ Ambos rellenos correctamente.</td></tr>
+<tr><td>Largo/Ancho/Grueso vacíos en la línea creada</td><td>✅ Confirmado.</td></tr>
+<tr><td>Duplicado (mismo lote dos veces)</td><td>✅ Banner rojo, botón Agregar oculto.</td></tr>
+<tr><td>Lote no encontrado (<code>XYZ999999</code>)</td><td>✅ Banner amarillo, opción "+ Manual" disponible.</td></tr>
+<tr><td>Entrada manual sigue funcionando</td><td>✅ Línea con <code>Origen = Manual</code>.</td></tr>
+<tr><td>Lote 1-fila (regresión)</td><td>⏳ A verificar — no hubo caso real disponible</td></tr>
+<tr><td>Lote origen alternativo (otra tabla)</td><td>⏳ A verificar — no había datos cerrados</td></tr>
+</tbody>
+</table>
+<p><strong>Decisión sobre los pendientes:</strong> marcarlos en el handoff de cierre y no bloquear el deploy. Casos de regresión sintéticos los probaríamos creando datos a mano, pero el coste/beneficio en una sesión con el cliente esperando es negativo — mejor capturar como riesgos conocidos.</p>
+</section>
+
+<section id="sec4">
+<h2>4. Sesión 2 — Triage de 4 bugs en producción (2026-04-29)</h2>
+<p>Esta sesión es la más útil para la formación porque ilustra el patrón "soporte L3 con IA copiloto", muy distinto al patrón "build con IA" del go-live.</p>
+
+<h3>4.1 Cómo apareció cada bug</h3>
+<table>
+<thead><tr><th>Bug</th><th>Cómo lo descubrió el cliente</th><th>Tiempo report → fix desplegado</th></tr></thead>
+<tbody>
+<tr><td>Empresa/Usuario <code>null</code> al guardar</td><td>El cliente abrió la vista MDA "Procesos abiertos" y vio columnas vacías</td><td>~15 min</td></tr>
+<tr><td>"campo <code>&lt;prefijo&gt;_ancho</code> obligatorio" al agregar lote</td><td>El cliente probó la búsqueda agregada del 2026-04-27</td><td>~10 min</td></tr>
+<tr><td>Galería con líneas fantasma en modo "Nuevo Registro"</td><td>Durante la verificación del bug 1, el cliente notó que al pulsar "Nuevo" aparecían líneas que no eran del nuevo registro</td><td>~20 min</td></tr>
+<tr><td>~64 registros huérfanos</td><td>Al fixear el bug 3, la galería pasó a mostrar 9 registros sin owner</td><td>~25 min (incluye limpieza)</td></tr>
+</tbody>
+</table>
+<div class="callout good">
+<strong>Tiempo total: ~70 minutos</strong> desde el primer report hasta la verificación end-to-end con un caso real del cliente.
+</div>
+
+<div class="bug-card">
+<h4>Bug 1 — DataField con mayúscula <span class="badge fix">silent failure</span></h4>
+<pre><code>Empresa_DataCard.DataField  : "&lt;prefijo&gt;_EmpresaLookup"   ← MAL (silently fails)
+Usuario_DataCard.DataField  : "&lt;prefijo&gt;_UsuarioLookup"   ← MAL
+
+Empresa_DataCard.DataField  : "&lt;prefijo&gt;_empresalookup"   ← BIEN
+Usuario_DataCard.DataField  : "&lt;prefijo&gt;_usuariolookup"   ← BIEN</code></pre>
+
+<p><strong>Por qué es interesante este bug:</strong></p>
+<ol>
+<li><strong>Silent failure</strong>. Dataverse acepta el <code>Update</code> con un nombre de campo que no existe y guarda <code>null</code> sin tirar error. La Canvas App no detecta el problema porque la operación retorna éxito.</li>
+<li><strong>Sutilmente diferente del go-live</strong>. En el go-live, los DataCards de "Cliente" y "Máquina" tuvieron este mismo problema y se arreglaron. Empresa y Usuario sobrevivieron porque tenían <code>DisplayMode.Disabled</code>. <strong>El problema existía desde el go-live pero era invisible</strong>.</li>
+<li><strong>El test funcional pasó</strong>. Solo un humano mirando el MDA detectaba el <code>null</code>.</li>
+</ol>
+
+<div class="callout good">
+<strong>Lección promovida:</strong> "Lookup DataField lowercase rule". Los logical names en Dataverse son SIEMPRE minúsculas. <strong>Auditar TODOS los DataCards de tipo lookup en la pantalla, no solo el que está fallando.</strong>
+</div>
+</div>
+
+<div class="bug-card">
+<h4>Bug 2 — Required en tabla vs Patch <span class="badge fix">data integrity</span></h4>
+<p>El refactor del 2026-04-27 dejó <code>Largo/Ancho/Grueso</code> fuera del Patch de "búsqueda agregada" (decisión Q1). Pero las columnas en <code>&lt;prefijo&gt;_LineaProceso</code> seguían marcadas como <code>Required = Yes</code> en Dataverse. Resultado: cuando el cliente usó la búsqueda agregada en producción, Dataverse rechazó el insert con <code>"El campo '&lt;prefijo&gt;_ancho' es obligatorio"</code>.</p>
+
+<p><strong>Por qué no se detectó en el smoke test del 2026-04-27.</strong> El smoke test sí agregó un lote (LOTE-XXXXX), pero el dev tenía permisos de admin. <strong>La detección llegó cuando el cliente hizo la operación en su sesión.</strong></p>
+
+<p><strong>Fix:</strong> maker portal → Tabla Línea de Proceso → Columnas → para <code>&lt;prefijo&gt;_ancho</code>, <code>&lt;prefijo&gt;_grueso</code>, <code>&lt;prefijo&gt;_largo</code>: Edit column → Required: Optional → Save. Publish all customizations. Re-export de la solución para capturar el cambio.</p>
+
+<div class="callout good">
+<strong>Lección promovida:</strong> "Required-vs-Patch alignment rule". Antes de marcar una columna como Required en Dataverse, <strong>auditar todos los <code>Patch()</code> y <code>SubmitForm()</code></strong> que escriben a esa tabla.
+</div>
+</div>
+
+<div class="bug-card">
+<h4>Bug 3 — Variable de estado sin reset <span class="badge fix">stateful UI</span></h4>
+<pre><code>// btn_NuevoRegistro.OnSelect — antes
+=Set(_modoNuevoRegistro, true);
+Navigate(&lt;…&gt;Form_Screen)
+
+// btn_NuevoRegistro.OnSelect — después
+=Set(_modoNuevoRegistro, true);
+Set(_registroActual, LookUp(&lt;…&gt;, false));   // typed Blank — limpia record previo
+Navigate(&lt;…&gt;Form_Screen)</code></pre>
+
+<p>Si el operador había abierto un registro existente antes, <code>_registroActual</code> apuntaba a ese registro. La galería del form filtraba por <code>Linea.Padre.id = _registroActual.id</code> → mostraba las líneas del registro <strong>anterior</strong> dentro del nuevo.</p>
+
+<p>Peor: si el operador clicaba "Nuevo" sin haber abierto nunca un registro, <code>_registroActual</code> era undefined → el filtro se convertía en "give me lines where padre IS NULL" → exposed los registros huérfanos del bug 4.</p>
+
+<div class="callout good">
+<strong>Lección promovida (refuerzo):</strong> "Typed Blank pattern para variables de estado". <code>LookUp(DataSource, false)</code> devuelve un record vacío <em>tipado</em>. Útil para (a) tipar variables al inicio de la app, (b) <strong>resetear</strong> una variable a "vacío" sin perder el tipado.
+</div>
+</div>
+
+<div class="bug-card">
+<h4>Bug 4 — Limpieza de huérfanos <span class="badge fix">data cleanup</span></h4>
+<p>Una vez los bugs 1, 2 y 3 estaban arreglados, la galería en modo "Nuevo" mostraba 9 registros con <code>padre = null</code> — datos sembrados durante tests del go-live que nunca se limpiaron.</p>
+
+<p><strong>Decisión:</strong> fix en el dato, no en la UI. Razones:</p>
+<ol>
+<li>Filtrar <code>padre &lt;&gt; null</code> en la galería sería <em>papering over</em>.</li>
+<li>La columna <code>&lt;prefijo&gt;_padrelookup</code> ya estaba marcada como <code>Required</code> en metadata, así que <strong>a partir de ahora</strong> no pueden crearse más huérfanos por la app.</li>
+<li>El cliente acepta borrar manualmente los ~64 registros vía la vista "Active" del MDA.</li>
+</ol>
+
+<p><strong>Pendiente capturado en el handoff:</strong> verificar que la relación <code>padre → hijo</code> está configurada como <code>Cascade Delete Parental</code>.</p>
+</div>
+
+<h3>4.6 Verificación end-to-end con el cliente</h3>
+<p>Al cierre de la sesión, el cliente reproduce el flujo completo:</p>
+<ol>
+<li>Crea un nuevo registro con todos los lookups.</li>
+<li>Confirma que la galería arranca vacía <code>(0)/(0)/(0)</code>.</li>
+<li>Tras guardar, agrega un lote manual.</li>
+<li>Verifica en el MDA que el registro y la línea persisten con los lookups bien guardados.</li>
+</ol>
+<div class="callout good">
+<strong>Cierre de sesión sin pendientes inmediatos</strong>, con 3 items en el handoff para la próxima sesión (Cascade Delete + Business Rule cosmético + smoke test de cierre del proceso).
+</div>
+</section>
+
+<section id="sec5">
+<h2>5. Patrones reutilizables que salieron de la fase de mantenimiento</h2>
+
+<h3>5.1 Plan ejecutable como contrato (refuerzo)</h3>
+<p>El template del plan del 2026-04-27 se replicará tal cual en futuras sesiones de refactor. Las propiedades que lo hacen funcionar:</p>
+<ul>
+<li><strong>Goal en una sola frase.</strong> Si no cabe, el alcance está mal definido.</li>
+<li><strong>Out of scope explícito.</strong> Más valioso que el In scope, porque protege contra los desvíos típicos de "ya que estoy aquí…".</li>
+<li><strong>Tasks atómicas con checkboxes.</strong> Permite reanudar sesiones a mitad sin pérdida de contexto.</li>
+<li><strong>Comandos exactos para verificar y commitear.</strong> La IA los ejecuta tal cual; el humano audita sin reescribirlos.</li>
+<li><strong>Sección Risks separada.</strong> Las 5 reglas de PA Studio que quizá fallen están aquí.</li>
+<li><strong>Sección Rollback.</strong> En producción siempre.</li>
+</ul>
+
+<h3>5.2 Memorias del proyecto promovidas a base de conocimiento del equipo</h3>
+<p>Tres reglas pasaron de "memoria del proyecto" a "knowledge base del equipo":</p>
+<ol>
+<li><strong>Lookup DataField lowercase</strong>. Auditar TODOS los DataCards de tipo lookup, no solo el que falla.</li>
+<li><strong>Typed Blank pattern</strong>. Para inicialización Y para reset de variables de estado.</li>
+<li><strong>Required-vs-Patch alignment</strong>. Antes de marcar Required, auditar todos los <code>Patch()</code> que escriben a la tabla.</li>
+</ol>
+
+<div class="callout info">
+<strong>El círculo virtuoso.</strong> La regla nace en el repo del cliente como <code>feedback_*.md</code> (auto-memoria del proyecto). Cuando se aplica a un segundo proyecto, se promueve a la base de conocimiento del equipo. <strong>Después de 3-4 proyectos, la KB del equipo es la "biblioteca de errores ya pagados"</strong>, y los proyectos nuevos arrancan ya con esas trampas evitadas.
+</div>
+
+<h3>5.3 Patrón "el handoff doble" en sesiones complejas</h3>
+<p>Para la sesión del 2026-04-27 generamos <strong>dos</strong> handoffs distintos con el mismo timestamp:</p>
+<table>
+<thead><tr><th>Handoff</th><th>Cuándo se escribe</th><th>Para quién</th></tr></thead>
+<tbody>
+<tr><td><code>…-aggregation-handoff.md</code> (start)</td><td>ANTES de empezar</td><td>Ejecutor — qué leer, qué decisiones no re-litigar, por dónde empezar, qué NO hacer</td></tr>
+<tr><td><code>…-aggregation.md</code> (end)</td><td>AL CERRAR</td><td>Próxima sesión — qué se hizo, qué se desplegó, qué quedó pendiente</td></tr>
+</tbody>
+</table>
+<p>El "handoff de start" es el documento más infravalorado de los proyectos asistidos por IA. Contiene literalmente la frase "Cosas que NO hacer" como sección, lo que comprime el contexto enorme que normalmente se discute en una llamada de kick-off a 5-7 bullets.</p>
+
+<h3>5.4 Checklist para sesiones de bugfix con cliente en vivo</h3>
+<div class="ascii">[ ] Antes de unirse a la llamada:
+    [ ] PA Studio abierto en la app de producción
+    [ ] make.powerapps.com abierto en la solución
+    [ ] El MDA del cliente abierto en otra pestaña
+    [ ] El plan/handoff del último cambio relevante leído (~5 min)
+    [ ] La auto-memoria del proyecto leída (~3 min)
+    [ ] Git status limpio + branch correcto
+
+[ ] Durante la sesión:
+    [ ] Cada bug → reproducir antes de fixear (el cliente reproduce; tú mira)
+    [ ] Cada fix → "lo voy a aplicar; cuento contigo para verificar"
+    [ ] No batchear varios fixes sin verificar cada uno
+    [ ] Si un fix expone otro bug (ej. fix #3 → bug #4), NO entrar en el siguiente
+        sin acordar el alcance con el cliente
+    [ ] Si un fix requiere cambio de schema, avisar del Publish + tiempo
+
+[ ] Al cerrar:
+    [ ] El cliente reproduce el flujo end-to-end con un caso real
+    [ ] Handoff escrito ANTES de cerrar la llamada (no "luego lo escribo")
+    [ ] Lecciones nuevas → memoria del proyecto / KB del equipo
+    [ ] Pendientes en lista numerada para la siguiente sesión
+    [ ] Commit con un mensaje que liste los 4 bugs en orden</div>
+</section>
+
+<section id="sec6">
+<h2>6. Lo que la IA NO hizo (y siguió haciendo el humano)</h2>
+
+<h3>6.1 Comunicación con el cliente</h3>
+<p>Toda la sesión de triage del 2026-04-29 transcurrió con el cliente en llamada. La IA estaba presente como copiloto del dev, no del cliente. Las decisiones de alcance, la priorización, la negociación — todo eso lo lleva el humano. <strong>Ningún LLM razona bien sobre el contexto político/social de una llamada de cliente.</strong></p>
+
+<h3>6.2 Reproducir el bug en producción</h3>
+<p>La IA puede leer el código, leer los logs si los hay, y proponer hipótesis sobre qué está mal. <strong>No puede reproducir el bug</strong>, porque no opera la Canvas App en producción. El humano reproduce, ve el banner de error, verifica los datos en el MDA. La IA sintetiza la observación + el código y propone el fix.</p>
+
+<h3>6.3 Decidir si un fix es seguro para producción</h3>
+<p>"¿Cambio el RequiredLevel de 3 columnas en producción ahora mismo, sin maintenance window?" Esa decisión la toma el humano. La IA puede recordar los pros y contras, pero la decisión es <strong>human-in-the-loop por diseño</strong>.</p>
+
+<h3>6.4 Ojo de UX</h3>
+<p>El bug 4 (huérfanos) terminó decidiéndose por "limpiamos data + relación Cascade Delete". Pero hubo 5 minutos de discusión entre dev y cliente sobre alternativas:</p>
+<ul>
+<li>¿Filtrar la galería?</li>
+<li>¿Marcar los huérfanos como "archived"?</li>
+<li>¿Vista separada "huérfanos" para que un admin los gestione?</li>
+<li>¿Nada — son solo 64 registros?</li>
+</ul>
+<div class="callout bad">
+La IA puede listar las 4 alternativas. <strong>Cuál se elige depende de cómo trabaja el cliente</strong>. Ese juicio humano sigue siendo donde el dev senior gana su sueldo.
+</div>
+</section>
+
+<section id="sec7">
+<h2>7. Métricas honestas de la fase de mantenimiento</h2>
+
+<h3>7.1 Cuánto código nuevo se generó</h3>
+<table>
+<thead><tr><th>Métrica</th><th>Go-live (2 días)</th><th>Mantenimiento (3 semanas)</th></tr></thead>
+<tbody>
+<tr><td>LOC YAML generado por IA</td><td>~3.134</td><td>~85</td></tr>
+<tr><td>LOC Python generado por IA</td><td>~1.140</td><td>0</td></tr>
+<tr><td>LOC Markdown (specs/handoffs/planes)</td><td>~1.114</td><td>~880</td></tr>
+<tr><td>Cambios de schema Dataverse</td><td>3 tablas + 44 campos + 8 lookups</td><td>1 columna nueva + 3 Required-toggle</td></tr>
+<tr><td>Cambios manuales en PA Studio</td><td>~10</td><td>~5</td></tr>
+</tbody>
+</table>
+<div class="callout good">
+<strong>El reparto cambia radicalmente.</strong> En el go-live el LLM produce ~5x más LOC de YAML que de docs. En mantenimiento, <strong>produce ~10x más docs (planes/handoffs) que código</strong>. El LLM hace lo que mejor hace (estructurar prosa técnica) y deja al humano lo que mejor hace (cambios pequeños y precisos en una UI viva).
+</div>
+
+<h3>7.2 Tokens estimados de la fase de mantenimiento</h3>
+<table>
+<thead><tr><th>Sesión</th><th>Input estimado</th><th>Output estimado</th></tr></thead>
+<tbody>
+<tr><td>2026-04-27 (refactor)</td><td>~30-50k</td><td>~25-40k</td></tr>
+<tr><td>2026-04-29 (triage 4 bugs)</td><td>~20-30k</td><td>~15-25k</td></tr>
+<tr><td><strong>Total mantenimiento</strong></td><td><strong>~50-80k</strong></td><td><strong>~40-65k</strong></td></tr>
+</tbody>
+</table>
+<div class="callout warn">
+<span class="est">Estimación</span> <strong>Coste aproximado de la fase de mantenimiento: ~$3-5.</strong> Frente a las ~6-9 h de dev senior que costaría sin IA (~$300-450 a tarifa de mercado), es ruido.
+</div>
+
+<h3>7.3 Qué porcentaje del YAML del go-live sobrevivió 3 semanas</h3>
+<table>
+<thead><tr><th>Chunk del go-live</th><th>"Controles + propiedades clave"</th><th>Tocados en mantenimiento</th><th>% superviviente</th></tr></thead>
+<tbody>
+<tr><td>Chunk 1 (header)</td><td>~15</td><td>0</td><td>100%</td></tr>
+<tr><td>Chunk 2 (form)</td><td>~50</td><td>2 (DataField × 2)</td><td>~96%</td></tr>
+<tr><td>Chunk 3 (search)</td><td>~20</td><td>~10 (refactor 2026-04-27)</td><td>~50%</td></tr>
+<tr><td>Chunk 4 (gallery)</td><td>~25</td><td>0</td><td>100%</td></tr>
+<tr><td>Chunk 5 (footer)</td><td>~10</td><td>0</td><td>100%</td></tr>
+<tr><td>Chunk 6 (modal A)</td><td>~30</td><td>0</td><td>100%</td></tr>
+<tr><td>Chunk 7 (modal B)</td><td>~15</td><td>0</td><td>100%</td></tr>
+<tr><td>Chunk 8 (cierre fórmula)</td><td>~5</td><td>0</td><td>100%</td></tr>
+<tr><td>Pantalla lista</td><td>~25</td><td>1 (OnSelect "Nuevo")</td><td>~96%</td></tr>
+<tr><td><strong>Total ponderado</strong></td><td><strong>~195</strong></td><td><strong>~13</strong></td><td><strong>~93%</strong></td></tr>
+</tbody>
+</table>
+<div class="callout good">
+<strong>Conclusión:</strong> ~93% del YAML generado por la IA en el go-live seguía vigente 3 semanas después. El único chunk con cambios significativos (chunk 3 search) fue el que arregló un bug funcional, no un problema del código generado. <strong>El YAML inicial era correcto para el spec inicial — el spec evolucionó.</strong> Esto es la mejor refutación al miedo de "el código que escribe la IA no se mantiene".
+</div>
+</section>
+
+<section id="sec8">
+<h2>8. Adaptaciones al ejecutar este patrón con otros clientes</h2>
+
+<h3>8.1 Lo que se traslada tal cual</h3>
+<ul>
+<li><strong>Estructura del plan ejecutable</strong> (sección 3.2). Independiente de cliente y de stack.</li>
+<li><strong>Patrón "handoff doble"</strong> (sección 5.3). Independiente de stack.</li>
+<li><strong>Las 3 reglas KB</strong> (sección 5.2). Aplican a cualquier proyecto Canvas App + Dataverse.</li>
+<li><strong>Checklist de sesión de bugfix con cliente en vivo</strong> (sección 5.4). Independiente de stack.</li>
+<li><strong>Convención de naming <code>&lt;tema&gt;-YYYY-MM-DD.md</code></strong> para handoffs.</li>
+</ul>
+
+<h3>8.2 Lo que toca recalibrar para el siguiente cliente</h3>
+<table>
+<thead><tr><th>Item</th><th>Cómo recalibrar</th></tr></thead>
+<tbody>
+<tr><td>Memorias del proyecto (<code>feedback_*.md</code>)</td><td>Heredar las "horizontales" (typed Blank, lookup lowercase, Required vs Patch). Crear de cero las "verticales" (display names del cliente, optionsets específicos)</td></tr>
+<tr><td><code>CLAUDE.md</code> del repo</td><td>Reemplazar prefijo, nombres de soluciones, lista de tablas, perfiles de auth</td></tr>
+<tr><td>Plan y handoffs históricos</td><td>NO heredar. Cada cliente tiene su contexto político-funcional</td></tr>
+<tr><td>Tabla de display names canónicos</td><td>Generar nueva por cliente</td></tr>
+</tbody>
+</table>
+
+<h3>8.3 Cuándo repetir el patrón completo y cuándo simplificar</h3>
+<div class="callout good">
+<strong>Repetir completo (plan + handoff doble + smoke test + memoria) si:</strong>
+<ul>
+<li>Cambio de schema en Dataverse</li>
+<li>Refactor de una fórmula &gt; 20 líneas</li>
+<li>Cambio que afecta a &gt; 1 pantalla</li>
+<li>Sesión con cliente en vivo donde se van a tomar decisiones</li>
+</ul>
+</div>
+<div class="callout warn">
+<strong>Simplificar a "edición directa + commit + 1 línea de handoff" si:</strong>
+<ul>
+<li>Typo o ajuste cosmético</li>
+<li>Cambio aislado en 1 propiedad de 1 control</li>
+<li>Edición de docs</li>
+</ul>
+</div>
+<p><strong>Pista:</strong> la pregunta clave es "¿quiero poder repetir/auditar/explicar este cambio dentro de 6 meses sin abrir el código?". Si sí → patrón completo. Si no → versión simplificada.</p>
+</section>
+
+<section id="sec9">
+<h2>9. Q&amp;A preparado</h2>
+
+<details>
+<summary>P1: ¿La IA puede operar producción directamente o solo asistir al dev?</summary>
+<p>Asiste al dev. Para cambios de schema en Dataverse, ningún LLM tiene credenciales de admin del entorno cliente. Para cambios en PA Studio, el LLM no tiene acceso a la pantalla. La IA es copiloto, no piloto. <strong>Esta separación es deseable</strong>, no una limitación a remover.</p>
+</details>
+
+<details>
+<summary>P2: ¿Qué pasa si el LLM cambia de versión entre go-live y mantenimiento?</summary>
+<p>Pasó durante este proyecto. La consistencia se mantiene porque las "reglas duras" viven en archivos versionados (memoria del proyecto + plan + handoffs), no en la cabeza del LLM. <strong>El stack de archivos versionados es el "cinturón de seguridad" frente a cambios de modelo.</strong></p>
+</details>
+
+<details>
+<summary>P3: ¿Cuánto cuesta operar el módulo en mantenimiento al mes con IA?</summary>
+<p>Tras el deploy: ~$3-5/mes en tokens. Suscripciones Claude/Anthropic Max cubren esto sin acercarse al límite. El coste real es el tiempo del dev senior — pero ese coste también baja ~50–60% vs operar sin IA.</p>
+</details>
+
+<details>
+<summary>P4: ¿Vale la pena el plan ejecutable de 544 líneas para un fix que se va a hacer en 2 horas?</summary>
+<p>Sí, <strong>si la sesión va a ser con cliente en vivo o si el fix toca producción</strong>. El coste del plan (~30 min de redacción) se amortiza en 5 min de sesión más eficiente y, sobre todo, en que la sesión queda auditable. Para fixes triviales sin cliente delante, no hace falta plan — basta con commit message claro.</p>
+</details>
+
+<details>
+<summary>P5: ¿Cómo evitar que un cliente vea la IA como "el dev" y le escriba directamente?</summary>
+<p>Política de cuenta: el cliente nunca interactúa con un LLM directamente. Toda la comunicación cliente ↔ dev ↔ IA pasa por el dev. Razones: (a) el LLM no tiene credenciales para tocar producción, (b) los criterios de alcance los define el dev, (c) los compromisos contractuales los asume el dev. <strong>La IA es interna del dev, como su IDE.</strong></p>
+</details>
+
+<details>
+<summary>P6: ¿Qué KPIs debería medir un equipo que adopta este patrón?</summary>
+<ol>
+<li>Tiempo medio "report → fix desplegado" antes y después de adoptar IA.</li>
+<li>% de YAML/código del go-live aún vigente a los 3 / 6 / 12 meses.</li>
+<li>Nº de memorias promovidas a la KB del equipo por trimestre.</li>
+<li>Nº de planes ejecutables ejecutados sin desviación significativa.</li>
+<li>Coste de tokens ÷ horas de dev ahorradas.</li>
+</ol>
+</details>
+</section>
+
+<section id="sec10">
+<h2>10. Lecciones cerrando el ciclo de vida (go-live → 3 semanas en producción)</h2>
+
+<div class="callout good">
+<ol>
+<li><strong>El YAML que la IA genera SÍ es mantenible</strong> — si los cambios futuros usan el mismo método (planes + handoffs + memoria viva), no si se hacen ad-hoc en PA Studio sin documentar.</li>
+<li><strong>Los planes ejecutables son el contrato compartido humano-IA</strong>. Sin ellos, la IA en mantenimiento es ruido. Con ellos, la IA acelera 2-3x el ciclo de fix.</li>
+<li><strong>Las memorias horizontales (regla genérica de stack) deben promoverse a la KB del equipo</strong>; las verticales (specific al cliente) viven en el repo del cliente. <strong>La línea entre "mi proyecto" y "mi equipo" es el límite de promoción de la regla.</strong></li>
+<li><strong>El triage de bugs en producción con IA + cliente en vivo es el caso donde la IA aporta más valor por minuto invertido</strong> — comprime ciclos de horas a minutos. Pero requiere que el dev tenga la sesión preparada (PA Studio + portal + MDA + handoffs leídos) antes de que el cliente entre.</li>
+<li><strong>No re-exportar el <code>.msapp</code></strong> (regla del proyecto). En PA Studio web, los cambios viven en producción. El YAML en el repo es <strong>contrato de cambio</strong>, no fuente de verdad.</li>
+</ol>
+</div>
+</section>
+
+<section id="secA">
+<h2>Apéndices</h2>
+
+<h3>Apéndice A — Mapa de fuentes</h3>
+<div class="ascii">docs/
+├── plans/
+│   └── &lt;fecha&gt;-secaderos-paquete-aggregation.md     ← Plan ejecutable (544 LOC)
+├── handoffs/
+│   ├── &lt;fecha&gt;-aggregation-handoff.md               ← Start handoff
+│   ├── &lt;fecha&gt;-aggregation.md                       ← End handoff
+│   └── &lt;fecha&gt;-production-bugfixes.md               ← Triage de 4 bugs
+└── training/
+    ├── secaderos-case-study-2026-04-09.md           ← Caso de estudio nº 1 (go-live)
+    └── secaderos-case-study-followup-mantenimiento.md ← este documento
+
+solutions/&lt;SolucionPrincipal&gt;/Entities/
+└── &lt;prefijo&gt;_LineaProceso/Entity.xml                ← Diff: nueva columna fingerprint + 3 columnas Required→Optional
+
+git log:
+5bf716a feat(...): paquete aggregation fix (smoke test passed)
+69c34cc fix(...): production bugfixes (4 issues)
+
+memorias del proyecto (auto-memoria):
+project_&lt;modulo&gt;.md                                  ← Status post-deploy + 4 bugfixes
+feedback_canvas_app_powerfx.md                       ← Reglas Power Fx + YAML
+feedback_canvas_app_no_reexport.md                   ← Regla "no re-exportar .msapp"
+feedback_audit_lookup_datafields.md                  ← Auditar TODOS los lookup DataCards
+feedback_table_required_aligns_with_patch.md         ← Required vs Patch alignment
+feedback_publish_all_customizations.md               ← Saved ≠ Published
+feedback_yaml_paste.md                               ← Formato bare, sin Screens: wrapper
+feedback_handoff_naming.md                           ← &lt;tema&gt;-YYYY-MM-DD.md
+feedback_pa_datasource_names.md                      ← Display names canónicos
+
+base de conocimiento del equipo (knowledge base centralizada):
+canvas-apps/lookup-datafield-lowercase.md
+canvas-apps/typed-blank-pattern.md
+dataverse/required-vs-patch-alignment.md</div>
+
+<h3>Apéndice B — Comparativa go-live vs mantenimiento (resumen visual)</h3>
+<table>
+<thead><tr><th>Dimensión</th><th>Go-live</th><th>Mantenimiento (3 semanas)</th></tr></thead>
+<tbody>
+<tr><td>Sesiones efectivas</td><td>3</td><td>2</td></tr>
+<tr><td>LOC YAML generado</td><td>~3.134</td><td>~85</td></tr>
+<tr><td>LOC docs generados</td><td>~1.114</td><td>~880</td></tr>
+<tr><td>% YAML que sobrevive sin tocar</td><td>(no aplica — recién creado)</td><td>~93%</td></tr>
+<tr><td>Cambios manuales en PA Studio</td><td>~10</td><td>~5</td></tr>
+<tr><td>Cambios de schema Dataverse</td><td>grandes (3 tablas, 44 campos)</td><td>mínimos (1 columna + 3 Required-toggle)</td></tr>
+<tr><td>Sesiones con cliente en vivo</td><td>1 (demo final)</td><td>1 (triage 2026-04-29)</td></tr>
+<tr><td>Tiempo de ciclo "report → fix"</td><td>n/a</td><td>10–25 min/bug</td></tr>
+<tr><td>Coste estimado en tokens</td><td>~$9–14</td><td>~$3–5</td></tr>
+<tr><td>Ahorro estimado vs sin IA</td><td>~60–70%</td><td>~50–60%</td></tr>
+<tr><td>Aporte principal de la IA</td><td>Generar YAML voluminoso correctamente</td><td>Comprimir ciclos de triage + redactar planes/handoffs</td></tr>
+<tr><td>Cuello de botella humano</td><td>Validar Power Fx + pegar YAML chunk a chunk</td><td>Razonar sobre estado vivo en producción + comunicar con cliente</td></tr>
+</tbody>
+</table>
+</section>
+
+<div class="footer">
+Caso de estudio nº 2 (continuación) · Fase de mantenimiento · Sesión de formación PowerFox · 2026-04-29<br>
+Versión anonimizada para uso transversal con otros clientes. Generado a partir de commits, plan ejecutable, handoffs y memorias del proyecto.
+</div>
+
+</div>
+</body>
+</html>

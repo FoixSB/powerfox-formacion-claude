@@ -1,0 +1,1405 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Power Apps + IA — Caso Real de Desarrollo</title>
+<link href="https://fonts.googleapis.com/css2?family=Source+Code+Pro:wght@400;600&family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #faf9f7;
+  --surface: #ffffff;
+  --surface2: #f3f1ee;
+  --surface3: #e8e5e0;
+  --accent: #c96442;
+  --accent2: #7c6b9e;
+  --accent3: #c49a2a;
+  --green: #3d8b6e;
+  --red: #c0504d;
+  --pink: #b86b8a;
+  --text: #1a1612;
+  --text2: #5c5650;
+  --text3: #8a847c;
+  --radius: 14px;
+  --radius-sm: 8px;
+  --shadow: 0 1px 3px rgba(0,0,0,.06), 0 4px 12px rgba(0,0,0,.04);
+  --shadow-lg: 0 4px 20px rgba(0,0,0,.08);
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+html { scroll-behavior: smooth; }
+
+body {
+  font-family: 'Inter', -apple-system, system-ui, sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  line-height: 1.7;
+  overflow-x: hidden;
+  font-size: 15px;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ── SCROLLBAR ── */
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: var(--bg); }
+::-webkit-scrollbar-thumb { background: var(--surface3); border-radius: 3px; }
+
+/* ── HERO ── */
+.hero {
+  min-height: 85vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  padding: 60px 24px;
+  position: relative;
+  overflow: hidden;
+  background: linear-gradient(170deg, #faf9f7 0%, #f0ece6 40%, #e8dfd4 100%);
+}
+
+.hero::before {
+  content: '';
+  position: absolute;
+  width: 700px; height: 700px;
+  background: radial-gradient(circle, rgba(201,100,66,.08) 0%, transparent 70%);
+  top: -200px; right: -100px;
+  animation: float 18s ease-in-out infinite;
+}
+.hero::after {
+  content: '';
+  position: absolute;
+  width: 500px; height: 500px;
+  background: radial-gradient(circle, rgba(124,107,158,.07) 0%, transparent 70%);
+  bottom: -100px; left: -100px;
+  animation: float 22s ease-in-out infinite reverse;
+}
+
+@keyframes float {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  50% { transform: translate(30px, -20px) scale(1.05); }
+}
+
+.hero-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: rgba(201,100,66,.08);
+  border: 1px solid rgba(201,100,66,.2);
+  padding: 8px 20px;
+  border-radius: 100px;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  color: var(--accent);
+  margin-bottom: 32px;
+  position: relative;
+  z-index: 1;
+  animation: fadeUp .8s ease both;
+}
+
+.hero h1 {
+  font-size: clamp(38px, 6vw, 76px);
+  font-weight: 900;
+  line-height: 1.08;
+  letter-spacing: -2px;
+  position: relative;
+  z-index: 1;
+  animation: fadeUp .8s ease .15s both;
+  color: var(--text);
+}
+.hero h1 .gradient {
+  background: linear-gradient(135deg, var(--accent) 0%, var(--accent2) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.hero-sub {
+  font-size: clamp(15px, 2vw, 19px);
+  color: var(--text2);
+  max-width: 650px;
+  margin-top: 24px;
+  font-weight: 400;
+  position: relative;
+  z-index: 1;
+  animation: fadeUp .8s ease .3s both;
+}
+
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* ── NAV STICKY ── */
+.sticky-nav {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  background: rgba(250,249,247,.88);
+  backdrop-filter: blur(16px);
+  border-bottom: 1px solid var(--surface3);
+  padding: 0 24px;
+  overflow-x: auto;
+}
+.sticky-nav-inner {
+  max-width: 1100px;
+  margin: 0 auto;
+  display: flex;
+  gap: 2px;
+}
+.sticky-nav a {
+  color: var(--text3);
+  text-decoration: none;
+  font-size: 13px;
+  font-weight: 600;
+  padding: 14px 14px;
+  white-space: nowrap;
+  border-bottom: 3px solid transparent;
+  transition: all .2s;
+}
+.sticky-nav a:hover { color: var(--text); }
+.sticky-nav a.active {
+  color: var(--accent);
+  border-bottom-color: var(--accent);
+  background: rgba(201,100,66,.07);
+  border-radius: 6px 6px 0 0;
+  font-weight: 700;
+}
+
+/* ── PAGE ── */
+.page { max-width: 1100px; margin: 0 auto; padding: 0 24px; }
+
+/* ── SECTION ── */
+section { padding: 80px 0 50px; }
+
+.section-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-family: 'Source Code Pro', monospace;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--accent);
+  margin-bottom: 14px;
+}
+.section-label .dot {
+  width: 7px; height: 7px;
+  background: var(--accent);
+  border-radius: 50%;
+}
+
+section h2 {
+  font-size: clamp(26px, 3.5vw, 42px);
+  font-weight: 800;
+  letter-spacing: -0.5px;
+  margin-bottom: 16px;
+  line-height: 1.15;
+  color: var(--text);
+}
+
+section .lead {
+  font-size: 16px;
+  color: var(--text2);
+  max-width: 700px;
+  margin-bottom: 36px;
+  line-height: 1.7;
+}
+
+/* ── STAT GRID ── */
+.stat-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: 14px;
+  margin: 36px 0;
+}
+.stat-card {
+  background: var(--surface);
+  border: 1px solid var(--surface3);
+  border-radius: var(--radius);
+  padding: 26px 20px;
+  text-align: center;
+  box-shadow: var(--shadow);
+  transition: transform .2s, box-shadow .2s;
+}
+.stat-card:hover {
+  transform: translateY(-3px);
+  box-shadow: var(--shadow-lg);
+}
+.stat-card .number {
+  font-size: 32px;
+  font-weight: 900;
+  color: var(--accent);
+  line-height: 1;
+  font-family: 'Source Code Pro', monospace;
+}
+.stat-card .label {
+  font-size: 12px;
+  color: var(--text3);
+  margin-top: 8px;
+  font-weight: 500;
+}
+
+/* ── CARDS ── */
+.card {
+  background: var(--surface);
+  border: 1px solid var(--surface3);
+  border-radius: var(--radius);
+  padding: 28px;
+  margin-bottom: 14px;
+  box-shadow: var(--shadow);
+  transition: box-shadow .2s;
+}
+.card:hover { box-shadow: var(--shadow-lg); }
+
+.card-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 14px;
+  margin: 20px 0;
+}
+
+.card h3 {
+  font-size: 17px;
+  font-weight: 700;
+  margin-bottom: 10px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: var(--text);
+}
+.card h3 .icon {
+  width: 34px; height: 34px;
+  border-radius: 9px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 16px;
+  flex-shrink: 0;
+}
+
+.card p, .card li { color: var(--text2); font-size: 14px; line-height: 1.7; }
+.card ul { padding-left: 18px; margin-top: 8px; }
+.card li { margin-bottom: 5px; }
+.card strong { color: var(--text); }
+
+/* ── PIPELINE ── */
+.pipeline {
+  display: flex;
+  gap: 0;
+  margin: 36px 0;
+  overflow-x: auto;
+  padding-bottom: 16px;
+}
+.pipeline-step {
+  flex: 0 0 auto;
+  width: 180px;
+  text-align: center;
+  position: relative;
+}
+.pipeline-step::after {
+  content: '→';
+  position: absolute;
+  right: -10px;
+  top: 34px;
+  font-size: 18px;
+  color: var(--text3);
+}
+.pipeline-step:last-child::after { display: none; }
+
+.pipeline-step .circle {
+  width: 64px; height: 64px;
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 24px;
+  margin: 0 auto 10px;
+  border: 2px solid;
+  background: var(--surface);
+  box-shadow: var(--shadow);
+}
+.pipeline-step .name {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--text);
+}
+.pipeline-step .desc {
+  font-size: 11px;
+  color: var(--text3);
+  margin-top: 3px;
+}
+
+/* ── PROS / CONS ── */
+.pros-cons {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+  margin: 28px 0;
+}
+@media (max-width: 768px) { .pros-cons { grid-template-columns: 1fr; } }
+
+.pros-card, .cons-card {
+  border-radius: var(--radius);
+  padding: 28px;
+  border: 1px solid;
+}
+.pros-card {
+  background: rgba(61,139,110,.05);
+  border-color: rgba(61,139,110,.2);
+}
+.cons-card {
+  background: rgba(192,80,77,.05);
+  border-color: rgba(192,80,77,.2);
+}
+.pros-card h3 { color: var(--green); }
+.cons-card h3 { color: var(--red); }
+.pros-card li::marker { color: var(--green); }
+.cons-card li::marker { color: var(--red); }
+.pros-card li, .cons-card li { color: var(--text2); font-size: 14px; margin-bottom: 8px; }
+.pros-card strong, .cons-card strong { color: var(--text); }
+
+/* ── COMPARISON TABLE ── */
+.comp-table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  margin: 28px 0;
+  border-radius: var(--radius);
+  overflow: hidden;
+  border: 1px solid var(--surface3);
+  box-shadow: var(--shadow);
+  font-size: 14px;
+}
+.comp-table th {
+  background: var(--surface2);
+  padding: 14px 18px;
+  text-align: left;
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: var(--text3);
+  border-bottom: 1px solid var(--surface3);
+}
+.comp-table th:first-child { color: var(--text); }
+.comp-table td {
+  padding: 12px 18px;
+  color: var(--text2);
+  border-bottom: 1px solid var(--surface3);
+  background: var(--surface);
+}
+.comp-table tr:last-child td { border-bottom: none; }
+.comp-table td:first-child { font-weight: 600; color: var(--text); }
+.comp-table .highlight { color: var(--accent); font-weight: 700; }
+.comp-table .winner { background: rgba(201,100,66,.05); }
+
+/* ── DELEGATION GRID ── */
+.delegation-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 14px;
+  margin: 28px 0;
+}
+@media (max-width: 900px) { .delegation-grid { grid-template-columns: 1fr; } }
+
+.deleg-card {
+  border-radius: var(--radius);
+  padding: 24px;
+  border: 1px solid;
+}
+.deleg-green { background: rgba(61,139,110,.04); border-color: rgba(61,139,110,.2); }
+.deleg-yellow { background: rgba(196,154,42,.04); border-color: rgba(196,154,42,.2); }
+.deleg-red { background: rgba(192,80,77,.04); border-color: rgba(192,80,77,.2); }
+.deleg-card h4 { margin-bottom: 10px; font-size: 15px; }
+.deleg-green h4 { color: var(--green); }
+.deleg-yellow h4 { color: var(--accent3); }
+.deleg-red h4 { color: var(--red); }
+.deleg-card li { font-size: 13px; color: var(--text2); margin-bottom: 5px; }
+
+/* ── ERROR CARDS ── */
+.error-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 14px;
+  margin: 20px 0;
+}
+.error-card {
+  background: var(--surface);
+  border: 1px solid var(--surface3);
+  border-left: 4px solid var(--red);
+  border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+  padding: 20px;
+  box-shadow: var(--shadow);
+}
+.error-card .tag {
+  display: inline-block;
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  padding: 3px 10px;
+  border-radius: 100px;
+  margin-bottom: 8px;
+}
+.error-card .tag-syntax { background: rgba(196,154,42,.12); color: var(--accent3); }
+.error-card .tag-logic { background: rgba(192,80,77,.12); color: var(--red); }
+.error-card .tag-context { background: rgba(124,107,158,.12); color: var(--accent2); }
+.error-card h4 { font-size: 14px; margin-bottom: 6px; color: var(--text); }
+.error-card p { font-size: 13px; color: var(--text3); }
+.error-card code { background: var(--surface2); padding: 1px 5px; border-radius: 4px; font-family: 'Source Code Pro', monospace; font-size: 12px; color: var(--accent); }
+
+/* ── CODE BLOCKS ── */
+.code-block {
+  background: var(--surface2);
+  border: 1px solid var(--surface3);
+  border-radius: var(--radius-sm);
+  padding: 20px 24px;
+  margin: 14px 0;
+  overflow-x: auto;
+  font-family: 'Source Code Pro', monospace;
+  font-size: 13px;
+  line-height: 1.8;
+  color: var(--text2);
+}
+.code-block .comment { color: var(--text3); }
+.code-block .keyword { color: var(--accent2); }
+.code-block .string { color: var(--green); }
+.code-block .bad { color: var(--red); text-decoration: line-through; opacity: .6; }
+.code-block .good { color: var(--green); }
+
+/* ── INTERACTIVE TABS ── */
+.tabs {
+  display: flex;
+  gap: 2px;
+  margin-bottom: 0;
+  border-bottom: 1px solid var(--surface3);
+}
+.tab-btn {
+  background: none;
+  border: none;
+  color: var(--text3);
+  font-family: 'Inter', sans-serif;
+  font-size: 13px;
+  font-weight: 600;
+  padding: 12px 18px;
+  cursor: pointer;
+  border-bottom: 2px solid transparent;
+  transition: all .2s;
+}
+.tab-btn:hover { color: var(--text); }
+.tab-btn.active {
+  color: var(--accent);
+  border-bottom-color: var(--accent);
+}
+.tab-content { display: none; padding-top: 20px; }
+.tab-content.active { display: block; }
+
+/* ── CALLOUT ── */
+.callout {
+  background: rgba(201,100,66,.05);
+  border: 1px solid rgba(201,100,66,.18);
+  border-radius: var(--radius);
+  padding: 22px 26px;
+  margin: 20px 0;
+  font-size: 14px;
+  color: var(--text2);
+  line-height: 1.7;
+}
+.callout strong { color: var(--accent); }
+
+.callout-warn {
+  background: rgba(196,154,42,.06);
+  border-color: rgba(196,154,42,.2);
+}
+.callout-warn strong { color: var(--accent3); }
+
+/* ── TIMELINE ── */
+.timeline {
+  position: relative;
+  margin: 36px 0;
+  padding-left: 36px;
+}
+.timeline::before {
+  content: '';
+  position: absolute;
+  left: 13px;
+  top: 0; bottom: 0;
+  width: 2px;
+  background: linear-gradient(to bottom, var(--accent), var(--accent2), var(--pink));
+  border-radius: 1px;
+}
+.timeline-item {
+  position: relative;
+  margin-bottom: 28px;
+}
+.timeline-item::before {
+  content: '';
+  position: absolute;
+  left: -30px;
+  top: 6px;
+  width: 12px; height: 12px;
+  border-radius: 50%;
+  background: var(--accent);
+  border: 3px solid var(--bg);
+}
+.timeline-item .time {
+  font-family: 'Source Code Pro', monospace;
+  font-size: 11px;
+  color: var(--accent);
+  font-weight: 600;
+}
+.timeline-item h4 { font-size: 15px; margin: 4px 0; color: var(--text); }
+.timeline-item p { font-size: 13px; color: var(--text3); }
+
+/* ── ACCORDION ── */
+.accordion { margin: 20px 0; }
+.accordion-item {
+  background: var(--surface);
+  border: 1px solid var(--surface3);
+  border-radius: var(--radius-sm);
+  margin-bottom: 6px;
+  overflow: hidden;
+  box-shadow: var(--shadow);
+}
+.accordion-header {
+  width: 100%;
+  background: none;
+  border: none;
+  color: var(--text);
+  font-family: 'Inter', sans-serif;
+  font-size: 14px;
+  font-weight: 600;
+  padding: 16px 22px;
+  text-align: left;
+  cursor: pointer;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  transition: background .2s;
+}
+.accordion-header:hover { background: var(--surface2); }
+.accordion-header .chevron {
+  transition: transform .3s;
+  font-size: 11px;
+  color: var(--text3);
+}
+.accordion-item.open .chevron { transform: rotate(180deg); }
+.accordion-body {
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height .4s ease;
+}
+.accordion-body-inner {
+  padding: 0 22px 18px;
+  font-size: 14px;
+  color: var(--text2);
+  line-height: 1.7;
+}
+.accordion-body-inner code { background: var(--surface2); padding: 1px 5px; border-radius: 4px; font-family: 'Source Code Pro', monospace; font-size: 12px; color: var(--accent); }
+.accordion-body-inner strong { color: var(--text); }
+
+/* ── FOOTER ── */
+.footer {
+  text-align: center;
+  padding: 50px 24px;
+  color: var(--text3);
+  font-size: 13px;
+  border-top: 1px solid var(--surface3);
+  margin-top: 50px;
+}
+.footer strong { color: var(--text2); }
+
+/* ── CODE in general ── */
+code {
+  background: var(--surface2);
+  padding: 1px 5px;
+  border-radius: 4px;
+  font-family: 'Source Code Pro', monospace;
+  font-size: 12px;
+  color: var(--accent);
+}
+
+/* ── RESPONSIVE ── */
+@media (max-width: 768px) {
+  .stat-grid { grid-template-columns: repeat(2, 1fr); }
+  .pipeline { flex-wrap: wrap; }
+  .pipeline-step { width: 130px; }
+  section { padding: 50px 0 30px; }
+}
+
+/* ── PRINT ── */
+@media print {
+  .sticky-nav { display: none; }
+  .hero { min-height: auto; padding: 40px; background: #fff; }
+  section { page-break-inside: avoid; }
+}
+</style>
+</head>
+<body>
+
+<!-- ═══ HERO ═══ -->
+<div class="hero">
+  <div class="hero-badge">⚡ Caso Real · Formación Práctica</div>
+  <h1>Power Apps + <span class="gradient">Claude Code</span></h1>
+  <p class="hero-sub">Desarrollo real de un módulo maestro-detalle en Canvas App usando IA como asistente. Sin filtro: qué funcionó, qué no, y cuánto costó realmente.</p>
+</div>
+
+<!-- ═══ NAV ═══ -->
+<div class="sticky-nav">
+  <div class="sticky-nav-inner">
+    <a href="#cifras">Cifras</a>
+    <a href="#inventario">Inventario</a>
+    <a href="#prerequisitos">Prerequisitos</a>
+    <a href="#pipeline">Pipeline</a>
+    <a href="#tokens">Tokens</a>
+    <a href="#pros-cons">Pros / Contras</a>
+    <a href="#pain-points">Pain Points</a>
+    <a href="#delegar">Qué Delegar</a>
+    <a href="#code-apps">Code Apps</a>
+    <a href="#docs-gen">Docs Generados</a>
+    <a href="#factor-humano">Factor Humano</a>
+    <a href="#demo">Demo</a>
+    <a href="#qa">Q&A</a>
+  </div>
+</div>
+
+<div class="page">
+
+<!-- ═══ 1. CIFRAS CLAVE ═══ -->
+<section id="cifras">
+  <div class="section-label"><span class="dot"></span> Resumen ejecutivo</div>
+  <h2>3 sesiones. 3 tablas. 3.134 líneas de YAML.</h2>
+  <p class="lead">Un módulo Canvas App maestro-detalle completo —desde la transcripción de la reunión con el cliente hasta producción— en 24-35 horas con IA. Sin IA, el mismo trabajo hubiera costado 64-102 horas.</p>
+
+  <div class="stat-grid">
+    <div class="stat-card">
+      <div class="number">3</div>
+      <div class="label">Tablas Dataverse</div>
+    </div>
+    <div class="stat-card">
+      <div class="number">44</div>
+      <div class="label">Campos custom</div>
+    </div>
+    <div class="stat-card">
+      <div class="number">3.134</div>
+      <div class="label">Líneas YAML generadas</div>
+    </div>
+    <div class="stat-card">
+      <div class="number">~85%</div>
+      <div class="label">YAML que sobrevivió a prod</div>
+    </div>
+    <div class="stat-card">
+      <div class="number">60-70%</div>
+      <div class="label">Ahorro en horas</div>
+    </div>
+    <div class="stat-card">
+      <div class="number">$9-14</div>
+      <div class="label">Coste en tokens del proyecto</div>
+    </div>
+  </div>
+
+  <div class="callout">
+    <strong>Dato demoledor:</strong> El coste total en tokens de IA (~$12) equivale a lo que un desarrollador senior factura en 15 minutos. El coste real no son los tokens — es la hora del humano que supervisa.
+  </div>
+</section>
+
+<!-- ═══ 2. INVENTARIO ═══ -->
+<section id="inventario">
+  <div class="section-label"><span class="dot"></span> Qué se construyó</div>
+  <h2>Inventario completo del módulo</h2>
+
+  <div class="card-grid">
+    <div class="card">
+      <h3><span class="icon" style="background:rgba(201,100,66,.1); color:var(--accent);">🗄️</span> Dataverse</h3>
+      <ul>
+        <li><strong>3 tablas</strong> (padre, hijo, consumo 1:1)</li>
+        <li><strong>44 campos</strong> custom (14 + 16 + 14)</li>
+        <li><strong>8 lookups</strong> cruzados con tablas existentes</li>
+        <li><strong>21 vistas</strong> para Model-Driven App</li>
+        <li><strong>9 formularios</strong></li>
+        <li>Nuevo valor en OptionSet MultiSelect existente</li>
+        <li>Grupo nuevo en Sitemap de la Model-Driven App</li>
+      </ul>
+    </div>
+    <div class="card">
+      <h3><span class="icon" style="background:rgba(124,107,158,.1); color:var(--accent2);">📱</span> Canvas App</h3>
+      <ul>
+        <li><strong>2 pantallas nuevas</strong> + 1 modificada</li>
+        <li>Pantalla lista con filtros por empresa</li>
+        <li><strong>Maestro-detalle</strong>: formulario + gallery + tabs + modales</li>
+        <li>Búsqueda en <strong>2 tablas</strong> simultáneas</li>
+        <li>Validación de duplicados, salidas parciales con checkbox</li>
+        <li>Modal de consumo (5 sondas, combustible, electricidad)</li>
+        <li>Validaciones de cierre condicionales por empresa</li>
+      </ul>
+    </div>
+    <div class="card">
+      <h3><span class="icon" style="background:rgba(196,154,42,.1); color:var(--accent3);">🐍</span> Scripts Python</h3>
+      <ul>
+        <li><strong>1.140 líneas</strong> de Python</li>
+        <li>Creación masiva de tablas vía Dataverse Web API</li>
+        <li>Auth con DeviceCodeCredential</li>
+        <li>Creación por fases (tablas → lookups → option sets → publish)</li>
+        <li>Script de datos demo para testear</li>
+      </ul>
+    </div>
+    <div class="card">
+      <h3><span class="icon" style="background:rgba(184,107,138,.1); color:var(--pink);">📄</span> Documentación generada por IA</h3>
+      <ul>
+        <li><strong>Spec funcional</strong>: 402 líneas MD</li>
+        <li><strong>4 handoffs</strong> entre sesiones (712 líneas)</li>
+        <li><strong>Checklist de testing</strong>: HTML interactivo (1.073 líneas)</li>
+        <li><strong>Manual de flujos</strong>: HTML visual para el cliente</li>
+        <li><strong>Mockup HTML</strong> del layout antes de desarrollar</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ 3. PREREQUISITOS ═══ -->
+<section id="prerequisitos">
+  <div class="section-label"><span class="dot"></span> Antes de escribir una línea</div>
+  <h2>Lo que nadie te cuenta en los demos de 5 minutos</h2>
+  <p class="lead">Sin esta preparación, la IA trabaja a ciegas e inventa nombres de tablas y campos que no existen. El 80% del éxito está aquí.</p>
+
+  <div class="card-grid">
+    <div class="card">
+      <h3><span class="icon" style="background:rgba(201,100,66,.1); color:var(--accent);">🔧</span> PAC CLI</h3>
+      <p>Exportar soluciones, <code>pac solution unpack</code> para XML editables, <code>pac canvas unpack</code> para convertir .msapp en YAML. <strong>Claude Code lo ejecuta directamente.</strong></p>
+    </div>
+    <div class="card">
+      <h3><span class="icon" style="background:rgba(124,107,158,.1); color:var(--accent2);">🔍</span> Dataverse DevTools</h3>
+      <p>Extensión de VS Code para navegar metadata (tablas, columnas, relaciones, option sets) sin salir del editor. <strong>Manual:</strong> el desarrollador consulta y pasa los display names reales al prompt.</p>
+    </div>
+    <div class="card">
+      <h3><span class="icon" style="background:rgba(61,139,110,.1); color:var(--green);">📦</span> Power Platform Extensions</h3>
+      <p>Pack/Unpack de Canvas App: <code>.msapp</code> ↔ carpeta YAML. Sin esto Claude Code no puede leer las pantallas existentes y <strong>no respeta patrones, temas ni naming conventions</strong>.</p>
+    </div>
+    <div class="card">
+      <h3><span class="icon" style="background:rgba(196,154,42,.1); color:var(--accent3);">🔐</span> Autenticación (DeviceCode)</h3>
+      <p>Scripts Python usan <code>DeviceCodeCredential</code>. No <code>InteractiveBrowser</code> porque cuelga en Git Bash/WSL. Token expira a la hora → <code>get_token()</code> antes de cada request.</p>
+    </div>
+  </div>
+
+  <div class="callout-warn callout">
+    <strong>⚠️ Lección aprendida:</strong> <code>InteractiveBrowserCredential</code> cuelga en terminales no interactivos (Git Bash, WSL, terminal embebida de Claude Code). Se descubrió por la vía dura gastando 2-3 iteraciones. Ahora vive como regla en la memoria del proyecto.
+  </div>
+
+  <h3 style="margin-top:40px; margin-bottom:16px;">Skills y repos de referencia configurados</h3>
+  <div class="card">
+    <ul>
+      <li><strong>Microsoft Dataverse-skills</strong> (github.com/microsoft/Dataverse-skills): 3 SKILL.md para creación de tablas, export/import, conexión. Aporta: creación por fases con espera 15-30s, header <code>MSCRM.SolutionUniqueName</code>, código idioma 3082 (es-ES).</li>
+      <li><strong>Skill custom canvas-apps-ui-gen</strong>: genera YAML en formato "bare" (empieza por <code>- controlName:</code>) apto para pegar en PA Studio. Sin este skill, la IA genera formato <code>Screens:</code> que da error PA1001.</li>
+      <li><strong>Knowledge base centralizada</strong> del equipo: guías sobre PAC CLI, Power Automate, ribbons, referenciadas desde el <code>CLAUDE.md</code> del repo.</li>
+    </ul>
+  </div>
+</section>
+
+<!-- ═══ 4. PIPELINE ═══ -->
+<section id="pipeline">
+  <div class="section-label"><span class="dot"></span> Flujo de trabajo</div>
+  <h2>Pipeline completo del desarrollo</h2>
+
+  <div class="pipeline">
+    <div class="pipeline-step">
+      <div class="circle" style="border-color: var(--accent3); color: var(--accent3); background: rgba(196,154,42,.06);">🎙️</div>
+      <div class="name">Reunión</div>
+      <div class="desc">Transcripción + requisitos</div>
+    </div>
+    <div class="pipeline-step">
+      <div class="circle" style="border-color: var(--accent); color: var(--accent); background: rgba(201,100,66,.06);">💬</div>
+      <div class="name">Claude Chat</div>
+      <div class="desc">Spec MD + HTML + Mockup</div>
+    </div>
+    <div class="pipeline-step">
+      <div class="circle" style="border-color: var(--accent2); color: var(--accent2); background: rgba(124,107,158,.06);">📤</div>
+      <div class="name">Export + Unpack</div>
+      <div class="desc">PAC CLI → XML + YAML base</div>
+    </div>
+    <div class="pipeline-step">
+      <div class="circle" style="border-color: var(--green); color: var(--green); background: rgba(61,139,110,.06);">⚙️</div>
+      <div class="name">Claude Code</div>
+      <div class="desc">Scripts Python → Dataverse</div>
+    </div>
+    <div class="pipeline-step">
+      <div class="circle" style="border-color: var(--pink); color: var(--pink); background: rgba(184,107,138,.06);">📋</div>
+      <div class="name">YAML Canvas</div>
+      <div class="desc">8 chunks generados por IA</div>
+    </div>
+    <div class="pipeline-step">
+      <div class="circle" style="border-color: var(--red); color: var(--red); background: rgba(192,80,77,.06);">📌</div>
+      <div class="name">Paste + Fix</div>
+      <div class="desc">PA Studio → errores → F&R</div>
+    </div>
+    <div class="pipeline-step">
+      <div class="circle" style="border-color: var(--accent3); color: var(--accent3); background: rgba(196,154,42,.06);">🔁</div>
+      <div class="name">Iterar</div>
+      <div class="desc">×N hasta que funcione</div>
+    </div>
+    <div class="pipeline-step">
+      <div class="circle" style="border-color: var(--green); color: var(--green); background: rgba(61,139,110,.06);">🚀</div>
+      <div class="name">Producción</div>
+      <div class="desc">Deploy + demo cliente</div>
+    </div>
+  </div>
+
+  <h3 style="margin-top:48px; margin-bottom:16px;">Timeline real</h3>
+  <div class="timeline">
+    <div class="timeline-item">
+      <div class="time">Sesión 1 — Backend</div>
+      <h4>Tablas Dataverse + Sitemap + Vistas</h4>
+      <p>Scripts Python crean 3 tablas, 44 campos, 8 lookups. 2-3 iteraciones por fallos de auth. Resultado casi perfecto.</p>
+    </div>
+    <div class="timeline-item">
+      <div class="time">Sesión 2 — Canvas v1</div>
+      <h4>Pantalla lista (508 líneas YAML) + primer chunk del form</h4>
+      <p>Se descubren las 15 categorías de error de pegado YAML. Se construye la tabla Find & Replace que salva el resto del proyecto.</p>
+    </div>
+    <div class="timeline-item">
+      <div class="time">Sesión 3 — Canvas v2 + Deploy</div>
+      <h4>8 chunks del Secado_Form_Screen + deploy a prod</h4>
+      <p>Cada chunk: generar → pegar → error → fix → verificar. Demo al cliente: ~90% funcional. Ediciones quirúrgicas post-demo.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ 5. TOKENS ═══ -->
+<section id="tokens">
+  <div class="section-label"><span class="dot"></span> Complejidad y tokens</div>
+  <h2>¿Cuánto costó realmente?</h2>
+
+  <table class="comp-table">
+    <thead>
+      <tr>
+        <th>Fase</th>
+        <th>Tokens entrada</th>
+        <th>Tokens salida</th>
+        <th>Nota</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>Setup (leer Entity.xml + CLAUDE.md)</td>
+        <td>~25-40k</td>
+        <td>~1k</td>
+        <td>Solo lectura, sin generación</td>
+      </tr>
+      <tr>
+        <td>Scripts Python (tablas)</td>
+        <td>~5k</td>
+        <td>~17-22k</td>
+        <td>2-3 iteraciones por auth/schema</td>
+      </tr>
+      <tr>
+        <td>Canvas — pantalla lista</td>
+        <td>~3k</td>
+        <td>~8-12k</td>
+        <td>508 líneas YAML</td>
+      </tr>
+      <tr style="background:rgba(239,68,68,.04);">
+        <td><strong>Canvas — form maestro-detalle (8 chunks)</strong></td>
+        <td><strong>~40-65k</strong></td>
+        <td><strong>~32-50k</strong></td>
+        <td>Muchas iteraciones por errores de pegado</td>
+      </tr>
+      <tr>
+        <td>Handoffs + checklist + docs</td>
+        <td>~4k</td>
+        <td>~20-25k</td>
+        <td>452 líneas MD + 1.073 HTML</td>
+      </tr>
+      <tr>
+        <td>Documentación final</td>
+        <td>~3-5k</td>
+        <td>~8-12k</td>
+        <td></td>
+      </tr>
+      <tr style="background:var(--surface2);">
+        <td><strong>TOTAL</strong></td>
+        <td class="highlight"><strong>~100-150k</strong></td>
+        <td class="highlight"><strong>~100-160k</strong></td>
+        <td><strong>≈ 200-300k tokens → $9-14</strong></td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h3 style="margin-top:48px; margin-bottom:16px;">Comparativa horas-hombre</h3>
+  <table class="comp-table">
+    <thead>
+      <tr><th>Tarea</th><th>Sin IA</th><th>Con Claude Code</th><th>Ahorro</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>Diseño de tablas</td><td>4-6 h</td><td>2-3 h</td><td>40-50%</td></tr>
+      <tr><td>Creación 3 tablas + 44 campos</td><td>6-10 h</td><td>1.5-2 h</td><td class="highlight">70-80%</td></tr>
+      <tr><td>Sitemap + 21 vistas + 9 forms</td><td>4-6 h</td><td>2-3 h</td><td>40-50%</td></tr>
+      <tr><td>Spec funcional</td><td>6-8 h</td><td>2-3 h</td><td>60-70%</td></tr>
+      <tr><td>Canvas — pantalla lista</td><td>4-6 h</td><td>1.5-2.5 h</td><td>50-60%</td></tr>
+      <tr style="background:rgba(239,68,68,.04);"><td><strong>Canvas — form maestro-detalle</strong></td><td><strong>30-50 h</strong></td><td><strong>10-15 h</strong></td><td class="highlight"><strong>55-70%</strong></td></tr>
+      <tr><td>Pruebas + ajustes demo</td><td>4-6 h</td><td>3-4 h</td><td>15-30%</td></tr>
+      <tr><td>Documentación</td><td>6-10 h</td><td>2-3 h</td><td>65-75%</td></tr>
+      <tr style="background:var(--surface2);"><td><strong>TOTAL</strong></td><td><strong>64-102 h</strong></td><td class="highlight"><strong>24-35 h</strong></td><td class="highlight"><strong>~60-70%</strong></td></tr>
+    </tbody>
+  </table>
+</section>
+
+<!-- ═══ 6. PROS / CONTRAS ═══ -->
+<section id="pros-cons">
+  <div class="section-label"><span class="dot"></span> Balance real</div>
+  <h2>Pros y Contras honestos</h2>
+
+  <div class="pros-cons">
+    <div class="pros-card">
+      <h3>✅ Pros</h3>
+      <ul>
+        <li><strong>Ahorro 60-70% en tiempo total</strong> — de 2 semanas a 3 sesiones</li>
+        <li><strong>Backend casi perfecto a la primera</strong> — tablas, lookups, vistas, sitemap con mínimo retrabajo</li>
+        <li><strong>Documentación automática de altísima calidad</strong> — specs, handoffs, checklists de testing, manuales de flujo. Antes tardabas horas, ahora minutos</li>
+        <li><strong>Los docs generados sirven para que el cliente testee solo</strong> — menos reuniones de soporte, el cliente sigue los flujos paso a paso</li>
+        <li><strong>Coste en tokens ridículo</strong> — $9-14 todo el proyecto</li>
+        <li><strong>Memoria reutilizable</strong> — los errores descubiertos se guardan y las próximas sesiones los heredan</li>
+        <li><strong>Mockups HTML antes de desarrollar</strong> — el cliente valida visualmente antes de invertir horas</li>
+        <li><strong>Scripts Python masivos</strong> — crear 44 campos uno a uno en la UI es tortura; con un script son 2 horas</li>
+      </ul>
+    </div>
+    <div class="cons-card">
+      <h3>❌ Contras</h3>
+      <ul>
+        <li><strong>Canvas App YAML nunca pega limpio</strong> — siempre requiere Find & Replace + ajustes manuales</li>
+        <li><strong>~15 categorías de errores recurrentes</strong> de pegado que tienes que aprender</li>
+        <li><strong>La IA genera código sintácticamente correcto pero funcionalmente incorrecto</strong> — bugs silenciosos que solo detectas al probar</li>
+        <li><strong>Preparación previa necesaria</strong> — PAC CLI, DeviceCode, unpack, skills. 2-3 horas antes de pedir nada</li>
+        <li><strong>Context window se "diluye"</strong> — tras ~30 mensajes la IA olvida decisiones tomadas al principio</li>
+        <li><strong>Handoffs entre sesiones = re-explicar contexto</strong> — 3-6 veces por sesión</li>
+        <li><strong>Layouts pixel-perfect imposibles</strong> — alineación, spacing, z-index hay que hacerlo a mano</li>
+        <li><strong>Requiere desarrollador que domine Power Fx</strong> — sin experiencia, generas basura que no puedes arreglar</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ 7. PAIN POINTS ═══ -->
+<section id="pain-points">
+  <div class="section-label"><span class="dot"></span> Los errores que cuestan horas</div>
+  <h2>Pain Points reales del YAML + Canvas App</h2>
+  <p class="lead">Estas son las ~15 categorías de error que descubrimos. Cada una costó iteraciones. Ahora viven en la memoria del proyecto para no repetirlas.</p>
+
+  <div class="tabs">
+    <button class="tab-btn active" onclick="switchTab(event, 'tab-syntax')">Sintaxis YAML</button>
+    <button class="tab-btn" onclick="switchTab(event, 'tab-logic')">Lógica Power Fx</button>
+    <button class="tab-btn" onclick="switchTab(event, 'tab-context')">Contexto / Memoria</button>
+  </div>
+
+  <div class="tab-content active" id="tab-syntax">
+    <div class="error-grid">
+      <div class="error-card">
+        <span class="tag tag-syntax">Display Names</span>
+        <h4>La IA inventa nombres de datasource</h4>
+        <p>Genera <code>'Lineas de Secado'</code> (sin acento) cuando PA Studio usa <code>'Líneas de Secado'</code>. Cada datasource mal = error "not found" al pegar.</p>
+      </div>
+      <div class="error-card">
+        <span class="tag tag-syntax">Screens: wrapper</span>
+        <h4>Formato YAML incorrecto para paste</h4>
+        <p>El formato <code>Screens:</code> de pac unpack NO funciona para la función "Paste code" de PA Studio. Hay que usar formato bare: <code>- controlName:</code></p>
+      </div>
+      <div class="error-card">
+        <span class="tag tag-syntax">Modern Controls</span>
+        <h4>Propiedades inválidas</h4>
+        <p><code><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="cd8fb8b9b9a2a38dfde3fde3f9f8">[email&#160;protected]</a></code> no acepta <code>Size:</code>, <code>Icon:</code> (string), <code>BorderColor:</code>. <code><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="7521100d013c1b05000135455b455b4041">[email&#160;protected]</a></code> rechaza <code>Format:</code>. Hay que cambiarlos en la UI manualmente.</p>
+      </div>
+      <div class="error-card">
+        <span class="tag tag-syntax">Dos puntos en strings</span>
+        <h4>YAML se rompe con ":" dentro de valores</h4>
+        <p><code>Placeholder: ="Buscar ej: A12591"</code> → YAML lo parsea como key-value y revienta. Hay que quitar los dos puntos o usar literal block.</p>
+      </div>
+      <div class="error-card">
+        <span class="tag tag-syntax">Jerarquía containers</span>
+        <h4>Paste al padre equivocado</h4>
+        <p>PA Studio pega los controles al elemento seleccionado. Si seleccionas un Rectangle en vez del GroupContainer, el paste falla silenciosamente.</p>
+      </div>
+      <div class="error-card">
+        <span class="tag tag-syntax">Versiones de control</span>
+        <h4><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="d684b3b5a2b7b8b1bab396e4f8e2f8e7">[email&#160;protected]</a> no existe</h4>
+        <p>La IA inventa versiones de controles. <code><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="c496a1a7b0a5aaa3a8a184f6eaf0eaf5">[email&#160;protected]</a></code> no existe — usar <code>@2.3.0</code>. Hay que mantener una tabla de versiones válidas.</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="tab-content" id="tab-logic">
+    <div class="error-grid">
+      <div class="error-card">
+        <span class="tag tag-logic">OptionSet column ≠ valor</span>
+        <h4>La regla más confusa de Power Fx</h4>
+        <p>Columna: <code>'Estado (xxx_estado)'</code>. Valor: <code>'Estado (Líneas de Secado)'.'En Secado'</code>. No son el mismo nombre. Y hay excepciones sin regla universal.</p>
+      </div>
+      <div class="error-card">
+        <span class="tag tag-logic">Filter compara objetos</span>
+        <h4>Compila pero devuelve 0 registros</h4>
+        <p><code>Filter(Tabla, Lookup = _record)</code> compila pero compara objetos completos. Fix: usar <code>Lookup.'Campo (schema)' = _record.'Campo (schema)'</code>.</p>
+      </div>
+      <div class="error-card">
+        <span class="tag tag-logic">Variables sin tipar</span>
+        <h4>Set(var, Blank()) peta 3 pantallas después</h4>
+        <p><code>Set(_var, Blank())</code> no tipa la variable. Usar <code>Set(_var, LookUp(DataSource, false))</code> que nunca devuelve nada pero tipa correctamente.</p>
+      </div>
+      <div class="error-card">
+        <span class="tag tag-logic">Campo primario ambiguo</span>
+        <h4>record.Nombre vs record.'Nombre (schema)'</h4>
+        <p>Si el campo primario se llama igual que la tabla, PA exige schema name: <code>'Secado (xxx_secadoid)'</code> para ID, <code>'Secado (xxx_secadoname)'</code> para display.</p>
+      </div>
+      <div class="error-card">
+        <span class="tag tag-logic">Colecciones vacías</span>
+        <h4>Clear(col) falla en primera carga</h4>
+        <p><code>Clear(col)</code> en una colección que no existe da error. Fix: <code>ClearCollect(col, {ID: GUID()}); Remove(col, First(col))</code> para tipar + vaciar.</p>
+      </div>
+      <div class="error-card">
+        <span class="tag tag-logic">Nombres históricos</span>
+        <h4>.Unidades vs .Filas</h4>
+        <p>La IA genera <code>.Unidades</code> pero el campo real se llama <code>.Filas</code> por decisión histórica del cliente. Solo se descubre al probar con datos reales.</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="tab-content" id="tab-context">
+    <div class="error-grid">
+      <div class="error-card">
+        <span class="tag tag-context">Ventana de contexto</span>
+        <h4>Tras ~30 mensajes la IA "olvida"</h4>
+        <p>En el chunk 6, la IA sugirió 4 sondas cuando la spec decía 5 (aire, caldera, madera 1/2/3). La info se "diluyó" tras 30 mensajes.</p>
+      </div>
+      <div class="error-card">
+        <span class="tag tag-context">Re-explicaciones</span>
+        <h4>3-6 veces por sesión</h4>
+        <p>Hay que re-explicar decisiones ya tomadas en la spec o en handoffs previos. Cada re-explicación son 1-2 mensajes extra que rompen el flow.</p>
+      </div>
+      <div class="error-card">
+        <span class="tag tag-context">Handoffs entre sesiones</span>
+        <h4>4 documentos de 120-270 líneas</h4>
+        <p>Sin los handoffs, cada sesión nueva reinventa nombres de campos. En un experimento temprano la IA sugirió un nombre completamente diferente al acordado.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ 8. QUÉ DELEGAR ═══ -->
+<section id="delegar">
+  <div class="section-label"><span class="dot"></span> Guía práctica</div>
+  <h2>Qué delegar y qué NO delegar a la IA</h2>
+  <p class="lead">Esta es la guía que se llevan a casa. Basada 100% en experiencia real de este proyecto.</p>
+
+  <div class="delegation-grid">
+    <div class="deleg-card deleg-green">
+      <h4>🟢 Delegar con los ojos cerrados</h4>
+      <ul>
+        <li>Creación de tablas Dataverse (scripts Python vía Web API)</li>
+        <li>Generación de specs desde transcripciones</li>
+        <li>Vistas XML para Model-Driven App</li>
+        <li>Documentación (handoffs, checklists, READMEs)</li>
+        <li>Scripts de automatización PAC CLI</li>
+        <li>Mockups HTML del layout</li>
+      </ul>
+    </div>
+    <div class="deleg-card deleg-yellow">
+      <h4>🟡 Delegar con supervisión</h4>
+      <ul>
+        <li>YAML de Canvas App (con tabla Find & Replace)</li>
+        <li>Fórmulas Power Fx complejas</li>
+        <li>Dashboards Model-Driven</li>
+        <li>Power Automate flows (JSON)</li>
+      </ul>
+    </div>
+    <div class="deleg-card deleg-red">
+      <h4>🔴 NO delegar</h4>
+      <ul>
+        <li>Layouts pixel-perfect</li>
+        <li>Containers anidados en galleries</li>
+        <li>Cambios de Format, Icon, Theme en UI</li>
+        <li>Lógica de estado runtime</li>
+        <li>Decisiones de UX</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ 9. CODE APPS ═══ -->
+<section id="code-apps">
+  <div class="section-label"><span class="dot"></span> El futuro</div>
+  <h2>Canvas App vs Code Apps (React/TS)</h2>
+  <p class="lead">Code Apps es el nuevo paradigma de Power Apps basado en React + TypeScript. ¿Qué hubiera cambiado?</p>
+
+  <table class="comp-table">
+    <thead>
+      <tr><th>Dimensión</th><th>Canvas App (real)</th><th>Code Apps (estimado)</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>Lenguaje</td><td>YAML propietario + Power Fx</td><td class="winner">React + TypeScript + Fluent UI</td></tr>
+      <tr><td>Soporte IA</td><td>Skill custom necesaria</td><td class="winner">Nativo — React/TS es el fuerte de cualquier LLM</td></tr>
+      <tr><td>Líneas de código</td><td>~3.134 YAML</td><td class="winner">~2.000-2.500 TS/TSX</td></tr>
+      <tr><td>% correcto al primer intento</td><td>~80-85% (tras F&R)</td><td class="winner">~90-95%</td></tr>
+      <tr><td>Iteraciones por chunk</td><td>2-4</td><td class="winner">1-2</td></tr>
+      <tr><td>Debugging</td><td>Prueba en dispositivo → error runtime</td><td class="winner">TypeScript compiler + React DevTools</td></tr>
+      <tr><td>Deploy</td><td>pac solution import + paste manual</td><td class="winner">CI/CD estándar npm/git</td></tr>
+      <tr><td>Horas estimadas con IA</td><td><strong>24-35 h</strong></td><td class="winner highlight"><strong>15-25 h (est.)</strong></td></tr>
+      <tr><td>Madurez / Features</td><td class="winner">Producción, ecosystem completo</td><td>Preview, paridad incompleta</td></tr>
+    </tbody>
+  </table>
+
+  <div class="callout">
+    <strong>Conclusión:</strong> Code Apps recortaría otro 30-40% del tiempo. Pero aún no tiene paridad completa de features. Para proyectos con deadline cerrado hoy, Canvas App sigue siendo la apuesta segura.
+  </div>
+</section>
+
+<!-- ═══ 10. DOCS GENERADOS ═══ -->
+<section id="docs-gen">
+  <div class="section-label"><span class="dot"></span> Valor oculto</div>
+  <h2>Documentación generada: el superpoder que nadie menciona</h2>
+  <p class="lead">La IA no solo escribe código. Los documentos que genera aceleran demos, reducen reuniones de soporte y permiten que el cliente testee por su cuenta.</p>
+
+  <div class="card-grid">
+    <div class="card" style="border-left: 4px solid var(--green);">
+      <h3><span class="icon" style="background:rgba(61,139,110,.1); color:var(--green);">📋</span> Manual de Flujos de Procesos</h3>
+      <p>HTML visual con <strong>8 flujos paso a paso</strong>, cajas de decisión en los puntos de validación, badges de estados. El cliente lo abre en el navegador y sigue los pasos como un tutorial. <strong>Antes tardabas 6-8 horas en escribir esto. Con IA: 30 minutos.</strong></p>
+    </div>
+    <div class="card" style="border-left: 4px solid var(--accent);">
+      <h3><span class="icon" style="background:rgba(201,100,66,.1); color:var(--accent);">✅</span> Checklist de Testing Interactivo</h3>
+      <p><strong>16 casos de prueba</strong> con checkboxes clickables. El cliente marca lo que ya probó. Incluye: qué probar, qué resultado esperar, qué hacer si falla. <strong>El cliente testea solo sin necesitar una reunión de 2 horas.</strong></p>
+    </div>
+    <div class="card" style="border-left: 4px solid var(--accent2);">
+      <h3><span class="icon" style="background:rgba(124,107,158,.1); color:var(--accent2);">🖼️</span> Mockup HTML Interactivo</h3>
+      <p>Antes de desarrollar nada, se genera un mockup visual de la pantalla maestro-detalle. El cliente valida la disposición de campos, botones y modales. <strong>Evita el "no era lo que esperaba" post-desarrollo.</strong></p>
+    </div>
+    <div class="card" style="border-left: 4px solid var(--accent3);">
+      <h3><span class="icon" style="background:rgba(196,154,42,.1); color:var(--accent3);">📝</span> Spec Funcional + Handoffs</h3>
+      <p>402 líneas de spec funcional + 4 handoffs entre sesiones. <strong>La spec es el "contrato" que evita malentendidos</strong>. Los handoffs garantizan continuidad entre sesiones de Claude Code sin perder contexto.</p>
+    </div>
+  </div>
+
+  <div class="callout">
+    <strong>Impacto real:</strong> Estos documentos no son "nice to have". Son los que permiten que el cliente haga sus propias pruebas, que la demo sea fluida, y que si otro desarrollador entra al proyecto no empiece de cero. La IA los genera en minutos con la información correcta del proyecto.
+  </div>
+</section>
+
+<!-- ═══ 11. FACTOR HUMANO ═══ -->
+<section id="factor-humano">
+  <div class="section-label"><span class="dot"></span> La pregunta difícil</div>
+  <h2>¿Se puede hacer sin saber Power Apps?</h2>
+
+  <div class="card" style="border-left: 4px solid var(--red); margin-bottom: 24px;">
+    <h3 style="color: var(--red);">Respuesta honesta: No.</h3>
+    <p style="margin-top: 12px;">La IA <strong>multiplica por 2-3×</strong> a un desarrollador experto. Al principiante lo pone a generar código roto que no puede arreglar — coste negativo, frustración alta.</p>
+  </div>
+
+  <div class="accordion">
+    <div class="accordion-item">
+      <button class="accordion-header" onclick="toggleAccordion(this)">Sin experiencia en Dataverse <span class="chevron">▼</span></button>
+      <div class="accordion-body"><div class="accordion-body-inner">No sabes que una tabla tiene un prefijo <code>xxx_srr_</code> distinto de <code>xxx_stt_</code> y por qué. La IA te sugiere nombres que suenan bien pero no existen en el entorno. No puedes validar si los lookups apuntan a la tabla correcta.</div></div>
+    </div>
+    <div class="accordion-item">
+      <button class="accordion-header" onclick="toggleAccordion(this)">Sin Power Fx <span class="chevron">▼</span></button>
+      <div class="accordion-body"><div class="accordion-body-inner">No detectas que <code>Filter(Tabla, Lookup = _record)</code> compila pero devuelve 0 registros. No sabes que hay que comparar por ID con schema name. Los bugs silenciosos te destrozan.</div></div>
+    </div>
+    <div class="accordion-item">
+      <button class="accordion-header" onclick="toggleAccordion(this)">Sin experiencia en PA Studio <span class="chevron">▼</span></button>
+      <div class="accordion-body"><div class="accordion-body-inner">No sabes que <code>Format:</code> no se puede cambiar en YAML con modern controls. No distingues los controles <code>@0.0.45</code> de los clásicos. No entiendes por qué el paste falla y piensas que la IA miente.</div></div>
+    </div>
+    <div class="accordion-item">
+      <button class="accordion-header" onclick="toggleAccordion(this)">Perfil ideal para este workflow <span class="chevron">▼</span></button>
+      <div class="accordion-body"><div class="accordion-body-inner">Desarrollador con <strong>1-2 años de experiencia</strong> en Power Platform que quiere acelerarse. Conoce Dataverse, ha publicado Canvas Apps, domina Power Fx lo suficiente para oler problemas. La IA es su copiloto, no su piloto.</div></div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ 12. DEMO ═══ -->
+<section id="demo">
+  <div class="section-label"><span class="dot"></span> Demo en vivo</div>
+  <h2>3 prompts para demostrar la diferencia</h2>
+
+  <div class="tabs">
+    <button class="tab-btn active" onclick="switchTab(event, 'tab-bad')">❌ Prompt malo</button>
+    <button class="tab-btn" onclick="switchTab(event, 'tab-good')">✅ Prompt bueno</button>
+    <button class="tab-btn" onclick="switchTab(event, 'tab-surgical')">🔪 Edición quirúrgica</button>
+  </div>
+
+  <div class="tab-content active" id="tab-bad">
+    <div class="code-block">
+      <span class="comment">// Prompt MALO — vago, sin contexto</span><br><br>
+      <span class="bad">Créame una pantalla en Power Apps para gestionar<br>
+      secaderos de madera. Necesita abrir secados, meter<br>
+      paquetes y cerrarlos.</span>
+    </div>
+    <div class="callout-warn callout">
+      <strong>Resultado:</strong> La IA inventa nombres de tabla (Secaderos, Paquetes, Secados), controles genéricos sin theme, fórmulas Power Fx que no referencian lookups del proyecto. Nada se puede pegar en PA Studio sin 2 horas de corrección.
+    </div>
+  </div>
+
+  <div class="tab-content" id="tab-good">
+    <div class="code-block">
+      <span class="comment">// Prompt BUENO — con contexto completo</span><br><br>
+      <span class="good">Necesito generar el YAML del Form_Screen para la Canvas App<br>
+      siguiendo la spec en docs/specs/spec.md.<br><br>
+      Contexto del entorno:<br>
+      - Theme: modernesqueTheme (azul RGBA 56,96,178). Tablet 1366x768.<br>
+      - Display names reales (verificados en PA Studio):<br>
+      &nbsp;&nbsp;'Líneas de Secado', 'Consumos de Secado', 'Paquete Productos',<br>
+      &nbsp;&nbsp;Canteadoras, Productos, Maquinas, Empresas.<br>
+      - Primary key: 'Secado (xxx_secadoid)' para ID.<br>
+      - OptionSets: columna 'Estado (xxx_estado)',<br>
+      &nbsp;&nbsp;valor 'Estado (Líneas de Secado)'.'En Secado'.<br>
+      - Modern controls: <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="b8facdccccd7d6f8889688968c8d">[email&#160;protected]</a>, <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="9ecafbe6ead7f0eeebeadeaeb0aeb0abaa">[email&#160;protected]</a>.<br>
+      &nbsp;&nbsp;NO incluir: Format, Size, Icon, BorderColor.<br>
+      - Formato paste: bare, empezando por - screenRoot:<br>
+      - Variables tipadas: Set(_var, LookUp(DS, false))<br><br>
+      Genera SOLO el chunk 4 (Gallery de líneas).</span>
+    </div>
+    <div class="callout">
+      <strong>Resultado:</strong> YAML que compila al primer intento con 0-2 correcciones, no 15. La diferencia es la información que le das.
+    </div>
+  </div>
+
+  <div class="tab-content" id="tab-surgical">
+    <div class="code-block">
+      <span class="comment">// Prompt de EDICIÓN QUIRÚRGICA</span><br><br>
+      <span class="good">En el chunk4-gallery.yaml, el botón 'btn_Check_Sec'<br>
+      tiene Width: =14 y Height: =14 — los checkboxes<br>
+      salen demasiado pequeños en el dispositivo.<br><br>
+      Cambia SOLO esos dos valores a Width: =20 y<br>
+      Height: =20. No toques NINGÚN otro control,<br>
+      ninguna propiedad, ningún comentario.<br>
+      No reformatees el archivo.<br>
+      Muéstrame el diff antes de aplicarlo.</span>
+    </div>
+    <div class="callout">
+      <strong>Técnica:</strong> Constraint explícito + petición de diff antes de aplicar = evita el "ya que estoy aquí refactorizo otras cositas" que destroza pantallas enteras.
+    </div>
+  </div>
+</section>
+
+<!-- ═══ 13. Q&A ═══ -->
+<section id="qa">
+  <div class="section-label"><span class="dot"></span> Preguntas frecuentes</div>
+  <h2>Q&A preparado</h2>
+
+  <div class="accordion">
+    <div class="accordion-item">
+      <button class="accordion-header" onclick="toggleAccordion(this)">¿Cuánto cuesta usar Claude Code al mes? <span class="chevron">▼</span></button>
+      <div class="accordion-body"><div class="accordion-body-inner">Suscripción Claude Max ~$100-200/mes cubre este volumen sin problema. En pago por uso, este proyecto entero costó ~$9-14 en tokens. El coste real no son los tokens — es la hora del desarrollador que supervisa. Mil veces más caro que los tokens, mil veces más valioso.</div></div>
+    </div>
+    <div class="accordion-item">
+      <button class="accordion-header" onclick="toggleAccordion(this)">¿Funciona igual con Model-Driven Apps? <span class="chevron">▼</span></button>
+      <div class="accordion-body"><div class="accordion-body-inner"><strong>Mejor con Model-Driven.</strong> Model-Driven es XML estructurado (Entity.xml, SavedQueries, RibbonDiff) que la IA genera muy bien. Canvas App tiene la complejidad extra del YAML propietario + Power Fx + quirks de los modern controls. En este proyecto, todo el backend Model-Driven fue ~2h perfecto; la Canvas App fue ~12h al 90%.</div></div>
+    </div>
+    <div class="accordion-item">
+      <button class="accordion-header" onclick="toggleAccordion(this)">¿Y con Copilot en Power Apps no basta? <span class="chevron">▼</span></button>
+      <div class="accordion-body"><div class="accordion-body-inner">Copilot es excelente para generar un primer draft de una pantalla sencilla dentro del Studio. Lo que NO hace: trabajar con el repo fuera del Studio, versionar con git, razonar sobre múltiples pantallas a la vez, generar scripts Python para crear 44 campos en lote, escribir specs de 400 líneas, mantener memoria del proyecto entre sesiones. Claude Code complementa a Copilot; no compite con él.</div></div>
+    </div>
+    <div class="accordion-item">
+      <button class="accordion-header" onclick="toggleAccordion(this)">¿Qué pasa cuando Microsoft cambia la estructura del YAML? <span class="chevron">▼</span></button>
+      <div class="accordion-body"><div class="accordion-body-inner">Pasó durante este proyecto — el versionado de modern controls es frágil. La mitigación: la memoria del proyecto se actualiza cada vez que descubrimos un nuevo caso. La regla no vive en la cabeza del desarrollador, vive en archivos versionados. Si Microsoft cambia algo, actualizas la memoria y todas las sesiones futuras lo heredan.</div></div>
+    </div>
+    <div class="accordion-item">
+      <button class="accordion-header" onclick="toggleAccordion(this)">¿Se puede usar con soluciones managed de terceros? <span class="chevron">▼</span></button>
+      <div class="accordion-body"><div class="accordion-body-inner">Sí para <strong>leerlas</strong> — la IA lee Entity.xml sin problema. No para <strong>modificarlas</strong> — las soluciones managed son read-only por diseño de Power Platform. Para personalizar sobre una managed, se crea una solución unmanaged propia encima que haga extensión.</div></div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ RECOMENDACIONES FINALES ═══ -->
+<section>
+  <div class="section-label"><span class="dot"></span> Para llevarse a casa</div>
+  <h2>10 recomendaciones</h2>
+
+  <div class="card">
+    <ol style="padding-left: 20px;">
+      <li style="margin-bottom: 12px; color: var(--text2);"><strong style="color:var(--text);">Invierte 1-2h en preparación</strong> (PAC CLI, auth, unpack). Sin esto, cualquier ahorro de IA queda anulado.</li>
+      <li style="margin-bottom: 12px; color: var(--text2);"><strong style="color:var(--text);">Escribe la spec ANTES de tocar código.</strong> 400 líneas de spec ahorran 40 horas de desarrollo.</li>
+      <li style="margin-bottom: 12px; color: var(--text2);"><strong style="color:var(--text);">Usa handoffs con fecha</strong> entre sesiones. Cada sesión lee el anterior para reanudar contexto.</li>
+      <li style="margin-bottom: 12px; color: var(--text2);"><strong style="color:var(--text);">Mantén una memoria viva</strong> de los pain points. Cada descubrimiento va a un archivo versionado.</li>
+      <li style="margin-bottom: 12px; color: var(--text2);"><strong style="color:var(--text);">Divide la Canvas App en chunks</strong> lógicos. Chunks más grandes = debugging más caro.</li>
+      <li style="margin-bottom: 12px; color: var(--text2);"><strong style="color:var(--text);">Reserva 20% del tiempo</strong> para correcciones manuales post-paste.</li>
+      <li style="margin-bottom: 12px; color: var(--text2);"><strong style="color:var(--text);">Pasa el display name exacto</strong> de cada datasource en el prompt.</li>
+      <li style="margin-bottom: 12px; color: var(--text2);"><strong style="color:var(--text);">Pide el diff antes de aplicar</strong> — evita el refactor sorpresa.</li>
+      <li style="margin-bottom: 12px; color: var(--text2);"><strong style="color:var(--text);">Si hay deadline, usa lo que dominas.</strong> Canvas App es el camino conocido.</li>
+      <li style="margin-bottom: 12px; color: var(--text2);"><strong style="color:var(--text);">Documenta qué NO funcionó.</strong> La negativa es igual de valiosa que la positiva.</li>
+    </ol>
+  </div>
+</section>
+
+</div><!-- end .page -->
+
+<div class="footer">
+  <strong>Power Fox Solutions</strong> · Formación Power Apps + IA · 2026<br>
+  <span style="opacity:.5; font-size:11px;">Datos basados en un proyecto real de desarrollo. Estimaciones marcadas como tal.</span>
+</div>
+
+<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
+// Tab switching
+function switchTab(e, tabId) {
+  const parent = e.target.closest('section') || e.target.closest('.page');
+  const tabs = e.target.parentElement;
+  tabs.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  e.target.classList.add('active');
+  
+  // Find sibling tab-contents
+  let el = tabs.nextElementSibling;
+  while (el && el.classList.contains('tab-content')) {
+    el.classList.remove('active');
+    el = el.nextElementSibling;
+  }
+  document.getElementById(tabId).classList.add('active');
+}
+
+// Accordion
+function toggleAccordion(btn) {
+  const item = btn.parentElement;
+  const body = item.querySelector('.accordion-body');
+  const inner = body.querySelector('.accordion-body-inner');
+  
+  if (item.classList.contains('open')) {
+    item.classList.remove('open');
+    body.style.maxHeight = '0';
+  } else {
+    // Close others in same accordion
+    item.parentElement.querySelectorAll('.accordion-item.open').forEach(other => {
+      other.classList.remove('open');
+      other.querySelector('.accordion-body').style.maxHeight = '0';
+    });
+    item.classList.add('open');
+    body.style.maxHeight = inner.scrollHeight + 'px';
+  }
+}
+
+// Sticky nav active state
+const sections = document.querySelectorAll('section[id]');
+const navLinks = document.querySelectorAll('.sticky-nav a');
+
+window.addEventListener('scroll', () => {
+  let current = '';
+  sections.forEach(section => {
+    const top = section.offsetTop - 120;
+    if (scrollY >= top) current = section.id;
+  });
+  navLinks.forEach(link => {
+    link.classList.remove('active');
+    if (link.getAttribute('href') === '#' + current) link.classList.add('active');
+  });
+});
+
+// Animate cards on scroll
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      entry.target.style.opacity = '1';
+      entry.target.style.transform = 'translateY(0)';
+    }
+  });
+}, { threshold: 0.1 });
+
+document.querySelectorAll('.stat-card, .card, .error-card, .deleg-card, .pros-card, .cons-card').forEach(el => {
+  el.style.opacity = '0';
+  el.style.transform = 'translateY(16px)';
+  el.style.transition = 'opacity .5s ease, transform .5s ease';
+  observer.observe(el);
+});
+</script>
+
+</body>
+</html>

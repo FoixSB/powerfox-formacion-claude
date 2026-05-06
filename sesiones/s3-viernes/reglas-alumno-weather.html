@@ -1,0 +1,599 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Weather App · Guía del Alumno · S3 Miércoles · Power Fox</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Instrument+Serif&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap');
+  :root {
+    --bg: #FAF7F2;
+    --ink: #1A1A1A;
+    --ink-mid: #4A4A4A;
+    --ink-light: #8A8A8A;
+    --paper: #FFFFFF;
+    --line: #E5E0D5;
+    --accent: #1F5C7A;
+    --accent-soft: #E5EEF3;
+    --gold: #C8932B;
+    --green: #4A7C2F;
+    --green-soft: #EEF3E8;
+    --red: #A33;
+    --red-soft: #F8E5E5;
+    --code-bg: #1F1B16;
+    --code-ink: #F4EFE5;
+    --r: 4px;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #0F1518;
+      --ink: #E8F0F4;
+      --ink-mid: #A8B5BC;
+      --ink-light: #6B7880;
+      --paper: #18222A;
+      --line: #2A3540;
+      --accent: #6FB5D5;
+      --accent-soft: #1A2A33;
+      --gold: #E0B14A;
+      --green: #8DB36A;
+      --green-soft: #1E2818;
+      --red: #D67373;
+      --red-soft: #2A1818;
+      --code-bg: #0A0F12;
+      --code-ink: #E8F0F4;
+    }
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: 'Inter', sans-serif;
+    background: var(--bg);
+    color: var(--ink);
+    line-height: 1.65;
+    font-size: 15px;
+  }
+  .top {
+    background: var(--ink);
+    color: var(--bg);
+    padding: 0.75rem 1.5rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 0.8rem;
+    font-family: 'JetBrains Mono', monospace;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+  }
+  .top .right { color: var(--gold); }
+  .container { max-width: 900px; margin: 0 auto; padding: 2rem 1.5rem; }
+
+  header.hero {
+    text-align: center;
+    padding: 3rem 0 2rem;
+    border-bottom: 1px solid var(--line);
+    margin-bottom: 2.5rem;
+  }
+  header.hero .eyebrow {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    color: var(--accent);
+    margin-bottom: 0.75rem;
+  }
+  header.hero h1 {
+    font-family: 'Instrument Serif', serif;
+    font-size: clamp(2rem, 5vw, 3.2rem);
+    font-weight: 400;
+    line-height: 1.1;
+    margin-bottom: 0.75rem;
+  }
+  header.hero h1 em { color: var(--accent); font-style: normal; }
+  header.hero p {
+    font-size: 1.05rem;
+    color: var(--ink-mid);
+    max-width: 680px;
+    margin: 0 auto;
+  }
+
+  .goal {
+    background: var(--accent-soft);
+    border-left: 3px solid var(--accent);
+    padding: 1rem 1.25rem;
+    margin-bottom: 2rem;
+    border-radius: var(--r);
+  }
+  .goal strong { color: var(--accent); }
+
+  section { margin-bottom: 2.5rem; scroll-margin-top: 1rem; }
+  .section-head {
+    display: flex;
+    align-items: baseline;
+    gap: 1rem;
+    border-bottom: 2px solid var(--ink);
+    padding-bottom: 0.6rem;
+    margin-bottom: 1rem;
+    flex-wrap: wrap;
+  }
+  .section-head .num {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.85rem;
+    color: var(--accent);
+    background: var(--accent-soft);
+    padding: 0.2rem 0.6rem;
+    border-radius: 3px;
+  }
+  .section-head h2 {
+    font-family: 'Instrument Serif', serif;
+    font-size: 1.8rem;
+    font-weight: 400;
+    flex: 1;
+  }
+  .section-head .duration {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.78rem;
+    color: var(--ink-light);
+  }
+
+  p { margin-bottom: 0.85rem; }
+  ul, ol { padding-left: 1.4rem; margin-bottom: 1rem; }
+  li { margin-bottom: 0.35rem; }
+
+  pre {
+    background: var(--code-bg);
+    color: var(--code-ink);
+    padding: 1rem 1.25rem;
+    border-radius: var(--r);
+    overflow-x: auto;
+    margin-bottom: 1rem;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.85rem;
+    line-height: 1.6;
+  }
+  code {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.88em;
+    background: var(--accent-soft);
+    color: var(--accent);
+    padding: 0.1rem 0.4rem;
+    border-radius: 3px;
+  }
+  pre code { background: transparent; color: inherit; padding: 0; }
+
+  .prompt-card {
+    background: var(--paper);
+    border: 1px solid var(--line);
+    border-radius: var(--r);
+    margin-bottom: 1.25rem;
+    overflow: hidden;
+  }
+  .prompt-head {
+    background: var(--bg);
+    padding: 0.85rem 1.25rem;
+    border-bottom: 1px solid var(--line);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.75rem;
+  }
+  .prompt-head .left { display: flex; align-items: center; gap: 0.75rem; }
+  .pnum {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.78rem;
+    background: var(--accent);
+    color: white;
+    padding: 0.25rem 0.55rem;
+    border-radius: 3px;
+    font-weight: 600;
+  }
+  .prompt-head h3 {
+    font-family: 'Instrument Serif', serif;
+    font-size: 1.2rem;
+    font-weight: 400;
+  }
+  .copy-btn {
+    background: var(--ink);
+    color: var(--bg);
+    border: 0;
+    padding: 0.45rem 0.9rem;
+    border-radius: 3px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.72rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    cursor: pointer;
+    transition: background 0.15s;
+  }
+  .copy-btn:hover { background: var(--accent); }
+  .copy-btn.copied { background: var(--green); color: white; }
+  .prompt-body {
+    background: var(--code-bg);
+    color: var(--code-ink);
+    padding: 1.25rem 1.5rem;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.83rem;
+    line-height: 1.6;
+    white-space: pre-wrap;
+    word-break: break-word;
+  }
+  .after {
+    padding: 1rem 1.5rem;
+    background: var(--green-soft);
+    border-top: 1px solid var(--line);
+  }
+  .after h4 {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.72rem;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    color: var(--green);
+    margin-bottom: 0.5rem;
+  }
+  .after ul { margin-bottom: 0; }
+
+  .warn, .tip {
+    padding: 0.85rem 1.1rem;
+    border-radius: var(--r);
+    margin-bottom: 1rem;
+    font-size: 0.95rem;
+  }
+  .warn {
+    background: var(--red-soft);
+    border-left: 3px solid var(--red);
+  }
+  .warn strong { color: var(--red); }
+  .tip {
+    background: var(--accent-soft);
+    border-left: 3px solid var(--accent);
+  }
+  .tip strong { color: var(--accent); }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 1.25rem;
+    font-size: 0.92rem;
+  }
+  th, td {
+    text-align: left;
+    padding: 0.55rem 0.85rem;
+    border-bottom: 1px solid var(--line);
+    vertical-align: top;
+  }
+  th {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.72rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: var(--ink-light);
+    font-weight: 500;
+  }
+
+  footer {
+    text-align: center;
+    padding: 2rem 0 3rem;
+    border-top: 1px solid var(--line);
+    margin-top: 3rem;
+    color: var(--ink-light);
+    font-size: 0.85rem;
+  }
+
+  @media (max-width: 600px) {
+    .container { padding: 1rem; }
+    .prompt-head { flex-direction: column; align-items: flex-start; }
+  }
+</style>
+</head>
+<body>
+
+<div class="top">
+  <span>Power Fox · Curso Claude Code</span>
+  <span class="right">S3 Miércoles · Weather App</span>
+</div>
+
+<div class="container">
+
+  <header class="hero">
+    <div class="eyebrow">Sesión 3 — Miércoles</div>
+    <h1>Construye tu <em>Weather App</em> con Claude</h1>
+    <p>Tu primera app real con Claude Code. En 2 horas pasas de carpeta vacía a una app de clima funcionando en tu navegador, con datos reales de cualquier ciudad del mundo.</p>
+  </header>
+
+  <div class="goal">
+    <strong>Objetivo de hoy:</strong> al final de la sesión tendrás <code>localhost:5173</code> abierto en tu navegador con tu propia weather app, buscando ciudades reales y mostrando el clima de los próximos 7 días.
+  </div>
+
+  <!-- SETUP -->
+  <section id="setup">
+    <div class="section-head">
+      <span class="num">SETUP</span>
+      <h2>Antes de empezar</h2>
+      <span class="duration">10 min</span>
+    </div>
+
+    <p>Abre la terminal en VS Code (<code>Ctrl + ñ</code> o <code>Ctrl + ´</code>). Sustituye <code>NOMBRE</code> por tu nombre en kebab-case (igual que tu carpeta en <code>/alumnos/</code>).</p>
+
+<pre><code># 1. Asegúrate de estar en main actualizada
+git switch main
+git pull
+
+# 2. Crea tu rama de trabajo
+git switch -c feature/weather-NOMBRE
+
+# 3. Crea la carpeta de tu app y métete dentro
+mkdir -p alumnos/NOMBRE/weather-report
+cd alumnos/NOMBRE/weather-report
+
+# 4. Verifica que estás en el sitio correcto
+pwd</code></pre>
+
+    <div class="warn"><strong>⚠ Trampa típica:</strong> si te saltas el <code>cd</code>, Claude generará archivos en la raíz del repo y romperá cosas. Antes de pegar el P1, repítete: <em>"estoy DENTRO de alumnos/MI-NOMBRE/weather-report"</em>.</div>
+
+    <p>Ahora abre Claude Code en esta carpeta (Cmd/Ctrl + Esc dentro de VS Code). Estás listo para el P1.</p>
+  </section>
+
+  <!-- P1 -->
+  <section id="p1">
+    <div class="section-head">
+      <span class="num">P1</span>
+      <h2>Crear la app con datos de prueba</h2>
+      <span class="duration">30 min</span>
+    </div>
+
+    <p>Vamos a crear el proyecto Vite + React de cero, con todos los componentes y datos hardcodeados de 3 ciudades (Madrid, Barcelona, Buenos Aires). Aún no tocamos APIs reales.</p>
+
+    <div class="prompt-card">
+      <div class="prompt-head">
+        <div class="left">
+          <span class="pnum">P1</span>
+          <h3>Scaffold + componentes + mocks</h3>
+        </div>
+        <button class="copy-btn" data-target="p1-body">Copiar</button>
+      </div>
+      <div class="prompt-body" id="p1-body">Crea una aplicación React + Vite llamada "weather-report" en la carpeta actual. Estructura:
+
+- src/App.jsx, src/main.jsx, src/App.css
+- src/components/SearchBar.jsx, WeatherCard.jsx, ForecastList.jsx
+- src/api/weather.js con función getWeatherByCity(city) que devuelve datos hardcodeados para tres ciudades: Madrid, Barcelona, Buenos Aires
+- package.json, vite.config.js, index.html, README.md corto en español
+
+Cada ciudad mock debe devolver: nombre, país, temperatura actual, descripción del clima, humedad, velocidad del viento, y un array de 7 días con día, máxima, mínima y código de clima.
+
+App.jsx muestra un SearchBar arriba, debajo el WeatherCard con la ciudad seleccionada, y abajo el ForecastList con los 7 días. Estado inicial: Madrid.
+
+Reglas duras:
+- No ejecutes npm install, lo lanzo yo
+- JavaScript plano, NO TypeScript
+- CSS plano, NO Tailwind ni librerías de UI
+- README en español, máximo 30 líneas</div>
+      <div class="after">
+        <h4>Después de pegar P1</h4>
+        <ul>
+          <li>Claude crea archivos. Acéptalos uno a uno o "Yes to all".</li>
+          <li>Cuando termine, en terminal: <code>npm install</code> y luego <code>npm run dev</code>.</li>
+          <li>Abre <code>http://localhost:5173</code> → deberías ver la app con Madrid pintado.</li>
+          <li>Prueba escribir "Barcelona" y "Buenos Aires" en el buscador.</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="tip"><strong>Si algo falla:</strong> dile a Claude el error exacto que ves en la terminal o en el navegador. Pega la captura o el texto. No reinventes la rueda — Claude debugea mejor con el error literal delante.</div>
+  </section>
+
+  <!-- P2 -->
+  <section id="p2">
+    <div class="section-head">
+      <span class="num">P2</span>
+      <h2>Conectar a la API real (Open-Meteo)</h2>
+      <span class="duration">40 min</span>
+    </div>
+
+    <p>Sustituimos los mocks por llamadas reales a Open-Meteo. Sin API key, sin registro. Después del P2 podrás buscar cualquier ciudad del mundo.</p>
+
+    <div class="prompt-card">
+      <div class="prompt-head">
+        <div class="left">
+          <span class="pnum">P2</span>
+          <h3>Reemplazar mocks por Open-Meteo</h3>
+        </div>
+        <button class="copy-btn" data-target="p2-body">Copiar</button>
+      </div>
+      <div class="prompt-body" id="p2-body">Modifica src/api/weather.js para sustituir los datos hardcodeados por llamadas reales a Open-Meteo. Usa fetch nativo del navegador (NO axios, NO librerías HTTP).
+
+Implementa tres funciones:
+
+1) geocodeCity(name) - llama a https://geocoding-api.open-meteo.com/v1/search?name={name}&count=1&language=es&format=json. Devuelve {lat, lon, country, displayName} o lanza Error("Ciudad no encontrada") si results está vacío.
+
+2) getWeather(lat, lon) - llama a https://api.open-meteo.com/v1/forecast?latitude={lat}&longitude={lon}&current_weather=true&daily=temperature_2m_max,temperature_2m_min,weathercode&timezone=auto. Devuelve los datos crudos de la API.
+
+3) getWeatherByCity(city) - orquesta las dos anteriores y devuelve un objeto normalizado con la misma forma que tenían los mocks: {city, country, temperature, description, humidity, windspeed, forecast: [{day, max, min, code}]}.
+
+Mapea el weathercode a una descripción en español (soleado, parcialmente nublado, nublado, lluvia ligera, lluvia, tormenta, nieve, niebla...). Crea un objeto WEATHER_CODES con el mapeo.
+
+App.jsx debe seguir funcionando igual: estado inicial buscar "Madrid", manejar loading y error. Si la búsqueda falla, mostrar el mensaje de error al usuario.
+
+Reglas duras:
+- fetch nativo, sin axios
+- Sin variables de entorno (.env), todas las URLs van directas
+- Si geocoding no devuelve resultados, lanza Error("Ciudad no encontrada")</div>
+      <div class="after">
+        <h4>Después de pegar P2</h4>
+        <ul>
+          <li>Recarga el navegador. Madrid debería seguir mostrándose, pero ahora con datos reales.</li>
+          <li>Prueba "Tokio", "Reykjavik", "Buenos Aires" — todas deben funcionar.</li>
+          <li>Prueba "Asdfgh" — debe mostrar "Ciudad no encontrada".</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="warn"><strong>⚠ Si ves CORS error:</strong> probablemente Claude metió la URL mal o intentó usar un proxy. Dile <em>"Open-Meteo permite CORS desde el navegador, llama a la URL directamente con fetch"</em>.</div>
+  </section>
+
+  <!-- P3 -->
+  <section id="p3">
+    <div class="section-head">
+      <span class="num">P3</span>
+      <h2>Pulido: estados, errores y forecast 7 días</h2>
+      <span class="duration">40 min</span>
+    </div>
+
+    <p>La app pasa de "demo cruda" a "se ve presentable". Estados de carga visibles, errores claros, forecast semanal con emoji por clima, y CSS legible en móvil.</p>
+
+    <div class="prompt-card">
+      <div class="prompt-head">
+        <div class="left">
+          <span class="pnum">P3</span>
+          <h3>UX, errores, forecast pintado</h3>
+        </div>
+        <button class="copy-btn" data-target="p3-body">Copiar</button>
+      </div>
+      <div class="prompt-body" id="p3-body">Mejora la weather app con los siguientes cambios:
+
+1) Estado de carga: mientras getWeatherByCity está pendiente, muestra "Cargando..." con un spinner CSS simple o texto pulsante. El SearchBar debe deshabilitarse durante la carga.
+
+2) Estado de error: si la llamada falla, muestra el mensaje de error en una caja roja con un botón "Reintentar" que vuelva a llamar a la última ciudad buscada.
+
+3) ForecastList completa: pinta los 7 días en una fila horizontal (en móvil, grid 2 columnas). Cada día muestra:
+   - Día de la semana en español abreviado (Lun, Mar, Mié, Jue, Vie, Sáb, Dom)
+   - Emoji según el weathercode (☀️ soleado, ⛅ parcial, ☁️ nublado, 🌧️ lluvia, ⛈️ tormenta, ❄️ nieve, 🌫️ niebla)
+   - Temperatura máxima y mínima
+
+4) Búsqueda automática inicial: al cargar la página, busca "Madrid" automáticamente (ya estaba, pero asegúrate de que use la API real, no mocks).
+
+5) CSS mejorado:
+   - WeatherCard centrada con max-width 500px
+   - Tipografía clara, contrastes suficientes
+   - Responsive: en pantallas <600px todo debe verse bien apilado
+   - Mantén CSS plano (sin Tailwind, sin styled-components)
+
+6) README actualizado en español: cómo correr la app, qué API usa, estructura de carpetas.
+
+Reglas duras:
+- Sin localStorage, sin geolocalización del navegador (lo dejamos fuera)
+- Sin librerías HTTP nuevas
+- Sin librerías de iconos (los emojis van en el JSX directo)</div>
+      <div class="after">
+        <h4>Después de pegar P3</h4>
+        <ul>
+          <li>Al recargar ves "Cargando..." brevemente, luego Madrid con su forecast.</li>
+          <li>Buscas una ciudad inexistente → caja roja con botón Reintentar.</li>
+          <li>Forecast muestra 7 días con emojis y temperaturas.</li>
+          <li>Reduces el ancho de la ventana → todo sigue legible.</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- CIERRE -->
+  <section id="cierre">
+    <div class="section-head">
+      <span class="num">CIERRE</span>
+      <h2>Commit y PR</h2>
+      <span class="duration">15 min</span>
+    </div>
+
+    <p>Cuando tu app funcione, commitea y abre PR.</p>
+
+<pre><code># Vuelve a la raíz del repo
+cd ../../..
+
+# Verifica qué vas a commitear
+git status
+
+# Añade y commitea
+git add alumnos/NOMBRE/weather-report
+git commit -m "feat(NOMBRE): weather app con Open-Meteo"
+
+# Sube tu rama y abre PR
+git push -u origin HEAD
+gh pr create --fill</code></pre>
+
+    <div class="warn"><strong>⚠ Antes de commitear:</strong> revisa que <code>node_modules/</code> NO esté en el commit. Si aparece, añade <code>node_modules/</code> a tu <code>.gitignore</code> dentro de la carpeta de la app.</div>
+  </section>
+
+  <!-- TROUBLESHOOTING -->
+  <section id="trouble">
+    <div class="section-head">
+      <span class="num">SOS</span>
+      <h2>Si algo no funciona</h2>
+    </div>
+
+    <table>
+      <thead>
+        <tr><th>Síntoma</th><th>Qué hacer</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><code>npm: command not found</code></td>
+          <td>Necesitas Node.js instalado. Avisa a Yeriel — instalación de Node se hace fuera de esta sesión.</td>
+        </tr>
+        <tr>
+          <td>Pantalla en blanco en localhost:5173</td>
+          <td>Abre la consola del navegador (F12 → Console). Copia el error y pégalo a Claude.</td>
+        </tr>
+        <tr>
+          <td>"Failed to fetch" / CORS</td>
+          <td>Verifica que la URL sea <code>https://api.open-meteo.com</code> (no http). Si insiste, díselo a Claude con el mensaje exacto.</td>
+        </tr>
+        <tr>
+          <td>Claude generó archivos en la raíz del repo</td>
+          <td>Para todo. Borra los archivos sueltos. Vuelve a hacer <code>cd alumnos/TU-NOMBRE/weather-report</code>. Repite el P1.</td>
+        </tr>
+        <tr>
+          <td>"Ciudad no encontrada" siempre</td>
+          <td>Open-Meteo Geocoding entiende español pero a veces falla con tildes. Prueba "Madrid", "Tokyo", "London".</td>
+        </tr>
+        <tr>
+          <td>El forecast no aparece</td>
+          <td>Revisa que <code>daily</code> tenga los tres parámetros en la URL: <code>temperature_2m_max,temperature_2m_min,weathercode</code>.</td>
+        </tr>
+        <tr>
+          <td>Vas atrasado y solo llegaste a P2</td>
+          <td>No pasa nada. Una app que pinta clima real es ya un éxito. Commitea lo que tengas.</td>
+        </tr>
+      </tbody>
+    </table>
+  </section>
+
+  <!-- RETOS -->
+  <section id="retos">
+    <div class="section-head">
+      <span class="num">+</span>
+      <h2>Retos opcionales (si terminas pronto)</h2>
+    </div>
+
+    <ul>
+      <li><strong>Geolocalización:</strong> al cargar, pedir permiso al navegador y mostrar el clima de tu ubicación actual en vez de Madrid.</li>
+      <li><strong>Última ciudad:</strong> guardar la última ciudad buscada en <code>localStorage</code> y usarla al recargar.</li>
+      <li><strong>Modo oscuro:</strong> toggle entre claro/oscuro con CSS variables.</li>
+      <li><strong>Unidades:</strong> botón para cambiar entre °C y °F.</li>
+    </ul>
+
+    <p>Para cualquiera de estos, abre Claude y describe lo que quieres. No copies un prompt nuevo entero — itera sobre lo que ya tienes.</p>
+  </section>
+
+  <footer>
+    Power Fox · Curso Claude Code · S3 Miércoles · Weather App por alumno
+  </footer>
+
+</div>
+
+<script>
+  document.querySelectorAll('.copy-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const id = btn.dataset.target;
+      const text = document.getElementById(id).textContent;
+      navigator.clipboard.writeText(text).then(() => {
+        const original = btn.textContent;
+        btn.textContent = '✓ Copiado';
+        btn.classList.add('copied');
+        setTimeout(() => {
+          btn.textContent = original;
+          btn.classList.remove('copied');
+        }, 1800);
+      });
+    });
+  });
+</script>
+
+</body>
+</html>

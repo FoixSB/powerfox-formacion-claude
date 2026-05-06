@@ -1,0 +1,375 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dataverse Skills — Tu agente de código ahora habla Dataverse | Power Fox</title>
+<script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700&family=JetBrains+Mono:wght@400;500&display=swap');
+  :root{--navy:#0B1D3A;--blue:#1565C0;--blue-light:#42A5F5;--accent:#FF6D00;--accent-soft:#FFF3E0;--bg:#F5F7FA;--card:#FFF;--text:#1A2332;--text-mid:#546E7A;--text-light:#90A4AE;--border:#E8EDF2;--code-bg:#1E1E2E;--green:#2E7D32;--green-soft:#E8F5E9;--red:#C62828;--red-soft:#FFEBEE;--purple:#6A1B9A;--purple-soft:#F3E5F5;--claude:#7C3AED;--agent:#DB2777;--ms:#0078D4;--ms-soft:#DEECF9;--r:12px}
+  *{margin:0;padding:0;box-sizing:border-box}body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);line-height:1.7}
+  .nav{display:flex;justify-content:space-between;align-items:center;padding:.75rem 1.5rem;background:var(--card);border-bottom:1px solid var(--border);position:sticky;top:0;z-index:100}.nav-logo{font-weight:700;font-size:.9rem;color:var(--navy);letter-spacing:1px}.nav-links{display:flex;gap:1rem}.nav-links a{font-size:.8rem;color:var(--text-mid);text-decoration:none;font-weight:500}
+  .hero{background:var(--navy);color:#fff;padding:3rem 2rem 2.5rem;position:relative;overflow:hidden}.hero::after{content:'';position:absolute;top:0;right:0;width:40%;height:100%;background:linear-gradient(135deg,transparent,rgba(0,120,212,.18),rgba(124,58,237,.12))}.hero-meta{display:flex;gap:1.5rem;flex-wrap:wrap;align-items:center;margin-bottom:1rem;position:relative;z-index:1}.hero-badge{background:var(--ms);color:#fff;padding:.25rem .75rem;border-radius:4px;font-size:.75rem;font-weight:700;letter-spacing:1.5px;text-transform:uppercase}.hero-week{font-size:.85rem;opacity:.7}.hero h1{font-size:2.2rem;font-weight:700;line-height:1.2;margin-bottom:.5rem;position:relative;z-index:1}.hero-sub{font-size:1rem;opacity:.8;position:relative;z-index:1;max-width:780px}.hero-time{display:inline-flex;align-items:center;gap:.4rem;background:rgba(255,255,255,.1);padding:.3rem .75rem;border-radius:6px;font-size:.85rem;margin-top:.75rem;position:relative;z-index:1}
+  .container{max-width:1100px;margin:0 auto;padding:2rem 1.5rem}
+  .section{margin-bottom:3rem}.section-header{display:flex;align-items:center;gap:.75rem;margin-bottom:1.25rem;padding-bottom:.75rem;border-bottom:2px solid var(--border);flex-wrap:wrap}.section-num{width:36px;height:36px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:.9rem;color:#fff;flex-shrink:0}.section-header h2{font-size:1.3rem;font-weight:700}.section-header .duration{margin-left:auto;font-size:.8rem;color:var(--text-light);font-weight:500}
+  .content-grid{display:grid;grid-template-columns:1fr 1fr;gap:1.25rem}@media(max-width:768px){.content-grid{grid-template-columns:1fr}}
+  .card{background:var(--card);border-radius:var(--r);padding:1.5rem;box-shadow:0 1px 4px rgba(0,0,0,.05);border:1px solid var(--border)}.card h3{font-size:1.05rem;font-weight:700;margin-bottom:.75rem;display:flex;align-items:center;gap:.5rem}.card p,.card li{font-size:.88rem;color:var(--text-mid)}.card ul{padding-left:1.25rem}.card li{margin-bottom:.35rem}.card-full{grid-column:1/-1}
+  .highlight-box{border-left:4px solid var(--accent);background:var(--accent-soft);padding:1rem 1.25rem;border-radius:0 var(--r) var(--r) 0;margin:1rem 0}.highlight-box p{font-size:.88rem;color:var(--text)}.tip-box{border-left:4px solid var(--green);background:var(--green-soft);padding:1rem 1.25rem;border-radius:0 var(--r) var(--r) 0;margin:1rem 0}.tip-box p{font-size:.88rem}.warn-box{border-left:4px solid var(--red);background:var(--red-soft);padding:1rem 1.25rem;border-radius:0 var(--r) var(--r) 0;margin:1rem 0}.warn-box p{font-size:.88rem}.ms-box{border-left:4px solid var(--ms);background:var(--ms-soft);padding:1rem 1.25rem;border-radius:0 var(--r) var(--r) 0;margin:1rem 0}.ms-box p{font-size:.88rem;color:var(--navy)}
+  .code-block{background:var(--code-bg);color:#CDD6F4;border-radius:8px;padding:1.25rem;font-family:'JetBrains Mono',monospace;font-size:.82rem;overflow-x:auto;margin:1rem 0;line-height:1.7;white-space:pre}.comment{color:#6C7086}.keyword{color:#CBA6F7}.string{color:#A6E3A1}.func{color:#89B4FA}.num{color:#FAB387}.prop{color:#F9E2AF}
+  .mermaid-wrap{background:var(--card);border-radius:var(--r);padding:1.5rem;border:1px solid var(--border);margin:1rem 0}.mermaid-wrap .mermaid{display:flex;justify-content:center}
+  .table-wrap{overflow-x:auto;margin:1rem 0}table{width:100%;border-collapse:collapse;font-size:.85rem;background:var(--card);border-radius:var(--r);overflow:hidden}th{background:var(--navy);color:#fff;padding:.65rem 1rem;text-align:left;font-size:.75rem;text-transform:uppercase;letter-spacing:.5px}td{padding:.6rem 1rem;border-bottom:1px solid var(--border);vertical-align:top;color:var(--text-mid);font-size:.85rem}td strong{color:var(--text)}tr:hover td{background:#F8FAFC}td code{background:#F1F3F5;color:var(--claude);padding:.1rem .35rem;border-radius:3px;font-family:'JetBrains Mono',monospace;font-size:.78rem}
+  .footer{text-align:center;padding:2rem;font-size:.8rem;color:var(--text-light);border-top:1px solid var(--border);margin-top:2rem}.footer strong{color:var(--navy)}
+  .ai-spotlight{background:linear-gradient(135deg,#1A1A2E,#2D2D4E);color:#fff;border-radius:var(--r);padding:2rem;margin:1.5rem 0;position:relative;overflow:hidden}.ai-spotlight::before{display:block;font-size:.7rem;font-weight:700;letter-spacing:2px;color:#A78BFA;margin-bottom:.75rem;content:'⚡ EL CAMBIO'}.ai-spotlight h3{font-size:1.3rem;font-weight:700;margin-bottom:.75rem;color:#fff}.ai-spotlight p{font-size:.95rem;color:#CDD6F4;margin-bottom:.5rem}
+  .skill-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:.85rem;margin:1rem 0}.skill-pill{background:var(--card);border:1px solid var(--border);border-left:4px solid var(--ms);border-radius:8px;padding:.9rem 1.1rem}.skill-pill h5{font-family:'JetBrains Mono',monospace;font-size:.85rem;font-weight:700;color:var(--ms);margin-bottom:.3rem}.skill-pill p{font-size:.82rem;color:var(--text-mid)}
+  .prompt-box{background:linear-gradient(135deg,#FFFDF7,#FFF3E0);border:1px solid var(--accent);border-radius:var(--r);padding:1rem 1.25rem;margin:.75rem 0;font-family:'JetBrains Mono',monospace;font-size:.85rem;color:var(--navy);position:relative}.prompt-box::before{content:'PROMPT';position:absolute;top:-9px;left:1rem;background:var(--accent);color:#fff;padding:.15rem .55rem;font-size:.6rem;font-weight:700;letter-spacing:1px;border-radius:3px;font-family:'DM Sans',sans-serif}
+  .compare-grid{display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin:1rem 0}@media(max-width:768px){.compare-grid{grid-template-columns:1fr}}.compare-card{padding:1.25rem;border-radius:var(--r);border:1px solid var(--border)}.compare-before{background:var(--red-soft);border-color:#EF9A9A}.compare-after{background:var(--green-soft);border-color:#A5D6A7}.compare-card h4{font-size:.95rem;font-weight:700;margin-bottom:.5rem}.compare-before h4{color:var(--red)}.compare-after h4{color:var(--green)}.compare-card p,.compare-card li{font-size:.85rem;color:var(--text)}.compare-card ul{padding-left:1.2rem;margin-top:.4rem}
+  .step-list{counter-reset:step;padding:0;list-style:none;margin:.5rem 0 1rem}.step-list li{counter-increment:step;position:relative;padding:.65rem 0 .65rem 2.5rem;border-bottom:1px dashed var(--border);font-size:.88rem;color:var(--text-mid)}.step-list li::before{content:counter(step);position:absolute;left:0;top:.6rem;width:1.75rem;height:1.75rem;background:var(--ms);color:#fff;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:.8rem}.step-list li:last-child{border-bottom:none}.step-list li strong{color:var(--text)}
+  .pill-row{display:flex;flex-wrap:wrap;gap:.4rem;margin:.5rem 0}.pill{background:#EDE9FE;color:var(--claude);padding:.2rem .65rem;border-radius:12px;font-size:.72rem;font-weight:600}.pill-ms{background:var(--ms-soft);color:var(--ms)}.pill-orange{background:var(--accent-soft);color:var(--accent)}
+</style>
+</head>
+<body>
+
+<nav class="nav"><div class="nav-logo">POWER FOX — Formación</div><div class="nav-links"><a href="#">S4</a><a href="#">Lunes</a><a href="#">Material complementario</a></div></nav>
+
+<div class="hero">
+  <div class="hero-meta"><span class="hero-badge">Material S4 · Lunes · Power Platform</span><span class="hero-week">2026-05-05 · Cápsula de 20 min</span></div>
+  <h1>Dataverse Skills · Tu agente de código ahora habla Dataverse</h1>
+  <p class="hero-sub">Microsoft acaba de publicar un plugin oficial — open source, MIT — que enseña a Claude Code y a GitHub Copilot a construir, consultar y administrar entornos de Dataverse usando lenguaje natural. Una sola instalación; el resto lo orquesta el agente.</p>
+  <div class="hero-time">⏱ Lectura: 8 min · Demo en clase: 12 min · Fuente: devblogs.microsoft.com (oct 2025)</div>
+</div>
+
+<div class="container">
+
+  <!-- ========== BLOQUE 1: QUÉ ES Y POR QUÉ NOS IMPORTA ========== -->
+  <div class="section">
+    <div class="section-header"><div class="section-num" style="background:var(--ms)">01</div><h2>Qué es Dataverse Skills</h2><span class="duration">2 min</span></div>
+
+    <div class="ai-spotlight">
+      <h3>🎯 La frase de Microsoft</h3>
+      <p><em>"Build, query, and manage Microsoft Dataverse through natural language."</em></p>
+      <p>Es un <strong>plugin oficial de Microsoft</strong>, open source bajo licencia MIT, que se instala en tu coding agent (Claude Code o GitHub Copilot) y le enseña a operar Dataverse. El usuario nunca invoca una skill directamente — describes la intención en español o inglés, y el agente decide qué skill cargar.</p>
+    </div>
+
+    <div class="content-grid">
+      <div class="card">
+        <h3>🧩 Cómo encaja con lo que ya sabéis</h3>
+        <p>En la S2 vimos qué son las <strong>skills</strong> y los <strong>agents</strong> en Claude Code. Esto es exactamente eso: un paquete de skills publicado por Microsoft, que se instala vía el sistema oficial de plugins.</p>
+        <ul>
+          <li>Se instala con <code>/plugin install</code> — sin clonar repos</li>
+          <li>Trae 8 skills especializadas (conectar, consultar, modelar, administrar…)</li>
+          <li>Levanta automáticamente un MCP server contra tu entorno Dataverse</li>
+          <li>Funciona con PAC CLI, Python SDK y Web API por debajo</li>
+        </ul>
+      </div>
+      <div class="card">
+        <h3>💼 Por qué nos importa en LitoClean</h3>
+        <p>Trabajamos con Dataverse a diario — soluciones, tablas, columnas, plugins, formularios, datos. Hoy todo eso pasa por <strong>maker.powerapps.com</strong> con clics y formularios.</p>
+        <ul>
+          <li>Crear una tabla con 8 columnas: ~5 minutos de clics</li>
+          <li>Importar un CSV: pasar por el wizard, mapear, esperar</li>
+          <li>Empaquetar una solución: <code>pac solution pack</code> + flags</li>
+        </ul>
+        <p style="margin-top:.5rem"><strong>Con Dataverse Skills:</strong> una frase. El agente hace el trabajo.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- ========== BLOQUE 2: ANTES / DESPUÉS ========== -->
+  <div class="section">
+    <div class="section-header"><div class="section-num" style="background:var(--accent)">02</div><h2>Antes vs. Después</h2><span class="duration">2 min</span></div>
+
+    <div class="compare-grid">
+      <div class="compare-card compare-before">
+        <h4>❌ Antes (flujo manual)</h4>
+        <ul>
+          <li>Abrir <code>make.powerapps.com</code></li>
+          <li>Seleccionar entorno correcto del dropdown</li>
+          <li>Solutions → New solution → rellenar formulario</li>
+          <li>Por cada tabla: New table → nombre → tipo → ownership…</li>
+          <li>Por cada columna: data type, required, searchable…</li>
+          <li>Crear relación lookup con otra tabla</li>
+          <li>Volver a la solution, añadir tabla manualmente</li>
+          <li>Importar CSV con el wizard de "Get data"</li>
+          <li>Total: <strong>30-60 minutos</strong> por solución pequeña</li>
+        </ul>
+      </div>
+      <div class="compare-card compare-after">
+        <h4>✅ Después (con Dataverse Skills)</h4>
+        <p style="font-style:italic;margin-bottom:.5rem">Un solo prompt en Claude Code:</p>
+        <div class="code-block" style="font-size:.78rem;margin:.5rem 0;padding:.75rem">"Crea una solución de Reclutamiento con tablas para
+Posiciones, Candidatos, Entrevistadores, Entrevistas
+y Feedback. Carga datos de ejemplo desde
+candidatos.csv y muéstrame las posiciones abiertas
+con más de 3 candidatos."</div>
+        <ul>
+          <li>El agente descubre el entorno y configura MCP</li>
+          <li>Crea solución vía PAC CLI</li>
+          <li>Construye tablas, columnas, relaciones</li>
+          <li>Genera y ejecuta Python para cargar el CSV</li>
+          <li>Lanza la query y te devuelve la respuesta</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- ========== BLOQUE 3: LAS 8 SKILLS ========== -->
+  <div class="section">
+    <div class="section-header"><div class="section-num" style="background:var(--claude)">03</div><h2>Las 8 skills incluidas</h2><span class="duration">3 min</span></div>
+
+    <p style="font-size:.9rem;color:var(--text-mid);margin-bottom:1rem">El agente las carga bajo demanda — no necesitas memorizarlas, pero conocerlas ayuda a entender qué puedes pedir.</p>
+
+    <div class="skill-grid">
+      <div class="skill-pill"><h5>dv-connect</h5><p>Setup inicial: instala CLI/SDK, autentica vía PAC CLI o Azure CLI, y registra el MCP server.</p></div>
+      <div class="skill-pill"><h5>dv-query</h5><p>Lee, filtra, pagina y agrega registros. Carga resultados en pandas DataFrames para analítica.</p></div>
+      <div class="skill-pill"><h5>dv-data</h5><p>CRUD, importaciones masivas, carga desde CSV, upserts con claves alternas.</p></div>
+      <div class="skill-pill"><h5>dv-metadata</h5><p>Diseña y modifica el modelo: tablas, columnas, relaciones, formularios y vistas.</p></div>
+      <div class="skill-pill"><h5>dv-solution</h5><p>Ciclo de vida de soluciones: crear, exportar, importar, mover entre entornos.</p></div>
+      <div class="skill-pill"><h5>dv-admin</h5><p>Administración del entorno: bulk delete, retención, auditoría, settings.</p></div>
+      <div class="skill-pill"><h5>dv-security</h5><p>Asignación de roles, accesos, business units, elevación de admin.</p></div>
+      <div class="skill-pill"><h5>dv-overview</h5><p>Routing transversal — el agente la usa para decidir qué otra skill cargar.</p></div>
+    </div>
+
+    <div class="ms-box"><p>📌 <strong>Las 3 fases que cubre el plugin:</strong> <em>Connect</em> (descubrir entorno y autenticar) → <em>Build</em> (crear solución, tablas, columnas, formularios, vistas) → <em>Operate</em> (cargar datos, consultar, perfilar calidad). Todo orquestado desde lenguaje natural.</p></div>
+  </div>
+
+  <!-- ========== BLOQUE 4: INSTALACIÓN ========== -->
+  <div class="section">
+    <div class="section-header"><div class="section-num" style="background:var(--green)">04</div><h2>Instalación — un solo comando</h2><span class="duration">3 min</span></div>
+
+    <div class="content-grid">
+      <div class="card">
+        <h3>📦 Para Claude Code</h3>
+        <div class="code-block">/plugin install dataverse@claude-plugins-official</div>
+        <p>Lo escribes dentro de Claude Code (en el prompt). Se instala como plugin oficial — igual que cualquier otro plugin del marketplace.</p>
+      </div>
+      <div class="card">
+        <h3>📦 Para GitHub Copilot</h3>
+        <div class="code-block">/plugin install dataverse@awesome-copilot</div>
+        <p>Funcionalidad idéntica — ambos agentes leen el mismo Markdown de definición de skills.</p>
+      </div>
+    </div>
+
+    <div class="section-header" style="margin-top:2rem"><div class="section-num" style="background:var(--accent)">▶</div><h2>Primera prueba después de instalar</h2></div>
+
+    <p style="font-size:.9rem;color:var(--text-mid)">No hay que configurar nada manualmente. Lanza este prompt y la skill <code>dv-connect</code> se encarga de todo:</p>
+
+    <div class="prompt-box">"Connect to Dataverse"</div>
+
+    <p style="font-size:.88rem;color:var(--text-mid);margin-top:.5rem">El agente:</p>
+    <ol class="step-list">
+      <li>Verifica que tienes <strong>PAC CLI</strong> y <strong>Python</strong> instalados (los instala si faltan)</li>
+      <li>Lanza <code>pac auth create</code> contra tu tenant — abre browser para login</li>
+      <li>Detecta tus entornos disponibles y te pregunta cuál usar</li>
+      <li>Registra un MCP server llamado <code>dataverse-&lt;orgname&gt;</code></li>
+      <li>Verifica con <code>pac auth list</code> que la conexión activa es correcta</li>
+    </ol>
+
+    <div class="tip-box"><p>✅ <strong>Cómo saber que funcionó:</strong> al final ves un MCP server <code>dataverse-{nombre-de-tu-org}</code> registrado en Claude Code, y <code>pac auth list</code> muestra el entorno activo.</p></div>
+
+    <div class="warn-box"><p>⚠️ <strong>Prerrequisito único:</strong> tener acceso a un entorno Dataverse — vía Power Apps, Dynamics 365, plan de Power Platform, o el <strong>Power Apps Developer Plan gratuito</strong>. Si todavía no tienes uno, regístrate en <a href="https://powerapps.microsoft.com/developerplan" style="color:var(--blue);font-weight:600">powerapps.microsoft.com/developerplan</a>.</p></div>
+  </div>
+
+  <!-- ========== BLOQUE 5: PROMPTS REALES ========== -->
+  <div class="section">
+    <div class="section-header"><div class="section-num" style="background:var(--accent)">05</div><h2>Catálogo de prompts que funcionan</h2><span class="duration">3 min</span></div>
+
+    <p style="font-size:.9rem;color:var(--text-mid);margin-bottom:1rem">Estos son los ejemplos que Microsoft incluye en su anuncio. Patrón claro: <strong>describe el resultado</strong>, no el método.</p>
+
+    <div class="content-grid">
+      <div class="card">
+        <h3>🔍 Consultas analíticas</h3>
+        <div class="prompt-box">"Show me my open deals over $100K closing this quarter"</div>
+        <div class="prompt-box">"List all contacts in Madrid with no activity in the last 90 days"</div>
+        <p>El agente traduce a OData/FetchXML, ejecuta y devuelve la respuesta tabulada.</p>
+      </div>
+      <div class="card">
+        <h3>📥 Importación de datos</h3>
+        <div class="prompt-box">"Import this CSV into the contacts table"</div>
+        <div class="prompt-box">"Bulk-load candidates.csv into pfx_candidate using email as alternate key"</div>
+        <p>Carga vía Python SDK con upserts — sin abrir el wizard del portal.</p>
+      </div>
+      <div class="card">
+        <h3>🏗️ Modelado</h3>
+        <div class="prompt-box">"Create a customer feedback table with name, rating, and comment columns"</div>
+        <div class="prompt-box">"Add a lookup from pfx_invoice to pfx_customer named Cliente"</div>
+        <p>Crea metadata y la añade a la solución activa automáticamente.</p>
+      </div>
+      <div class="card">
+        <h3>📦 Ciclo de vida</h3>
+        <div class="prompt-box">"Pull the schema and pack it into a solution"</div>
+        <div class="prompt-box">"Export the smart_project_solution as managed and deploy to UAT"</div>
+        <p>PAC CLI orquestado — sin recordar flags ni rutas.</p>
+      </div>
+      <div class="card">
+        <h3>🧹 Administración</h3>
+        <div class="prompt-box">"Bulk delete activities older than 2024"</div>
+        <p>Usa la API de bulk delete con job programado, no eliminación uno a uno.</p>
+      </div>
+      <div class="card">
+        <h3>🔐 Seguridad</h3>
+        <div class="prompt-box">"Add a teammate to the sales team on the dev environment"</div>
+        <p>Asigna roles vía la skill <code>dv-security</code>, controlando el entorno destino.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- ========== BLOQUE 6: CASO LITOCLEAN ========== -->
+  <div class="section">
+    <div class="section-header"><div class="section-num" style="background:var(--ms)">06</div><h2>Cómo lo aplicaríamos al caso de hoy</h2><span class="duration">3 min</span></div>
+
+    <p style="font-size:.9rem;color:var(--text-mid);margin-bottom:1rem">Hoy estamos analizando la Canvas App <strong>"Registro Semanal de Horas"</strong> (<code>pfx_weeklytimeentrypage_40d1a</code>) sobre la solución <code>smart_project_solution</code>. Esa solución vive en Dataverse, con tablas como <code>pfx_time_entry</code>, <code>pfx_time_entry_day</code>, <code>pfx_project</code>… Veamos qué podríamos pedirle a Claude Code con Dataverse Skills instalado:</p>
+
+    <div class="content-grid">
+      <div class="card">
+        <h3>📊 Auditoría rápida del modelo</h3>
+        <div class="prompt-box">"Lista las tablas de smart_project_solution con su recuento de columnas y de registros"</div>
+        <p>En lugar de abrir el portal y clicar tabla por tabla, una respuesta tabulada en segundos.</p>
+      </div>
+      <div class="card">
+        <h3>🔎 Detectar datos huérfanos</h3>
+        <div class="prompt-box">"¿Cuántos pfx_time_entry_day apuntan a cabeceras pfx_time_entry inexistentes?"</div>
+        <p>Cruzar tablas para encontrar inconsistencias — útil antes de desplegar a otro entorno.</p>
+      </div>
+      <div class="card">
+        <h3>🧪 Generar datos de prueba</h3>
+        <div class="prompt-box">"Crea 50 cabeceras pfx_time_entry de las últimas 4 semanas para 5 usuarios random, en estado Borrador"</div>
+        <p>Ideal para repoblar entornos de desarrollo sin scripts manuales.</p>
+      </div>
+      <div class="card">
+        <h3>📋 Snapshot de OptionSets</h3>
+        <div class="prompt-box">"Exporta los valores de pfx_time_entry_status_choice y pfx_role_choice a un Markdown"</div>
+        <p>Documenta los Choice (Borrador/Enviado/Aprobado/Rechazado…) sin abrir el solution explorer.</p>
+      </div>
+    </div>
+
+    <div class="highlight-box"><p>💡 <strong>El gancho:</strong> el documento <code>analisis-time-tracker.md</code> que estamos viendo hoy lo construyó Claude leyendo el YAML del <code>.msapp</code>. Con Dataverse Skills, podría ir más allá y consultar el Dataverse en vivo — combinar análisis estático del front (Canvas) con análisis dinámico del back (datos reales).</p></div>
+  </div>
+
+  <!-- ========== BLOQUE 7: ARQUITECTURA ========== -->
+  <div class="section">
+    <div class="section-header"><div class="section-num" style="background:var(--purple)">07</div><h2>Qué pasa por debajo</h2><span class="duration">2 min</span></div>
+
+    <div class="mermaid-wrap">
+      <div class="mermaid">
+flowchart LR
+    U[Tú escribes:<br/>'Crea una tabla<br/>de Feedback']
+    U --> CC[Claude Code]
+    CC -->|carga skill| DV[dv-overview]
+    DV -->|enruta a| MD[dv-metadata]
+    MD -->|usa| TOOLS{{Tooling}}
+    TOOLS --> PAC[PAC CLI]
+    TOOLS --> MCP[Dataverse<br/>MCP Server]
+    TOOLS --> PY[Python SDK]
+    TOOLS --> API[Web API]
+    PAC --> ENV[(Tu entorno<br/>Dataverse)]
+    MCP --> ENV
+    PY --> ENV
+    API --> ENV
+    style U fill:#FFF3E0,stroke:#FF6D00,color:#0B1D3A
+    style CC fill:#EDE9FE,stroke:#7C3AED,color:#0B1D3A
+    style DV fill:#DEECF9,stroke:#0078D4,color:#0B1D3A
+    style MD fill:#DEECF9,stroke:#0078D4,color:#0B1D3A
+    style ENV fill:#E8F5E9,stroke:#2E7D32,color:#0B1D3A
+      </div>
+    </div>
+
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Componente</th><th>Rol</th><th>Quién lo invoca</th></tr></thead>
+        <tbody>
+          <tr><td><strong>Claude Code</strong></td><td>Interpreta tu intención y selecciona skills</td><td>Tú, en lenguaje natural</td></tr>
+          <tr><td><strong>Skills (dv-*)</strong></td><td>Markdown con instrucciones específicas para cada tipo de tarea</td><td>Claude Code, automáticamente</td></tr>
+          <tr><td><strong>PAC CLI</strong></td><td>Crear solución, exportar/importar, autenticar entornos</td><td>Las skills, por shell</td></tr>
+          <tr><td><strong>Dataverse MCP Server</strong></td><td>Descubrir esquema en tiempo real</td><td>Las skills, vía MCP</td></tr>
+          <tr><td><strong>Python SDK</strong></td><td>Bulk operations, CSV, dataframes</td><td>Las skills, generando scripts</td></tr>
+          <tr><td><strong>Web API</strong></td><td>Queries OData/FetchXML</td><td>Las skills, vía HTTP</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- ========== BLOQUE 8: LIMITACIONES Y CIERRE ========== -->
+  <div class="section">
+    <div class="section-header"><div class="section-num" style="background:var(--red)">08</div><h2>Lo que aún NO hace (y consideraciones)</h2><span class="duration">2 min</span></div>
+
+    <div class="content-grid">
+      <div class="card">
+        <h3>🚫 Fuera de scope (por ahora)</h3>
+        <ul>
+          <li><strong>Plugins .NET de Dataverse</strong> — el plugin no genera ni registra ensamblados</li>
+          <li><strong>JavaScript de formularios</strong> — para eso seguimos con la skill propia <code>dataverse-form-javascript</code> de este repo</li>
+          <li><strong>Power Automate flows</strong> — no crea ni edita flujos</li>
+          <li><strong>Canvas Apps / Model-Driven UI</strong> — gestiona Dataverse, no la capa de aplicación</li>
+        </ul>
+      </div>
+      <div class="card">
+        <h3>⚠️ Buenas prácticas</h3>
+        <ul>
+          <li><strong>Empieza en un entorno Dev</strong> — bulk delete y cambios de schema son delicados</li>
+          <li>Revisa siempre el plan que el agente propone antes de aceptar</li>
+          <li>El plugin respeta los permisos de tu cuenta — no eleva privilegios</li>
+          <li>Los <code>pac auth</code> tokens viven en tu máquina; trátalos como credenciales</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="warn-box"><p>🔒 <strong>Repo público — recordatorio:</strong> al usar Dataverse Skills, el agente puede llegar a leer datos reales del entorno. <strong>Nunca peguéis</strong> nombres de proyectos reales, IDs de cliente o resultados de queries con datos sensibles en commits, prompts del repo público o capturas de pantalla compartidas.</p></div>
+  </div>
+
+  <!-- ========== ACCIÓN ========== -->
+  <div class="section">
+    <div class="section-header"><div class="section-num" style="background:var(--green)">▶</div><h2>Reto para esta semana</h2></div>
+
+    <div class="ai-spotlight" style="background:linear-gradient(135deg,#0B1D3A,#1565C0)">
+      <h3>🎯 Tu misión hasta el miércoles</h3>
+      <p><strong>1.</strong> Instala Dataverse Skills en tu Claude Code: <code style="background:#1E1E2E;padding:.2rem .5rem;border-radius:4px;color:#A6E3A1">/plugin install dataverse@claude-plugins-official</code></p>
+      <p><strong>2.</strong> Conecta a tu entorno de desarrollo de LitoClean: <em>"Connect to Dataverse"</em></p>
+      <p><strong>3.</strong> Lanza <em>tres</em> consultas reales sobre <code>smart_project_solution</code> — por ejemplo, contar registros por tabla, listar últimas 10 modificaciones, o resumir los Choice de <code>pfx_time_entry</code>.</p>
+      <p><strong>4.</strong> Documenta tus hallazgos en <code>/alumnos/[tu-nombre]/dataverse-skills-experimento.md</code> y abre PR.</p>
+    </div>
+
+    <div class="content-grid">
+      <div class="card">
+        <h3>🔗 Enlaces clave</h3>
+        <ul>
+          <li><a href="https://devblogs.microsoft.com/powerplatform/dataverse-skills-your-coding-agent-now-speaks-dataverse/" style="color:var(--blue);font-weight:600">Anuncio oficial · devblogs.microsoft.com</a></li>
+          <li><a href="https://github.com/microsoft/Dataverse-skills" style="color:var(--blue);font-weight:600">Repositorio · github.com/microsoft/Dataverse-skills</a></li>
+          <li><a href="https://aka.ms/dataversemcp" style="color:var(--blue);font-weight:600">Dataverse MCP Server · aka.ms/dataversemcp</a></li>
+          <li><a href="https://pypi.org/project/PowerPlatform-Dataverse-Client/" style="color:var(--blue);font-weight:600">Python SDK · PowerPlatform-Dataverse-Client</a></li>
+        </ul>
+      </div>
+      <div class="card">
+        <h3>🧠 Conexión con el resto del curso</h3>
+        <ul>
+          <li><strong>S1</strong> — instalamos Claude Code y vimos el sistema de plugins/skills</li>
+          <li><strong>S2</strong> — creamos skills propias en este repo</li>
+          <li><strong>S3</strong> — usamos el sistema de slash commands</li>
+          <li><strong>S4 (hoy)</strong> — un plugin oficial de Microsoft que aplica todo lo anterior a Dataverse</li>
+        </ul>
+        <p style="margin-top:.5rem">El patrón se repite: <strong>el ecosistema Claude Code crece</strong>, y los proveedores grandes están publicando sus propios paquetes oficiales.</p>
+      </div>
+    </div>
+
+    <div class="pill-row" style="justify-content:center;margin-top:1.5rem">
+      <span class="pill pill-ms">Microsoft</span>
+      <span class="pill">Claude Code</span>
+      <span class="pill pill-ms">Dataverse</span>
+      <span class="pill">MCP</span>
+      <span class="pill pill-orange">Open Source · MIT</span>
+      <span class="pill pill-orange">Power Platform</span>
+    </div>
+  </div>
+
+</div>
+
+<div class="footer">
+  <p><strong>Power Fox BI · Formación Claude Code</strong> · Sesión 4 · Lunes 2026-05-05</p>
+  <p>Material complementario · Cápsula de 20 min · Basado en el anuncio de Microsoft del plugin oficial Dataverse Skills</p>
+</div>
+
+<script>
+  mermaid.initialize({startOnLoad:true,theme:'base',themeVariables:{primaryColor:'#DEECF9',primaryTextColor:'#0B1D3A',primaryBorderColor:'#0078D4',lineColor:'#546E7A',fontFamily:'DM Sans, sans-serif'}});
+</script>
+</body>
+</html>

@@ -1,0 +1,462 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Power Automate — Standard, Premium y Claude Code | Power Fox</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700&family=JetBrains+Mono:wght@400;500&display=swap');
+  :root{--navy:#0B1D3A;--blue:#1565C0;--blue-light:#42A5F5;--accent:#FF6D00;--accent-soft:#FFF3E0;--bg:#F5F7FA;--card:#FFF;--text:#1A2332;--text-mid:#546E7A;--text-light:#90A4AE;--border:#E8EDF2;--code-bg:#1E1E2E;--green:#2E7D32;--green-soft:#E8F5E9;--red:#C62828;--red-soft:#FFEBEE;--purple:#6A1B9A;--purple-soft:#F3E5F5;--claude:#7C3AED;--gold:#B8860B;--gold-soft:#FFF8E1;--r:12px}
+  *{margin:0;padding:0;box-sizing:border-box}body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);line-height:1.7}
+  .nav{display:flex;justify-content:space-between;align-items:center;padding:.75rem 1.5rem;background:var(--card);border-bottom:1px solid var(--border);position:sticky;top:0;z-index:100}.nav-logo{font-weight:700;font-size:.9rem;color:var(--navy);letter-spacing:1px}.nav-links{display:flex;gap:1rem}.nav-links a{font-size:.8rem;color:var(--text-mid);text-decoration:none;font-weight:500}
+  .hero{background:var(--navy);color:#fff;padding:3rem 2rem 2.5rem;position:relative;overflow:hidden}.hero::after{content:'';position:absolute;top:0;right:0;width:40%;height:100%;background:linear-gradient(135deg,transparent,rgba(124,58,237,.18),rgba(255,109,0,.1))}.hero-meta{display:flex;gap:1.5rem;flex-wrap:wrap;align-items:center;margin-bottom:1rem;position:relative;z-index:1}.hero-badge{background:var(--claude);color:#fff;padding:.25rem .75rem;border-radius:4px;font-size:.75rem;font-weight:700;letter-spacing:1.5px;text-transform:uppercase}.hero-week{font-size:.85rem;opacity:.7}.hero h1{font-size:2.2rem;font-weight:700;line-height:1.2;margin-bottom:.5rem;position:relative;z-index:1}.hero-sub{font-size:1rem;opacity:.75;position:relative;z-index:1;max-width:760px}.hero-time{display:inline-flex;align-items:center;gap:.4rem;background:rgba(255,255,255,.1);padding:.3rem .75rem;border-radius:6px;font-size:.85rem;margin-top:.75rem;position:relative;z-index:1}
+  .container{max-width:1100px;margin:0 auto;padding:2rem 1.5rem}
+  .section{margin-bottom:3rem}.section-header{display:flex;align-items:center;gap:.75rem;margin-bottom:1.25rem;padding-bottom:.75rem;border-bottom:2px solid var(--border);flex-wrap:wrap}.section-num{width:36px;height:36px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:.9rem;color:#fff;flex-shrink:0}.section-header h2{font-size:1.3rem;font-weight:700}.section-header .duration{margin-left:auto;font-size:.8rem;color:var(--text-light);font-weight:500}
+  .content-grid{display:grid;grid-template-columns:1fr 1fr;gap:1.25rem}@media(max-width:768px){.content-grid{grid-template-columns:1fr}}
+  .card{background:var(--card);border-radius:var(--r);padding:1.5rem;box-shadow:0 1px 4px rgba(0,0,0,.05);border:1px solid var(--border)}.card h3{font-size:1.05rem;font-weight:700;margin-bottom:.75rem;display:flex;align-items:center;gap:.5rem}.card p,.card li{font-size:.88rem;color:var(--text-mid)}.card ul{padding-left:1.25rem}.card li{margin-bottom:.35rem}.card-full{grid-column:1/-1}
+  .highlight-box{border-left:4px solid var(--accent);background:var(--accent-soft);padding:1rem 1.25rem;border-radius:0 var(--r) var(--r) 0;margin:1rem 0}.highlight-box p{font-size:.88rem;color:var(--text)}.tip-box{border-left:4px solid var(--green);background:var(--green-soft);padding:1rem 1.25rem;border-radius:0 var(--r) var(--r) 0;margin:1rem 0}.tip-box p{font-size:.88rem}.warn-box{border-left:4px solid var(--red);background:var(--red-soft);padding:1rem 1.25rem;border-radius:0 var(--r) var(--r) 0;margin:1rem 0}.warn-box p{font-size:.88rem}
+  .code-block{background:var(--code-bg);color:#CDD6F4;border-radius:8px;padding:1.25rem;font-family:'JetBrains Mono',monospace;font-size:.78rem;overflow-x:auto;margin:1rem 0;line-height:1.6;white-space:pre}.comment{color:#6C7086}.keyword{color:#CBA6F7}.string{color:#A6E3A1}.func{color:#89B4FA}.num{color:#FAB387}.prop{color:#F9E2AF}
+  .table-wrap{overflow-x:auto;margin:1rem 0}table{width:100%;border-collapse:collapse;font-size:.85rem}th{background:var(--navy);color:#fff;padding:.6rem 1rem;text-align:left;font-size:.78rem;text-transform:uppercase;letter-spacing:.5px}td{padding:.6rem 1rem;border-bottom:1px solid var(--border);vertical-align:top}tr:hover td{background:#F8FAFC}
+  .footer{text-align:center;padding:2rem;font-size:.8rem;color:var(--text-light);border-top:1px solid var(--border);margin-top:2rem}.footer strong{color:var(--navy)}
+  .versus-grid{display:grid;grid-template-columns:1fr 1fr;gap:1.25rem;margin:1rem 0}@media(max-width:768px){.versus-grid{grid-template-columns:1fr}}
+  .plan-card{border-radius:var(--r);padding:1.5rem;border:2px solid;position:relative}.plan-standard{border-color:var(--blue);background:linear-gradient(180deg,#E3F2FD,#fff 60%)}.plan-premium{border-color:var(--gold);background:linear-gradient(180deg,var(--gold-soft),#fff 60%)}.plan-card .plan-tag{position:absolute;top:-12px;left:1rem;padding:.25rem .8rem;border-radius:4px;font-size:.7rem;font-weight:700;letter-spacing:1.5px;color:#fff}.plan-standard .plan-tag{background:var(--blue)}.plan-premium .plan-tag{background:var(--gold)}.plan-card h3{font-size:1.15rem;font-weight:700;margin:.5rem 0 .25rem;color:var(--text)}.plan-card .price{font-size:.95rem;color:var(--text-mid);margin-bottom:1rem;font-weight:500}.plan-card ul{padding-left:1.25rem;font-size:.86rem}.plan-card li{margin-bottom:.4rem;color:var(--text-mid)}.plan-card li strong{color:var(--text)}
+  .connector-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:.6rem;margin:1rem 0}.connector-pill{padding:.45rem .75rem;border-radius:6px;font-size:.78rem;font-weight:600;text-align:center;border:1px solid}.conn-std{background:#E3F2FD;color:var(--blue);border-color:#90CAF9}.conn-prem{background:var(--gold-soft);color:var(--gold);border-color:#E6C260}
+  .example-card{background:var(--card);border-radius:var(--r);padding:1.5rem;border:1px solid var(--border);margin-bottom:1.25rem;border-left:4px solid var(--accent)}.example-card .ex-title{display:flex;align-items:center;gap:.6rem;margin-bottom:.75rem;flex-wrap:wrap}.example-card .ex-num{width:30px;height:30px;border-radius:6px;background:var(--accent);color:#fff;font-weight:700;font-size:.85rem;display:flex;align-items:center;justify-content:center;flex-shrink:0}.example-card h3{font-size:1.05rem;font-weight:700;color:var(--text);margin:0}.example-card .ex-tag{font-size:.65rem;padding:.15rem .5rem;border-radius:4px;font-weight:700;letter-spacing:.5px;text-transform:uppercase;background:#E3F2FD;color:var(--blue);margin-left:auto}.flow-steps{counter-reset:step;list-style:none;padding:0;margin:.75rem 0}.flow-steps li{counter-increment:step;position:relative;padding:.5rem 0 .5rem 2.25rem;font-size:.86rem;color:var(--text-mid);border-bottom:1px dashed var(--border)}.flow-steps li::before{content:counter(step);position:absolute;left:0;top:.45rem;width:1.6rem;height:1.6rem;background:var(--blue);color:#fff;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:.75rem}.flow-steps li:last-child{border-bottom:none}.flow-steps li strong{color:var(--text)}.flow-steps .action-pill{display:inline-block;background:var(--accent-soft);color:var(--accent);padding:.05rem .4rem;border-radius:3px;font-family:'JetBrains Mono',monospace;font-size:.75rem;font-weight:600}
+  .ai-spotlight{background:linear-gradient(135deg,#1A1A2E,#2D2D4E);color:#fff;border-radius:var(--r);padding:2rem;margin:1.5rem 0;position:relative;overflow:hidden}.ai-spotlight::before{display:block;font-size:.7rem;font-weight:700;letter-spacing:2px;color:#A78BFA;margin-bottom:.75rem;content:'🤖 BLOQUE CLAVE — CLAUDE CODE'}.ai-spotlight h3{font-size:1.3rem;font-weight:700;margin-bottom:.75rem;color:#fff}.ai-spotlight p{font-size:.95rem;color:#CDD6F4;margin-bottom:.5rem}
+  .prompt-anchor{display:inline-flex;align-items:center;gap:.4rem;background:var(--claude);color:#fff;padding:.35rem .85rem;border-radius:6px;font-size:.78rem;font-weight:700;letter-spacing:.5px;margin:1rem 0 .5rem;font-family:'JetBrains Mono',monospace}.prompt-anchor::before{content:'⚡'}
+  .pipeline{display:flex;align-items:center;justify-content:center;gap:.5rem;flex-wrap:wrap;background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:1.25rem;margin:1rem 0}.pipeline-step{padding:.6rem 1rem;border-radius:8px;font-size:.8rem;font-weight:600;text-align:center;min-width:130px;color:#fff}.ps-blue{background:var(--blue)}.ps-purple{background:var(--claude)}.ps-orange{background:var(--accent)}.ps-green{background:var(--green)}.pipeline-arrow{color:var(--text-light);font-size:1.2rem;font-weight:700}
+  .qa-grid{display:grid;grid-template-columns:1fr 1fr;gap:1rem}@media(max-width:768px){.qa-grid{grid-template-columns:1fr}}.qa-card{background:var(--purple-soft);border-radius:var(--r);padding:1.25rem;border:1px solid #CE93D8}.qa-card p{font-size:.88rem;color:var(--claude);font-weight:500}
+</style>
+</head>
+<body>
+
+<nav class="nav"><div class="nav-logo">POWER FOX — Formación</div><div class="nav-links"><a href="#standard-premium">Standard vs Premium</a><a href="#ejemplos">Ejemplos</a><a href="#claude-tool">Claude Code</a></div></nav>
+
+<div class="hero">
+  <div class="hero-meta"><span class="hero-badge">Power Automate · Claude Code</span><span class="hero-week">Material complementario</span></div>
+  <h1>Power Automate — Standard, Premium y Claude Code</h1>
+  <p class="hero-sub">Diferencias reales entre licencias, qué conectores entran en cada plan, ejemplos prácticos de flujos Standard que puedes montar hoy mismo y cómo usar Claude Code para leer, debuggear y rediseñar flujos desde su JSON.</p>
+  <div class="hero-time">⏱ Material de referencia · 8 secciones · 5 ejemplos prácticos</div>
+</div>
+
+<div class="container">
+
+  <!-- ========== BLOQUE 1: ¿QUÉ ES PA? ========== -->
+  <div class="section">
+    <div class="section-header"><div class="section-num" style="background:var(--blue)">01</div><h2>Qué es Power Automate y para qué sirve</h2></div>
+    <div class="content-grid">
+      <div class="card">
+        <h3>🔄 La idea base</h3>
+        <p>Power Automate es la herramienta de automatización low-code de Microsoft. Permite encadenar acciones entre servicios mediante <strong>triggers</strong> (algo pasa) y <strong>acciones</strong> (entonces haz X).</p>
+        <p style="margin-top:.5rem">Bajo el capó cada flujo es <strong>JSON</strong>: una definición declarativa con <code>triggers</code>, <code>actions</code>, <code>connectionReferences</code> y <code>parameters</code>. Eso es justo lo que vamos a aprovechar más adelante con Claude Code.</p>
+      </div>
+      <div class="card">
+        <h3>🧩 Tres tipos de flujos</h3>
+        <ul>
+          <li><strong>Cloud flows:</strong> automáticos (trigger), instantáneos (botón) o programados.</li>
+          <li><strong>Desktop flows (RPA):</strong> grabación de UI, requiere licencia Premium.</li>
+          <li><strong>Business process flows:</strong> guías visuales en Model-Driven Apps.</li>
+        </ul>
+        <div class="tip-box">
+          <p>💡 El 90% del valor en empresas medianas está en los <strong>cloud flows</strong>. Es por donde recomendamos empezar.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ========== BLOQUE 2: STANDARD VS PREMIUM ========== -->
+  <div class="section" id="standard-premium">
+    <div class="section-header"><div class="section-num" style="background:var(--gold)">02</div><h2>Standard vs Premium — La gran diferencia</h2></div>
+
+    <p style="font-size:.92rem;color:var(--text-mid);margin-bottom:1rem">La línea divisoria principal en Power Automate <strong>no es la potencia del motor</strong> — es a qué <strong>conectores</strong> tienes acceso y cuántas ejecuciones puedes hacer. Todo el resto del producto (triggers, condicionales, bucles, scopes) está disponible en ambos planes.</p>
+
+    <div class="versus-grid">
+      <div class="plan-card plan-standard">
+        <span class="plan-tag">STANDARD</span>
+        <h3>Power Automate Standard</h3>
+        <p class="price">Incluido en tu licencia Microsoft 365 (E3, E5, Business Premium...)</p>
+        <ul>
+          <li><strong>Conectores estándar:</strong> Outlook, SharePoint, OneDrive, Teams, Forms, Planner, Excel Online, OneNote, Power BI</li>
+          <li><strong>Cloud flows automáticos, instantáneos y programados</strong></li>
+          <li><strong>Aprobaciones</strong> integradas en Teams y Outlook</li>
+          <li><strong>Hasta 6.000 acciones / usuario / día</strong> (Microsoft 365)</li>
+          <li><strong>Sin coste adicional</strong> si ya tienes M365</li>
+        </ul>
+      </div>
+      <div class="plan-card plan-premium">
+        <span class="plan-tag">PREMIUM</span>
+        <h3>Power Automate Premium</h3>
+        <p class="price">~15 $/usuario/mes o ~100 $/flujo/mes (per-flow plan)</p>
+        <ul>
+          <li><strong>Todos los conectores Premium:</strong> Dataverse, SQL Server, HTTP, Custom Connectors, ServiceNow, Salesforce, SAP, Oracle…</li>
+          <li><strong>Conector HTTP genérico</strong> (cualquier API REST)</li>
+          <li><strong>RPA (Desktop flows)</strong> con o sin asistente</li>
+          <li><strong>AI Builder</strong> (incluye créditos)</li>
+          <li><strong>Process Mining</strong> y Hosted Machines</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="warn-box">
+      <p>⚠️ <strong>Trampa habitual:</strong> usar el conector Dataverse en un flujo "Standard" lo convierte automáticamente en <strong>Premium</strong>. La solución no se podrá importar en un entorno donde los usuarios no tengan licencia Premium. Microsoft te avisa con un icono de diamante 💎 en cada acción premium.</p>
+    </div>
+  </div>
+
+  <!-- ========== BLOQUE 3: CONECTORES ========== -->
+  <div class="section">
+    <div class="section-header"><div class="section-num" style="background:var(--blue)">03</div><h2>Conectores — el corazón del producto</h2></div>
+
+    <div class="card card-full">
+      <h3>🔌 Conectores Standard más usados (incluidos en M365)</h3>
+      <div class="connector-grid">
+        <div class="connector-pill conn-std">Office 365 Outlook</div>
+        <div class="connector-pill conn-std">SharePoint</div>
+        <div class="connector-pill conn-std">OneDrive Business</div>
+        <div class="connector-pill conn-std">Microsoft Teams</div>
+        <div class="connector-pill conn-std">Microsoft Forms</div>
+        <div class="connector-pill conn-std">Excel Online (Business)</div>
+        <div class="connector-pill conn-std">Planner</div>
+        <div class="connector-pill conn-std">Approvals</div>
+        <div class="connector-pill conn-std">Office 365 Users</div>
+        <div class="connector-pill conn-std">OneNote</div>
+        <div class="connector-pill conn-std">Power BI</div>
+        <div class="connector-pill conn-std">RSS</div>
+        <div class="connector-pill conn-std">Variables/Date Time</div>
+        <div class="connector-pill conn-std">Notifications</div>
+      </div>
+    </div>
+
+    <div class="card card-full" style="margin-top:1rem">
+      <h3>💎 Conectores Premium (requieren licencia adicional)</h3>
+      <div class="connector-grid">
+        <div class="connector-pill conn-prem">Dataverse</div>
+        <div class="connector-pill conn-prem">HTTP</div>
+        <div class="connector-pill conn-prem">SQL Server</div>
+        <div class="connector-pill conn-prem">Azure Blob Storage</div>
+        <div class="connector-pill conn-prem">Custom Connector</div>
+        <div class="connector-pill conn-prem">Salesforce</div>
+        <div class="connector-pill conn-prem">ServiceNow</div>
+        <div class="connector-pill conn-prem">SAP ERP</div>
+        <div class="connector-pill conn-prem">Oracle DB</div>
+        <div class="connector-pill conn-prem">AI Builder</div>
+        <div class="connector-pill conn-prem">Azure DevOps</div>
+        <div class="connector-pill conn-prem">Adobe PDF</div>
+        <div class="connector-pill conn-prem">DocuSign</div>
+        <div class="connector-pill conn-prem">Power Apps (avanzado)</div>
+      </div>
+    </div>
+
+    <div class="highlight-box">
+      <p><strong>Regla mental rápida:</strong> si el conector empieza por "Office 365", "Microsoft" (Teams, Forms, Planner, OneDrive, OneNote) o es "Approvals", muy probablemente es Standard. Si conecta con bases de datos, ERPs externos, APIs genéricas o IA, casi seguro es Premium.</p>
+    </div>
+  </div>
+
+  <!-- ========== BLOQUE 4: LIMITACIONES Y CUOTAS ========== -->
+  <div class="section">
+    <div class="section-header"><div class="section-num" style="background:var(--red)">04</div><h2>Limitaciones reales del plan Standard</h2></div>
+    <div class="content-grid">
+      <div class="card">
+        <h3>🚫 Lo que NO puedes hacer en Standard</h3>
+        <ul>
+          <li>Llamar a APIs REST genéricas (no hay conector HTTP)</li>
+          <li>Leer/escribir en Dataverse (tablas custom)</li>
+          <li>Conectar a SQL Server, Oracle, MySQL on-prem</li>
+          <li>Usar AI Builder (form processing, prediction…)</li>
+          <li>Crear Custom Connectors</li>
+          <li>RPA (automatización de UI de escritorio)</li>
+        </ul>
+      </div>
+      <div class="card">
+        <h3>📊 Cuotas y límites diarios</h3>
+        <div class="table-wrap">
+          <table>
+            <tr><th>Plan</th><th>Acciones/día</th><th>Frecuencia mín. trigger</th></tr>
+            <tr><td>M365 Standard</td><td>6.000 / usuario</td><td>5 min</td></tr>
+            <tr><td>Power Automate Premium</td><td>40.000 / usuario</td><td>1 min</td></tr>
+            <tr><td>Per Flow</td><td>250.000 / flujo</td><td>1 min</td></tr>
+          </table>
+        </div>
+        <div class="tip-box">
+          <p>💡 Las acciones en bucles (<strong>Apply to each</strong>) cuentan cada iteración. Un flujo con 100 elementos × 5 acciones = 500 ejecuciones contra tu cuota.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ========== BLOQUE 5: EJEMPLOS PRÁCTICOS STANDARD ========== -->
+  <div class="section" id="ejemplos">
+    <div class="section-header"><div class="section-num" style="background:var(--accent)">05</div><h2>5 Ejemplos prácticos con Power Automate Standard</h2></div>
+
+    <p style="font-size:.92rem;color:var(--text-mid);margin-bottom:1.25rem">Todos estos flujos se montan con conectores incluidos en cualquier licencia M365. Cero coste extra. Tiempo medio de implementación: 15–30 min cada uno.</p>
+
+    <!-- Ejemplo 1 -->
+    <div class="example-card">
+      <div class="ex-title">
+        <div class="ex-num">1</div>
+        <h3>Backup automático de adjuntos de Outlook → OneDrive</h3>
+        <span class="ex-tag">Standard</span>
+      </div>
+      <p><strong>Caso de uso:</strong> archivar facturas, contratos o partes de trabajo que llegan por email sin que el usuario tenga que descargar nada.</p>
+      <ol class="flow-steps">
+        <li><strong>Trigger:</strong> <span class="action-pill">Outlook · When a new email arrives (V3)</span> filtrado por carpeta o asunto</li>
+        <li><strong>Condición:</strong> "Has Attachments = true" para evitar ejecuciones vacías</li>
+        <li><strong>Apply to each</strong> sobre <code>Attachments</code></li>
+        <li><strong>Acción:</strong> <span class="action-pill">OneDrive · Create file</span> en una carpeta organizada por año/mes con <code>formatDateTime(utcNow(),'yyyy/MM')</code></li>
+        <li><strong>Acción opcional:</strong> <span class="action-pill">Outlook · Mark as read</span> + mover a carpeta "Procesados"</li>
+      </ol>
+      <div class="tip-box"><p>💡 Filtra con <strong>"Importance" = High</strong> o un asunto regex para evitar archivar spam. La cuota Standard se gasta rápido si no filtras.</p></div>
+    </div>
+
+    <!-- Ejemplo 2 -->
+    <div class="example-card">
+      <div class="ex-title">
+        <div class="ex-num">2</div>
+        <h3>Formulario interno → Email + canal de Teams</h3>
+        <span class="ex-tag">Standard</span>
+      </div>
+      <p><strong>Caso de uso:</strong> solicitudes internas (acceso, hardware, vacaciones, incidencias) sin pasar por correo manual.</p>
+      <ol class="flow-steps">
+        <li><strong>Trigger:</strong> <span class="action-pill">Forms · When a new response is submitted</span></li>
+        <li><strong>Acción:</strong> <span class="action-pill">Forms · Get response details</span></li>
+        <li><strong>Acción:</strong> <span class="action-pill">Office 365 Users · Get manager (V2)</span> del solicitante</li>
+        <li><strong>Acción:</strong> <span class="action-pill">Outlook · Send an email (V2)</span> al manager con plantilla HTML</li>
+        <li><strong>Acción:</strong> <span class="action-pill">Teams · Post message in a chat or channel</span> en el canal del equipo</li>
+      </ol>
+      <div class="highlight-box"><p>🎯 Multiplica por 10 la velocidad de respuesta de RR. HH. o IT comparado con un buzón compartido. Se monta en 20 min.</p></div>
+    </div>
+
+    <!-- Ejemplo 3 -->
+    <div class="example-card">
+      <div class="ex-title">
+        <div class="ex-num">3</div>
+        <h3>Aprobación de gasto sobre lista de SharePoint</h3>
+        <span class="ex-tag">Standard</span>
+      </div>
+      <p><strong>Caso de uso:</strong> el equipo apunta gastos pendientes en una SharePoint List; los superiores a 500 € requieren aprobación del manager.</p>
+      <ol class="flow-steps">
+        <li><strong>Trigger:</strong> <span class="action-pill">SharePoint · When an item is created</span></li>
+        <li><strong>Condición:</strong> <code>Amount &gt; 500</code></li>
+        <li><strong>Acción:</strong> <span class="action-pill">Approvals · Start and wait for an approval</span> (tipo Approve/Reject)</li>
+        <li><strong>Switch sobre <code>outcome</code>:</strong>
+          <ul style="margin-top:.4rem">
+            <li><em>Approve:</em> SharePoint · Update item con estado "Aprobado" + email al solicitante</li>
+            <li><em>Reject:</em> SharePoint · Update item con motivo + email</li>
+          </ul>
+        </li>
+      </ol>
+      <div class="warn-box"><p>⚠️ Las aprobaciones tienen <strong>30 días</strong> de timeout por defecto. Si nadie responde, el flujo expira. Configura recordatorios o reasignación.</p></div>
+    </div>
+
+    <!-- Ejemplo 4 -->
+    <div class="example-card">
+      <div class="ex-title">
+        <div class="ex-num">4</div>
+        <h3>Resumen diario de tareas Planner pendientes → Teams</h3>
+        <span class="ex-tag">Standard</span>
+      </div>
+      <p><strong>Caso de uso:</strong> cada mañana a las 8:30 cada miembro del equipo recibe en su chat de Teams un resumen de tareas Planner asignadas con vencimiento en los próximos 7 días.</p>
+      <ol class="flow-steps">
+        <li><strong>Trigger:</strong> <span class="action-pill">Schedule · Recurrence</span> (días laborables 8:30)</li>
+        <li><strong>Acción:</strong> <span class="action-pill">Planner · List my tasks</span> filtradas por <code>dueDateTime &lt; addDays(utcNow(),7)</code></li>
+        <li><strong>Compose:</strong> construir Adaptive Card con la lista en HTML/Markdown</li>
+        <li><strong>Acción:</strong> <span class="action-pill">Teams · Post adaptive card in a chat with Flow bot</span></li>
+      </ol>
+      <div class="tip-box"><p>💡 Variante: en vez de Planner usa <strong>To Do</strong> (también Standard) para tareas personales. Mismo patrón.</p></div>
+    </div>
+
+    <!-- Ejemplo 5 -->
+    <div class="example-card">
+      <div class="ex-title">
+        <div class="ex-num">5</div>
+        <h3>Onboarding: nuevo empleado → kit completo</h3>
+        <span class="ex-tag">Standard</span>
+      </div>
+      <p><strong>Caso de uso:</strong> cuando RR. HH. añade una fila en la SharePoint List "Altas", se dispara una cadena de bienvenida automática.</p>
+      <ol class="flow-steps">
+        <li><strong>Trigger:</strong> <span class="action-pill">SharePoint · When an item is created</span> en la lista "Altas"</li>
+        <li><strong>Acción:</strong> <span class="action-pill">OneDrive · Copy file</span> de la carpeta "Plantillas onboarding" a una carpeta personal del nuevo empleado</li>
+        <li><strong>Acción:</strong> <span class="action-pill">Outlook · Send email</span> con el welcome pack al manager</li>
+        <li><strong>Acción:</strong> <span class="action-pill">Planner · Create a task</span> "Completar onboarding {{nombre}}" asignada al manager</li>
+        <li><strong>Acción:</strong> <span class="action-pill">Teams · Post message</span> en el canal #bienvenidas</li>
+      </ol>
+      <div class="highlight-box"><p>🎯 Sustituye un proceso típicamente de 4 personas y 6 emails por un flujo de 12 acciones que tarda 2 segundos.</p></div>
+    </div>
+  </div>
+
+  <!-- ========== BLOQUE 6: CLAUDE CODE + JSON ========== -->
+  <div class="section" id="claude-tool">
+    <div class="section-header"><div class="section-num" style="background:var(--claude)">06</div><h2>Power Automate Tool — Claude Code lee tu flujo en JSON</h2></div>
+
+    <div class="ai-spotlight">
+      <h3>La idea: cada flujo es un JSON que Claude Code puede entender</h3>
+      <p>Cuando exportas un flujo desde Power Automate (Solución → Exportar como ZIP → descomprimir), dentro encuentras <code>workflow/[guid]/definition.json</code> con la estructura completa: triggers, acciones, condiciones, expresiones de Power FX y referencias a conexiones.</p>
+      <p>Eso permite usar Claude Code como un <strong>copiloto que entiende tu flujo a nivel código</strong>: te lo explica, te lo refactoriza, te lo migra, te lo documenta o te genera uno nuevo desde requisitos.</p>
+    </div>
+
+    <h3 style="font-size:1.05rem;margin:1.25rem 0 .5rem">🔁 Workflow recomendado</h3>
+    <div class="pipeline">
+      <div class="pipeline-step ps-blue">1. Exportar<br><small>solución ZIP</small></div>
+      <div class="pipeline-arrow">→</div>
+      <div class="pipeline-step ps-orange">2. Abrir JSON<br><small>en VS Code</small></div>
+      <div class="pipeline-arrow">→</div>
+      <div class="pipeline-step ps-purple">3. Pedir a Claude<br><small>analizar / mejorar</small></div>
+      <div class="pipeline-arrow">→</div>
+      <div class="pipeline-step ps-green">4. Re-importar<br><small>solución actualizada</small></div>
+    </div>
+
+    <div class="content-grid">
+      <div class="card">
+        <h3>📂 Cómo localizar el JSON</h3>
+        <ol style="padding-left:1.25rem;font-size:.88rem;color:var(--text-mid)">
+          <li>En <em>make.powerautomate.com</em> abre la <strong>Solución</strong> que contiene el flujo</li>
+          <li><strong>Exportar &gt; Exportar como no administrada</strong> → descarga un .zip</li>
+          <li>Descomprime localmente. La estructura es: <code>Workflows/[NombreFlujo]-[GUID].json</code></li>
+          <li>Cada flujo tiene su <code>clientdata</code> con la definición completa en <code>$schema</code> y <code>actions</code></li>
+        </ol>
+        <div class="warn-box"><p>⚠️ El flujo debe estar dentro de una <strong>solución</strong>, no en "Mis flujos". Si está fuera, primero añádelo a una solución.</p></div>
+      </div>
+
+      <div class="card">
+        <h3>🧠 Qué le puedes pedir a Claude Code</h3>
+        <ul>
+          <li><strong>Auditoría:</strong> detectar conectores Premium ocultos, conexiones hardcodeadas, secretos en claro</li>
+          <li><strong>Documentación:</strong> generar un README explicando el flujo paso a paso</li>
+          <li><strong>Migración:</strong> reemplazar referencias de un entorno DEV → PROD</li>
+          <li><strong>Refactor:</strong> dividir un flujo gigante (&gt;50 acciones) en child flows</li>
+          <li><strong>Generación:</strong> a partir de un texto de requisitos, producir un JSON que importes directamente</li>
+        </ul>
+      </div>
+    </div>
+
+    <h3 style="font-size:1.05rem;margin:1.5rem 0 .5rem">🔍 Anatomía de un flujo en JSON (ejemplo simplificado)</h3>
+<pre class="code-block">{
+  <span class="prop">"properties"</span>: {
+    <span class="prop">"connectionReferences"</span>: {
+      <span class="prop">"shared_office365"</span>: {
+        <span class="prop">"connection"</span>: { <span class="prop">"connectionReferenceLogicalName"</span>: <span class="string">"new_outlookConnRef"</span> },
+        <span class="prop">"api"</span>: { <span class="prop">"name"</span>: <span class="string">"shared_office365"</span> }
+      }
+    },
+    <span class="prop">"definition"</span>: {
+      <span class="prop">"$schema"</span>: <span class="string">"https://schema.management.azure.com/.../workflowdefinition.json#"</span>,
+      <span class="prop">"triggers"</span>: {
+        <span class="prop">"When_a_new_email_arrives"</span>: {
+          <span class="prop">"type"</span>: <span class="string">"OpenApiConnectionWebhook"</span>,
+          <span class="prop">"inputs"</span>: { <span class="prop">"parameters"</span>: { <span class="prop">"importance"</span>: <span class="string">"High"</span> } }
+        }
+      },
+      <span class="prop">"actions"</span>: {
+        <span class="prop">"Apply_to_each_attachment"</span>: {
+          <span class="prop">"type"</span>: <span class="string">"Foreach"</span>,
+          <span class="prop">"foreach"</span>: <span class="string">"@triggerOutputs()?['body/attachments']"</span>,
+          <span class="prop">"actions"</span>: {
+            <span class="prop">"Create_file"</span>: {
+              <span class="prop">"type"</span>: <span class="string">"OpenApiConnection"</span>,
+              <span class="prop">"inputs"</span>: {
+                <span class="prop">"parameters"</span>: {
+                  <span class="prop">"folderPath"</span>: <span class="string">"/BackupOutlook/@{formatDateTime(utcNow(),'yyyy/MM')}"</span>,
+                  <span class="prop">"name"</span>: <span class="string">"@{items('Apply_to_each_attachment')?['name']}"</span>
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}</pre>
+    <p style="font-size:.86rem;color:var(--text-mid);margin-top:.5rem">Este JSON es <strong>el ejemplo nº 1</strong> (backup de adjuntos) en su forma exportada. Claude Code puede leerlo, validarlo y proponerte añadir un Scope de Try/Catch sin que abras Power Automate.</p>
+
+    <h3 style="font-size:1.05rem;margin:1.5rem 0 .5rem">⚡ Prompts útiles para esta workflow</h3>
+
+    <div class="prompt-anchor">@auditar-flujo</div>
+<pre class="code-block">Lee el archivo Workflows/MiFlujo-XXX.json.
+
+1. Lista todas las acciones y su tipo de conector (Standard / Premium).
+2. Marca cualquier valor hardcodeado que debería ser Environment Variable
+   (URLs, IDs de SharePoint, emails de cuenta de servicio).
+3. Detecta si falta manejo de errores (Scope con runAfter "Failed").
+4. Resume el propósito del flujo en 3 líneas.</pre>
+
+    <div class="prompt-anchor">@migrar-entorno</div>
+<pre class="code-block">Tengo el flujo exportado de DEV en Workflows/Onboarding.json.
+Necesito una versión para PROD donde:
+
+- La SharePoint Site URL pase de https://dev.sharepoint.com/sites/RRHH-DEV
+  a https://prod.sharepoint.com/sites/RRHH
+- Los IDs de listas se sustituyan por los de PROD (los tienes en prod-ids.json)
+- Las connection references usen los nombres con sufijo _prod
+
+Genera el JSON modificado y un diff de cambios.</pre>
+
+    <div class="prompt-anchor">@flujo-desde-requisitos</div>
+<pre class="code-block">Genera el JSON de un cloud flow Standard que:
+
+1. Se dispare cuando se cree un item en la lista SharePoint "Solicitudes"
+2. Si el campo "Importe" > 500, lance una aprobación al manager del solicitante
+3. Si se aprueba, actualice el item a estado "Aprobado" y envíe email
+4. Si se rechaza, actualice a "Rechazado" con el motivo
+
+Usa solo conectores Standard. Devuelve el JSON listo para importar
+dentro de una solución (formato Workflows/[name].json).</pre>
+
+    <div class="tip-box"><p>💡 <strong>Truco:</strong> guarda estos prompts como <em>slash commands</em> en <code>.claude/commands/</code> del repo del equipo y los reutilizas con <code>/auditar-flujo Workflows/MiFlujo.json</code>.</p></div>
+  </div>
+
+  <!-- ========== BLOQUE 7: CASOS DONDE BRILLA ========== -->
+  <div class="section">
+    <div class="section-header"><div class="section-num" style="background:var(--green)">07</div><h2>Casos donde Claude Code aporta más valor</h2></div>
+
+    <div class="content-grid">
+      <div class="card">
+        <h3>📚 Documentar flujos legacy</h3>
+        <p>Tienes 40 flujos heredados sin documentación. Pasas la carpeta <code>Workflows/</code> a Claude Code y le pides un README por flujo + un índice maestro. <strong>2 horas vs 2 semanas</strong>.</p>
+      </div>
+      <div class="card">
+        <h3>🔁 Migración masiva DEV → PROD</h3>
+        <p>Un cambio de tenant o un rename de site. En vez de tocar manualmente las acciones en cada flujo, Claude Code hace search & replace estructural sobre el JSON y devuelve el ZIP listo para importar.</p>
+      </div>
+      <div class="card">
+        <h3>🛡️ Auditoría de gobernanza</h3>
+        <p>Detectar flujos con conexiones a cuentas personales, secretos hardcodeados, conectores Premium en escenarios no autorizados. Claude Code escanea el JSON y genera un reporte por carpeta.</p>
+      </div>
+      <div class="card">
+        <h3>🧬 Refactor a child flows</h3>
+        <p>Un flujo con 80 acciones es inmantenible. Claude Code propone los 4-5 sub-flujos en los que dividirlo y genera el JSON tanto del padre como de los hijos.</p>
+      </div>
+    </div>
+
+    <div class="warn-box">
+      <p>⚠️ <strong>No es magia.</strong> Claude Code te genera JSON válido de cloud flows pero los <strong>desktop flows (RPA)</strong> usan un formato XAML diferente y mucho más opaco. Para esos, usa Claude Code para documentar pero no para generar.</p>
+    </div>
+  </div>
+
+  <!-- ========== BLOQUE 8: TAKEAWAYS ========== -->
+  <div class="section">
+    <div class="section-header"><div class="section-num" style="background:var(--accent)">08</div><h2>Takeaways</h2></div>
+    <div class="card card-full">
+      <ul>
+        <li><strong>Standard cubre el 80% de las automatizaciones internas</strong> de una organización M365. Antes de pedir Premium, revisa si lo que necesitas se hace con Outlook, SharePoint, Teams, Forms y Planner.</li>
+        <li><strong>Premium = conectores externos + IA + RPA.</strong> Si tu flujo toca Dataverse, SQL externo, una API REST cualquiera o necesita extracción de PDFs, te toca Premium.</li>
+        <li><strong>El icono diamante 💎</strong> en cualquier acción es la señal inequívoca de Premium. Si lo ves, mira si hay alternativa Standard.</li>
+        <li><strong>Los flujos son JSON</strong> y eso desbloquea todo el potencial de Claude Code: auditar, refactorizar, migrar entornos, generar desde requisitos.</li>
+        <li><strong>Workflow recomendado:</strong> exportar solución → abrir JSON en VS Code → trabajar con Claude Code → re-importar. Mucho más rápido que el editor visual cuando el flujo tiene muchas acciones.</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- PREGUNTAS -->
+  <div class="section">
+    <div class="section-header"><div class="section-num" style="background:var(--navy)">💬</div><h2>Preguntas para discutir</h2></div>
+    <div class="qa-grid">
+      <div class="qa-card"><p>❓ ¿Cuántos flujos activos tenéis hoy y cuántos están bajo licencia Premium sin necesitarlo realmente?</p></div>
+      <div class="qa-card"><p>❓ ¿Tenéis los flujos dentro de soluciones o sueltos en "Mis flujos"? ¿Quién es el owner si la persona se va?</p></div>
+      <div class="qa-card"><p>❓ ¿Qué proceso interno actual (con emails, Excels, copia-pega) podríais convertir en un flujo Standard esta semana?</p></div>
+      <div class="qa-card"><p>❓ ¿Estaríais dispuestos a versionar los JSON de los flujos en Git como parte del ALM del equipo?</p></div>
+    </div>
+  </div>
+</div>
+
+<div class="footer"><strong>POWER FOX</strong> · Formación Power Platform · Power Automate + Claude Code · Mayo 2026</div>
+</body>
+</html>
