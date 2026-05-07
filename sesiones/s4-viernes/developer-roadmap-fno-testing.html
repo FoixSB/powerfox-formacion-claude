@@ -1,0 +1,379 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Power Platform Developer Roadmap + F&O Testing | Power Fox</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700&family=JetBrains+Mono:wght@400;500&display=swap');
+  :root{--navy:#0B1D3A;--blue:#1565C0;--blue-light:#42A5F5;--accent:#FF6D00;--accent-soft:#FFF3E0;--bg:#F5F7FA;--card:#FFF;--text:#1A2332;--text-mid:#546E7A;--text-light:#90A4AE;--border:#E8EDF2;--code-bg:#1E1E2E;--green:#2E7D32;--green-soft:#E8F5E9;--red:#C62828;--red-soft:#FFEBEE;--purple:#6A1B9A;--purple-soft:#F3E5F5;--claude:#7C3AED;--xpp:#D32F2F;--xpp-soft:#FFEBEE;--ms:#0078D4;--ms-soft:#DEECF9;--r:12px}
+  *{margin:0;padding:0;box-sizing:border-box}body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);line-height:1.7}
+  .nav{display:flex;justify-content:space-between;align-items:center;padding:.75rem 1.5rem;background:var(--card);border-bottom:1px solid var(--border);position:sticky;top:0;z-index:100}.nav-logo{font-weight:700;font-size:.9rem;color:var(--navy);letter-spacing:1px}.nav-links{display:flex;gap:1rem;flex-wrap:wrap}.nav-links a{font-size:.8rem;color:var(--text-mid);text-decoration:none;font-weight:500}.nav-links a:hover{color:var(--ms)}
+  .hero{background:var(--navy);color:#fff;padding:3rem 2rem 2.5rem;position:relative;overflow:hidden}.hero::after{content:'';position:absolute;top:0;right:0;width:40%;height:100%;background:linear-gradient(135deg,transparent,rgba(0,120,212,.3),rgba(124,58,237,.18))}.hero-meta{display:flex;gap:1.5rem;flex-wrap:wrap;align-items:center;margin-bottom:1rem;position:relative;z-index:1}.hero-badge{background:var(--ms);color:#fff;padding:.25rem .75rem;border-radius:4px;font-size:.75rem;font-weight:700;letter-spacing:1.5px;text-transform:uppercase}.hero-week{font-size:.85rem;opacity:.7}.hero h1{font-size:2.2rem;font-weight:700;line-height:1.2;margin-bottom:.5rem;position:relative;z-index:1}.hero-sub{font-size:1rem;opacity:.85;position:relative;z-index:1;max-width:780px}.hero-time{display:inline-flex;align-items:center;gap:.4rem;background:rgba(255,255,255,.1);padding:.3rem .75rem;border-radius:6px;font-size:.85rem;margin-top:.75rem;position:relative;z-index:1}
+  .container{max-width:1100px;margin:0 auto;padding:2rem 1.5rem}
+  .toc{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:1.25rem 1.5rem;margin:1.5rem 0;display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:.5rem 1.5rem}.toc a{font-size:.85rem;color:var(--text-mid);text-decoration:none;display:block;padding:.25rem 0}.toc a:hover{color:var(--ms)}.toc strong{color:var(--navy);font-size:.7rem;letter-spacing:1px;text-transform:uppercase;display:block;grid-column:1/-1;margin-bottom:.25rem}
+  .section{margin-bottom:3rem}.section-header{display:flex;align-items:center;gap:.75rem;margin-bottom:1.25rem;padding-bottom:.75rem;border-bottom:2px solid var(--border);flex-wrap:wrap}.section-num{width:36px;height:36px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:.9rem;color:#fff;flex-shrink:0}.section-header h2{font-size:1.3rem;font-weight:700}.section-header .duration{margin-left:auto;font-size:.8rem;color:var(--text-light);font-weight:500}
+  .content-grid{display:grid;grid-template-columns:1fr 1fr;gap:1.25rem}@media(max-width:768px){.content-grid{grid-template-columns:1fr}}
+  .card{background:var(--card);border-radius:var(--r);padding:1.5rem;box-shadow:0 1px 4px rgba(0,0,0,.05);border:1px solid var(--border)}.card h3{font-size:1.05rem;font-weight:700;margin-bottom:.75rem;display:flex;align-items:center;gap:.5rem}.card p,.card li{font-size:.88rem;color:var(--text-mid)}.card ul{padding-left:1.25rem}.card li{margin-bottom:.35rem}.card-full{grid-column:1/-1}
+  .highlight-box{border-left:4px solid var(--accent);background:var(--accent-soft);padding:1rem 1.25rem;border-radius:0 var(--r) var(--r) 0;margin:1rem 0}.highlight-box p{font-size:.88rem;color:var(--text)}.tip-box{border-left:4px solid var(--green);background:var(--green-soft);padding:1rem 1.25rem;border-radius:0 var(--r) var(--r) 0;margin:1rem 0}.tip-box p{font-size:.88rem}.warn-box{border-left:4px solid var(--red);background:var(--red-soft);padding:1rem 1.25rem;border-radius:0 var(--r) var(--r) 0;margin:1rem 0}.warn-box p{font-size:.88rem}.info-box{border-left:4px solid var(--ms);background:var(--ms-soft);padding:1rem 1.25rem;border-radius:0 var(--r) var(--r) 0;margin:1rem 0}.info-box p{font-size:.88rem}
+  .code-block{background:var(--code-bg);color:#CDD6F4;border-radius:8px;padding:1.25rem;font-family:'JetBrains Mono',monospace;font-size:.78rem;overflow-x:auto;margin:1rem 0;line-height:1.6;white-space:pre}.comment{color:#6C7086}.keyword{color:#CBA6F7}.string{color:#A6E3A1}.func{color:#89B4FA}.num{color:#FAB387}.prop{color:#F9E2AF}.method{color:#F38BA8;font-weight:700}.type{color:#94E2D5}
+  .table-wrap{overflow-x:auto;margin:1rem 0}table{width:100%;border-collapse:collapse;font-size:.85rem}th{background:var(--navy);color:#fff;padding:.6rem 1rem;text-align:left;font-size:.78rem;text-transform:uppercase;letter-spacing:.5px}td{padding:.6rem 1rem;border-bottom:1px solid var(--border);vertical-align:top}tr:hover td{background:#F8FAFC}td code{background:var(--ms-soft);color:var(--ms);padding:.1rem .35rem;border-radius:3px;font-size:.78rem;font-family:'JetBrains Mono',monospace}
+  .product-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1rem;margin:1rem 0}@media(max-width:900px){.product-grid{grid-template-columns:1fr}}
+  .product-card{padding:1.25rem;border-radius:var(--r);border:1px solid var(--border);background:var(--card);border-left:4px solid var(--ms)}.product-card h4{font-size:1rem;font-weight:700;margin-bottom:.5rem;color:var(--navy)}.product-card p{font-size:.82rem;color:var(--text-mid);margin-bottom:.5rem}.product-card ul{padding-left:1.1rem;font-size:.8rem;color:var(--text-mid)}.product-card li{margin-bottom:.25rem}
+  .ai-spotlight{background:linear-gradient(135deg,#1A1A2E,#2D2D4E);color:#fff;border-radius:var(--r);padding:2rem;margin:1.5rem 0;position:relative;overflow:hidden}.ai-spotlight::before{display:block;font-size:.7rem;font-weight:700;letter-spacing:2px;color:#A78BFA;margin-bottom:.75rem;content:'BLOQUE CLAVE — DEV ROADMAP CON CLAUDE'}.ai-spotlight h3{font-size:1.3rem;font-weight:700;margin-bottom:.75rem;color:#fff}.ai-spotlight p{font-size:.95rem;color:#CDD6F4;margin-bottom:.5rem}.ai-spotlight ul{padding-left:1.5rem;color:#CDD6F4;font-size:.9rem}.ai-spotlight li{margin-bottom:.4rem}.ai-spotlight code{background:rgba(124,58,237,.25);padding:.1rem .4rem;border-radius:3px;color:#E0CFFF;font-family:'JetBrains Mono',monospace;font-size:.82rem}
+  .pipeline{display:flex;align-items:center;justify-content:center;gap:.5rem;flex-wrap:wrap;background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:1.25rem;margin:1rem 0}.pipeline-step{padding:.6rem 1rem;border-radius:8px;font-size:.8rem;font-weight:600;text-align:center;min-width:130px;color:#fff}.ps-blue{background:var(--blue)}.ps-purple{background:var(--claude)}.ps-orange{background:var(--accent)}.ps-green{background:var(--green)}.ps-ms{background:var(--ms)}.ps-xpp{background:var(--xpp)}.pipeline-arrow{color:var(--text-light);font-size:1.2rem;font-weight:700}
+  .roadmap-step{display:flex;gap:1rem;margin:1rem 0;padding:1.25rem;background:var(--card);border-radius:var(--r);border:1px solid var(--border);border-left:4px solid var(--ms)}.roadmap-step .rm-num{flex-shrink:0;width:36px;height:36px;border-radius:50%;background:var(--ms);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:1rem}.roadmap-step h3{font-size:1rem;font-weight:700;margin-bottom:.4rem}.roadmap-step p{font-size:.85rem;color:var(--text-mid);margin-bottom:.4rem}.roadmap-step .rm-tags{display:flex;flex-wrap:wrap;gap:.3rem;margin-top:.4rem}.roadmap-step .rm-tag{background:var(--ms-soft);color:var(--ms);padding:.15rem .55rem;border-radius:12px;font-size:.7rem;font-weight:600}
+  .prompt-box{background:linear-gradient(135deg,#FFFDF7,#FFF3E0);border:1px solid var(--accent);border-radius:var(--r);padding:1rem 1.25rem;margin:.75rem 0;font-family:'JetBrains Mono',monospace;font-size:.85rem;color:var(--navy);position:relative}.prompt-box::before{content:'PROMPT';position:absolute;top:-9px;left:1rem;background:var(--accent);color:#fff;padding:.15rem .55rem;font-size:.6rem;font-weight:700;letter-spacing:1px;border-radius:3px;font-family:'DM Sans',sans-serif}
+  .footer{text-align:center;padding:2rem;font-size:.8rem;color:var(--text-light);border-top:1px solid var(--border);margin-top:2rem}.footer strong{color:var(--navy)}
+  .qa-card{background:var(--purple-soft);border-radius:var(--r);padding:1.25rem;border:1px solid #CE93D8;margin:1rem 0}.qa-card p{font-size:.88rem;color:var(--claude);font-weight:500}
+  .xpp-block{border-left:4px solid var(--xpp);background:var(--xpp-soft);padding:1rem 1.25rem;border-radius:0 var(--r) var(--r) 0;margin:1rem 0}.xpp-block p{font-size:.88rem;color:var(--text)}
+</style>
+</head>
+<body>
+
+<nav class="nav"><div class="nav-logo">POWER FOX — Formación</div><div class="nav-links"><a href="#mapa">Mapa</a><a href="#productos">Los 5 productos</a><a href="#dataverse">Dataverse</a><a href="#roadmap">Roadmap dev</a><a href="#fno">F&O Testing</a><a href="#claude">Plan personal</a></div></nav>
+
+<div class="hero">
+  <div class="hero-meta"><span class="hero-badge">Power Platform Developer</span><span class="hero-week">S4 · Viernes · Tema 4</span></div>
+  <h1>Mapa del developer Power Platform + F&O Testing</h1>
+  <p class="hero-sub">Vista panorámica oficial de Microsoft sobre <strong>qué se considera "ser developer en Power Platform"</strong> en 2026: los 5 productos, sus puntos de extensión, y un caso especial — testing en Finance & Operations con SysTest. Ideal como cierre antes de la última sesión.</p>
+  <div class="hero-time">Material de referencia · 6 secciones · Plan personal de adopción incluido</div>
+</div>
+
+<div class="container">
+
+  <div class="toc">
+    <strong>Contenido</strong>
+    <a href="#mapa">01 · El mapa: 5 productos + Dataverse</a>
+    <a href="#productos">02 · Los 5 productos en detalle</a>
+    <a href="#dataverse">03 · Dataverse — el centro</a>
+    <a href="#roadmap">04 · Roadmap de skills 2026</a>
+    <a href="#fno">05 · F&O Testing — SysTest framework</a>
+    <a href="#claude">06 · Plan personal con Claude — para la última sesión</a>
+  </div>
+
+  <!-- ========== 01 — MAPA ========== -->
+  <div class="section" id="mapa">
+    <div class="section-header"><div class="section-num" style="background:var(--ms)">01</div><h2>El mapa de Power Platform según Microsoft</h2><span class="duration">3 min</span></div>
+
+    <div class="ai-spotlight">
+      <h3>🎯 Cómo Microsoft define ser developer aquí</h3>
+      <p><em>"Microsoft Power Platform is a low-code platform for rapidly building customized end-to-end business solutions."</em></p>
+      <p>El <em>get-started</em> oficial dice: la plataforma son <strong>5 productos + Dataverse</strong> como núcleo. Como dev, tu trabajo es <strong>extender</strong> cada uno cuando el low-code topa con su límite. Hoy, con Claude Code, esa frontera se mueve a tu favor.</p>
+    </div>
+
+    <div class="pipeline">
+      <div class="pipeline-step ps-ms">Copilot Studio</div>
+      <div class="pipeline-step ps-blue">Power Apps</div>
+      <div class="pipeline-step ps-orange">Power Automate</div>
+      <div class="pipeline-step ps-green">Power BI</div>
+      <div class="pipeline-step ps-purple">Power Pages</div>
+    </div>
+    <p style="text-align:center;font-size:.85rem;color:var(--text-mid);margin-top:.5rem"><strong>↓ todos sobre ↓</strong></p>
+    <div class="pipeline" style="margin-top:.5rem">
+      <div class="pipeline-step ps-ms" style="min-width:200px">Microsoft Dataverse</div>
+    </div>
+
+    <div class="info-box"><p><strong>💡 Lo que cambió en 2026:</strong> los 5 productos siguen, pero la integración con <strong>Azure AI</strong>, <strong>Microsoft Foundry</strong> y el <strong>Microsoft 365 Agents SDK</strong> ya no es opcional. Cualquier solución profesional de hoy mezcla low-code + Azure + agentes.</p></div>
+  </div>
+
+  <!-- ========== 02 — PRODUCTOS ========== -->
+  <div class="section" id="productos">
+    <div class="section-header"><div class="section-num" style="background:var(--blue)">02</div><h2>Los 5 productos en detalle (con extensibility points)</h2><span class="duration">7 min</span></div>
+
+    <div class="product-grid">
+      <div class="product-card">
+        <h4>🤖 Copilot Studio</h4>
+        <p>Constructor low-code de agentes y agent flows. Tu primer punto de entrada para "hablar con la app".</p>
+        <p style="font-size:.75rem;color:var(--text-light);text-transform:uppercase;letter-spacing:1px;margin-top:.5rem">Extensibility</p>
+        <ul>
+          <li>Custom connectors / REST</li>
+          <li><strong>MCP servers como tools</strong></li>
+          <li>Multi-agent (A2A protocol)</li>
+          <li>M365 Agents SDK</li>
+          <li>Foundry agents integrados</li>
+        </ul>
+      </div>
+      <div class="product-card">
+        <h4>📱 Power Apps — Canvas</h4>
+        <p>Pantallas pixel-perfect, Power Fx. Embebibles en SharePoint, Teams, Power BI, Dynamics.</p>
+        <p style="font-size:.75rem;color:var(--text-light);text-transform:uppercase;letter-spacing:1px;margin-top:.5rem">Extensibility</p>
+        <ul>
+          <li>PCF (Power Apps Component Framework)</li>
+          <li>Custom connectors (Azure Functions / API Management)</li>
+        </ul>
+      </div>
+      <div class="product-card">
+        <h4>🗂️ Power Apps — Model-Driven</h4>
+        <p>Apps data-driven sobre Dataverse. Vistas, formularios, ribbons, sitemap.</p>
+        <p style="font-size:.75rem;color:var(--text-light);text-transform:uppercase;letter-spacing:1px;margin-top:.5rem">Extensibility</p>
+        <ul>
+          <li>PCF</li>
+          <li>JS de cliente (formContext, Xrm.WebApi) — <strong>S2 del curso</strong></li>
+          <li>HTML web resources</li>
+        </ul>
+      </div>
+      <div class="product-card">
+        <h4>⚡ Power Automate</h4>
+        <p>Cloud flows, desktop flows (RPA). Bajo el capó: Azure Logic Apps + connectors.</p>
+        <p style="font-size:.75rem;color:var(--text-light);text-transform:uppercase;letter-spacing:1px;margin-top:.5rem">Extensibility</p>
+        <ul>
+          <li>Custom connectors</li>
+          <li>Workflow definition functions</li>
+          <li>JSON manipulable — <strong>S4-mié del curso</strong></li>
+        </ul>
+      </div>
+      <div class="product-card">
+        <h4>📊 Power BI</h4>
+        <p>Visualización y BI interactivo. Embebible en apps, websites, portales.</p>
+        <p style="font-size:.75rem;color:var(--text-light);text-transform:uppercase;letter-spacing:1px;margin-top:.5rem">Extensibility</p>
+        <ul>
+          <li>Custom visuals (SDK open-source)</li>
+          <li>Embed APIs en apps externas</li>
+        </ul>
+      </div>
+      <div class="product-card">
+        <h4>🌐 Power Pages</h4>
+        <p>Sitios externos low-code, enterprise-grade. Antes "Power Apps Portals".</p>
+        <p style="font-size:.75rem;color:var(--text-light);text-transform:uppercase;letter-spacing:1px;margin-top:.5rem">Extensibility</p>
+        <ul>
+          <li>Templates HTML/CSS/<strong>Liquid</strong></li>
+          <li>Portals Web API</li>
+          <li>VS Code + PAC CLI con CI/CD</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- ========== 03 — DATAVERSE ========== -->
+  <div class="section" id="dataverse">
+    <div class="section-header"><div class="section-num" style="background:var(--accent)">03</div><h2>Dataverse — el centro de todo</h2><span class="duration">3 min</span></div>
+
+    <div class="content-grid">
+      <div class="card">
+        <h3>🗃️ Lo que Microsoft espera que sepas</h3>
+        <p>Dataverse no es "una base de datos". Es el modelo de datos compartido + el motor de seguridad + el bus de eventos + la capa de extensibilidad — todo como SaaS.</p>
+        <ul>
+          <li>Tablas, columnas, relaciones, choices</li>
+          <li>Role-based security a nivel de registro</li>
+          <li>Plug-ins (event handlers en C#)</li>
+          <li>Webhooks + Azure Service Bus</li>
+          <li>Custom API (tu RPC con lógica)</li>
+          <li>Virtual tables (datos externos sin replicar)</li>
+        </ul>
+      </div>
+      <div class="card">
+        <h3>🛠️ Las 5 extensibilidades clave</h3>
+        <ol style="padding-left:1.25rem;font-size:.88rem">
+          <li><strong>Plug-ins</strong> — código C# que corre en pre/post de operaciones Dataverse</li>
+          <li><strong>Webhooks + Service Bus</strong> — para integrar con sistemas externos asíncronamente</li>
+          <li><strong>Custom API</strong> — tus propias acciones expuestas en Web API</li>
+          <li><strong>Virtual tables</strong> — leer datos de SAP, Salesforce, etc. sin replicar</li>
+          <li><strong>Calculated columns + Business Rules</strong> — lógica declarativa sin código</li>
+        </ol>
+        <p style="margin-top:.5rem"><strong>Regla:</strong> empieza por Business Rules, escala a plug-in cuando topes con su límite.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- ========== 04 — ROADMAP ========== -->
+  <div class="section" id="roadmap">
+    <div class="section-header"><div class="section-num" style="background:var(--green)">04</div><h2>Roadmap de skills para 2026</h2><span class="duration">5 min</span></div>
+
+    <p style="margin-bottom:1rem;font-size:.9rem;color:var(--text-mid)">Si Microsoft tuviera que recomendarte un orden de adopción, sería este. Cada paso construye sobre el anterior:</p>
+
+    <div class="roadmap-step">
+      <div class="rm-num">1</div>
+      <div>
+        <h3>Setup y entornos</h3>
+        <p>Crear un developer environment, instalar PAC CLI, conectar VS Code. Esto es lo que vimos en S2-lunes.</p>
+        <div class="rm-tags"><span class="rm-tag">PAC CLI</span><span class="rm-tag">VS Code</span><span class="rm-tag">Dev environment</span></div>
+      </div>
+    </div>
+
+    <div class="roadmap-step">
+      <div class="rm-num">2</div>
+      <div>
+        <h3>Modelar datos en Dataverse</h3>
+        <p>Tablas, columnas, relaciones, choices, business rules. Cómo importar/exportar soluciones.</p>
+        <div class="rm-tags"><span class="rm-tag">Tablas</span><span class="rm-tag">Soluciones</span><span class="rm-tag">Managed/Unmanaged</span></div>
+      </div>
+    </div>
+
+    <div class="roadmap-step">
+      <div class="rm-num">3</div>
+      <div>
+        <h3>Extender el cliente — JavaScript en MDA</h3>
+        <p><code>formContext</code>, <code>Xrm.WebApi</code>, web resources, eventos del formulario. Esto es S2 entera del curso.</p>
+        <div class="rm-tags"><span class="rm-tag">JavaScript</span><span class="rm-tag">Client API</span><span class="rm-tag">Web Resources</span></div>
+      </div>
+    </div>
+
+    <div class="roadmap-step">
+      <div class="rm-num">4</div>
+      <div>
+        <h3>Extender el servidor — Plug-ins Dataverse</h3>
+        <p>C# + SDK .NET. Pre/post operation. Custom API. Los plug-ins son donde la lógica de negocio crítica debe vivir.</p>
+        <div class="rm-tags"><span class="rm-tag">C# / .NET</span><span class="rm-tag">Plug-ins</span><span class="rm-tag">Custom API</span></div>
+      </div>
+    </div>
+
+    <div class="roadmap-step">
+      <div class="rm-num">5</div>
+      <div>
+        <h3>Componentes UI custom — PCF</h3>
+        <p>TypeScript + React. Cuando un control nativo de Power Apps no llega, PCF es la respuesta.</p>
+        <div class="rm-tags"><span class="rm-tag">TypeScript</span><span class="rm-tag">React</span><span class="rm-tag">PCF</span></div>
+      </div>
+    </div>
+
+    <div class="roadmap-step">
+      <div class="rm-num">6</div>
+      <div>
+        <h3>Integraciones — Custom connectors + Graph</h3>
+        <p>Azure Functions detrás de un OpenAPI. Microsoft Graph (S4-mié). Service principals para auth (S3 del curso).</p>
+        <div class="rm-tags"><span class="rm-tag">Azure Functions</span><span class="rm-tag">Graph API</span><span class="rm-tag">Service Principal</span></div>
+      </div>
+    </div>
+
+    <div class="roadmap-step">
+      <div class="rm-num">7</div>
+      <div>
+        <h3>ALM profesional</h3>
+        <p>Pipelines Azure DevOps / GitHub. Solution unpack, source control, deploy automatizado, gates de calidad.</p>
+        <div class="rm-tags"><span class="rm-tag">Azure DevOps</span><span class="rm-tag">GitHub Actions</span><span class="rm-tag">Solution checker</span></div>
+      </div>
+    </div>
+
+    <div class="roadmap-step">
+      <div class="rm-num">8</div>
+      <div>
+        <h3>Testing — Playwright (Tema 1 de hoy)</h3>
+        <p>E2E tests sobre Canvas/MDA con TypeScript. CI/CD ready. AI authoring vía MCP.</p>
+        <div class="rm-tags"><span class="rm-tag">Playwright</span><span class="rm-tag">TypeScript</span><span class="rm-tag">MCP</span></div>
+      </div>
+    </div>
+
+    <div class="roadmap-step">
+      <div class="rm-num">9</div>
+      <div>
+        <h3>AI / agentes — Copilot Studio + MCP</h3>
+        <p>Construir agentes propios, integrarlos con MCP servers, multi-agent A2A. Esto es 2026 puro.</p>
+        <div class="rm-tags"><span class="rm-tag">Copilot Studio</span><span class="rm-tag">MCP</span><span class="rm-tag">A2A protocol</span></div>
+      </div>
+    </div>
+
+    <div class="roadmap-step">
+      <div class="rm-num">10</div>
+      <div>
+        <h3>Distribuir — Catalog (Tema 3 de hoy)</h3>
+        <p>Empaquetar componentes propios y publicarlos en el marketplace interno del tenant. Cierre del ciclo de gobernanza.</p>
+        <div class="rm-tags"><span class="rm-tag">Catalog</span><span class="rm-tag">Governance</span><span class="rm-tag">Reuse</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ========== 05 — FNO ========== -->
+  <div class="section" id="fno">
+    <div class="section-header"><div class="section-num" style="background:var(--xpp)">05</div><h2>F&O Testing — SysTest framework (caso especial)</h2><span class="duration">5 min</span></div>
+
+    <div class="xpp-block"><p><strong>⚠️ Heads up:</strong> Esta sección aplica si trabajáis con <strong>Dynamics 365 Finance & Operations</strong> (X++). En LitoClean esto puede no ser relevante, pero conviene saber que existe — si en el futuro hay un proyecto F&O, sabéis que el testing tiene su propio mundo.</p></div>
+
+    <div class="content-grid">
+      <div class="card">
+        <h3>🎯 Qué es SysTest</h3>
+        <p>El framework de unit/component tests <strong>nativo de F&O</strong>. Vive dentro del unified developer experience de Power Platform — instalas las herramientas, abres Visual Studio, y los tests corren contra un sandbox cloud.</p>
+        <ul>
+          <li>Lenguaje: <strong>X++</strong></li>
+          <li>Editor: Visual Studio (no VS Code)</li>
+          <li>Ejecución: en el cloud contra sandbox</li>
+          <li>Aserciones: <code>this.assertEquals</code>, <code>this.assertTrue</code>, etc.</li>
+          <li>Atributo <code>SysTestMethod</code> marca métodos como tests</li>
+          <li><code>setup()</code> corre antes de cada test</li>
+        </ul>
+      </div>
+      <div class="card">
+        <h3>🧪 Test isolation — el atributo clave</h3>
+        <p>El atributo <code>SysTestTransaction</code> controla cómo se aísla el test de los demás. Sin esto, un test que crea registros contamina los siguientes.</p>
+        <ul>
+          <li><strong>AutoRollback</strong> (default) — todo se hace en transacción, rollback al final</li>
+          <li><strong>LegacyRollback</strong> — solo inserts trackeados</li>
+          <li><strong>LegacyRollbackWithUpdateTracking</strong> — inserts + updates + deletes (más lento)</li>
+          <li><strong>None</strong> — sin aislamiento (solo para debug)</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="code-block"><span class="comment">// Ejemplo: test sobre el motor de totales de alquiler de coches (FleetManagement)</span>
+[<span class="prop">SysTestTransaction</span>(TestTransactionMode::AutoRollback)]
+<span class="keyword">class</span> FMUnitTestSample <span class="keyword">extends</span> SysTestCase
+{
+    <span class="keyword">public void</span> <span class="method">setup</span>()
+    {
+        FMDataHelper::main(<span class="keyword">null</span>);  <span class="comment">// reset data</span>
+    }
+
+    [<span class="prop">SysTestMethod</span>, <span class="prop">Hookable</span>(<span class="keyword">false</span>)]
+    <span class="keyword">public void</span> <span class="method">testFMTotalsEngine</span>()
+    {
+        FMRental rental = FMRental::find(<span class="string">'000022'</span>);
+        FMTotalsEngine fmTotals = FMTotalsEngine::construct();
+        fmTotals.<span class="method">calculateRentalVehicleRate</span>(rental);
+
+        FMRentalTotal fmRentalTotal = fmTotals.<span class="method">totals</span>(rental);
+        <span class="keyword">this</span>.<span class="method">assertEquals</span>(expectedTotal, fmRentalTotal);
+    }
+}</div>
+
+    <div class="info-box"><p><strong>🔄 Flujo de ejecución:</strong> Build → Deploy model al cloud → Open Test Explorer → Run selected. Los tests corren en el cloud contra los datos del sandbox. <strong>No hay debug</strong> en el Test Explorer (limitación actual).</p></div>
+
+    <div class="warn-box"><p><strong>⚠️ Cuándo te interesa:</strong> Solo si el proyecto toca X++/F&O. Si vuestro stack es Power Platform "puro" (Canvas, MDA, Dataverse, Flows), <strong>Playwright para Power Platform es vuestra herramienta principal</strong>. SysTest entra en escena cuando hay módulos F&O custom.</p></div>
+  </div>
+
+  <!-- ========== 06 — PLAN PERSONAL ========== -->
+  <div class="section" id="claude">
+    <div class="section-header"><div class="section-num" style="background:var(--claude)">06</div><h2>Plan personal con Claude — para la última sesión</h2><span class="duration">5 min</span></div>
+
+    <div class="ai-spotlight">
+      <h3>🎓 Cómo cerrar bien antes de la última sesión</h3>
+      <p>El curso entró ya en su recta final. Vuestra próxima sesión es la última. La pregunta que cada uno tiene que responder esta semana:</p>
+      <p style="font-size:1.1rem;color:#FFE08A;margin-top:.75rem"><strong>"De todo lo visto, ¿qué adopto el lunes? ¿Qué dejo para el trimestre? ¿Qué descarto?"</strong></p>
+    </div>
+
+    <div class="content-grid">
+      <div class="card">
+        <h3>📝 Estructura del plan personal</h3>
+        <ol style="padding-left:1.25rem;font-size:.88rem">
+          <li><strong>Mi rol</strong> — maker, pro dev, DevOps, mixto</li>
+          <li><strong>Top 3 herramientas</strong> que voy a usar la semana que viene</li>
+          <li><strong>1 caso real</strong> donde voy a aplicarlas</li>
+          <li><strong>Métrica de éxito</strong> — cómo sabré que funcionó</li>
+          <li><strong>Riesgo</strong> que veo y cómo mitigarlo</li>
+        </ol>
+      </div>
+      <div class="card">
+        <h3>🤖 Pídeselo a Claude</h3>
+        <div class="prompt-box">A partir de mi README de alumno en /alumnos/[mi-nombre]/, lo que hicimos en S1 a S4, y mi rol en LitoClean (gerente / dev / maker), genérame un plan personal de adopción para los próximos 30 días con: top 3 herramientas, 1 caso real concreto, métrica de éxito y riesgo. Que sea accionable, no aspiracional.</div>
+      </div>
+    </div>
+
+    <div class="qa-card"><p>❓ <strong>Preguntas para la última sesión:</strong></p>
+    <ul style="padding-left:1.25rem;margin-top:.5rem">
+      <li>¿Qué tema os gustaría profundizar en una Fase 2?</li>
+      <li>¿Veis viable adoptar Claude Code como asistente diario?</li>
+      <li>¿Qué cambios concretos vais a implementar a partir del lunes?</li>
+      <li>¿Qué pieza de gobernanza (catalog, fusion, testing) implementáis primero?</li>
+    </ul>
+    </div>
+
+    <div class="tip-box"><p><strong>🚀 Compromiso:</strong> cada alumno trae a la última sesión su <strong>plan personal en 1 página</strong> (puede ser markdown, HTML, lo que sea — generado con Claude). Lo presentamos en 3-5 min cada uno.</p></div>
+
+    <div class="info-box"><p><strong>📚 Para profundizar entre sesiones:</strong> <em>Power Platform developer documentation</em> · <em>Microsoft Learn</em> · <em>Power CAT YouTube</em> · <em>April Dunnam, Microsoft DevRel</em>.</p></div>
+  </div>
+
+</div>
+
+<div class="footer"><strong>POWER FOX</strong> · Formación Claude Code · S4 Viernes · Tema 4 de 4 · Mayo 2026</div>
+
+</body>
+</html>

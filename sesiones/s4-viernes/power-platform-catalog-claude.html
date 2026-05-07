@@ -1,0 +1,343 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Power Platform Catalog — Marketplace interno corporativo | Power Fox</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700&family=JetBrains+Mono:wght@400;500&display=swap');
+  :root{--navy:#0B1D3A;--blue:#1565C0;--blue-light:#42A5F5;--accent:#FF6D00;--accent-soft:#FFF3E0;--bg:#F5F7FA;--card:#FFF;--text:#1A2332;--text-mid:#546E7A;--text-light:#90A4AE;--border:#E8EDF2;--code-bg:#1E1E2E;--green:#2E7D32;--green-soft:#E8F5E9;--red:#C62828;--red-soft:#FFEBEE;--purple:#6A1B9A;--purple-soft:#F3E5F5;--claude:#7C3AED;--cat:#0078D4;--cat-soft:#DEECF9;--gold:#B8860B;--gold-soft:#FFF8E1;--r:12px}
+  *{margin:0;padding:0;box-sizing:border-box}body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);line-height:1.7}
+  .nav{display:flex;justify-content:space-between;align-items:center;padding:.75rem 1.5rem;background:var(--card);border-bottom:1px solid var(--border);position:sticky;top:0;z-index:100}.nav-logo{font-weight:700;font-size:.9rem;color:var(--navy);letter-spacing:1px}.nav-links{display:flex;gap:1rem;flex-wrap:wrap}.nav-links a{font-size:.8rem;color:var(--text-mid);text-decoration:none;font-weight:500}.nav-links a:hover{color:var(--cat)}
+  .hero{background:var(--navy);color:#fff;padding:3rem 2rem 2.5rem;position:relative;overflow:hidden}.hero::after{content:'';position:absolute;top:0;right:0;width:40%;height:100%;background:linear-gradient(135deg,transparent,rgba(0,120,212,.3),rgba(255,109,0,.18))}.hero-meta{display:flex;gap:1.5rem;flex-wrap:wrap;align-items:center;margin-bottom:1rem;position:relative;z-index:1}.hero-badge{background:var(--cat);color:#fff;padding:.25rem .75rem;border-radius:4px;font-size:.75rem;font-weight:700;letter-spacing:1.5px;text-transform:uppercase}.hero-week{font-size:.85rem;opacity:.7}.hero h1{font-size:2.2rem;font-weight:700;line-height:1.2;margin-bottom:.5rem;position:relative;z-index:1}.hero-sub{font-size:1rem;opacity:.85;position:relative;z-index:1;max-width:780px}.hero-time{display:inline-flex;align-items:center;gap:.4rem;background:rgba(255,255,255,.1);padding:.3rem .75rem;border-radius:6px;font-size:.85rem;margin-top:.75rem;position:relative;z-index:1}
+  .container{max-width:1100px;margin:0 auto;padding:2rem 1.5rem}
+  .toc{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:1.25rem 1.5rem;margin:1.5rem 0;display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:.5rem 1.5rem}.toc a{font-size:.85rem;color:var(--text-mid);text-decoration:none;display:block;padding:.25rem 0}.toc a:hover{color:var(--cat)}.toc strong{color:var(--navy);font-size:.7rem;letter-spacing:1px;text-transform:uppercase;display:block;grid-column:1/-1;margin-bottom:.25rem}
+  .section{margin-bottom:3rem}.section-header{display:flex;align-items:center;gap:.75rem;margin-bottom:1.25rem;padding-bottom:.75rem;border-bottom:2px solid var(--border);flex-wrap:wrap}.section-num{width:36px;height:36px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:.9rem;color:#fff;flex-shrink:0}.section-header h2{font-size:1.3rem;font-weight:700}.section-header .duration{margin-left:auto;font-size:.8rem;color:var(--text-light);font-weight:500}
+  .content-grid{display:grid;grid-template-columns:1fr 1fr;gap:1.25rem}@media(max-width:768px){.content-grid{grid-template-columns:1fr}}
+  .triple-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1rem}@media(max-width:900px){.triple-grid{grid-template-columns:1fr}}
+  .card{background:var(--card);border-radius:var(--r);padding:1.5rem;box-shadow:0 1px 4px rgba(0,0,0,.05);border:1px solid var(--border)}.card h3{font-size:1.05rem;font-weight:700;margin-bottom:.75rem;display:flex;align-items:center;gap:.5rem}.card p,.card li{font-size:.88rem;color:var(--text-mid)}.card ul{padding-left:1.25rem}.card li{margin-bottom:.35rem}.card-full{grid-column:1/-1}
+  .highlight-box{border-left:4px solid var(--accent);background:var(--accent-soft);padding:1rem 1.25rem;border-radius:0 var(--r) var(--r) 0;margin:1rem 0}.highlight-box p{font-size:.88rem;color:var(--text)}.tip-box{border-left:4px solid var(--green);background:var(--green-soft);padding:1rem 1.25rem;border-radius:0 var(--r) var(--r) 0;margin:1rem 0}.tip-box p{font-size:.88rem}.warn-box{border-left:4px solid var(--red);background:var(--red-soft);padding:1rem 1.25rem;border-radius:0 var(--r) var(--r) 0;margin:1rem 0}.warn-box p{font-size:.88rem}.info-box{border-left:4px solid var(--cat);background:var(--cat-soft);padding:1rem 1.25rem;border-radius:0 var(--r) var(--r) 0;margin:1rem 0}.info-box p{font-size:.88rem}
+  .code-block{background:var(--code-bg);color:#CDD6F4;border-radius:8px;padding:1.25rem;font-family:'JetBrains Mono',monospace;font-size:.78rem;overflow-x:auto;margin:1rem 0;line-height:1.6;white-space:pre}.comment{color:#6C7086}.keyword{color:#CBA6F7}.string{color:#A6E3A1}.func{color:#89B4FA}.num{color:#FAB387}.prop{color:#F9E2AF}.method{color:#F38BA8;font-weight:700}
+  .table-wrap{overflow-x:auto;margin:1rem 0}table{width:100%;border-collapse:collapse;font-size:.85rem}th{background:var(--navy);color:#fff;padding:.6rem 1rem;text-align:left;font-size:.78rem;text-transform:uppercase;letter-spacing:.5px}td{padding:.6rem 1rem;border-bottom:1px solid var(--border);vertical-align:top}tr:hover td{background:#F8FAFC}td code{background:var(--cat-soft);color:var(--cat);padding:.1rem .35rem;border-radius:3px;font-size:.78rem;font-family:'JetBrains Mono',monospace}
+  .versus-grid{display:grid;grid-template-columns:1fr 1fr;gap:1.25rem;margin:1rem 0}@media(max-width:768px){.versus-grid{grid-template-columns:1fr}}.compare-card{border-radius:var(--r);padding:1.5rem;border:2px solid;position:relative;background:var(--card)}.cmp-cat{border-color:var(--cat)}.cmp-app{border-color:var(--gold)}.cmp-share{border-color:var(--text-light)}.compare-card .cmp-tag{position:absolute;top:-12px;left:1rem;padding:.25rem .8rem;border-radius:4px;font-size:.7rem;font-weight:700;letter-spacing:1.5px;color:#fff}.cmp-cat .cmp-tag{background:var(--cat)}.cmp-app .cmp-tag{background:var(--gold)}.cmp-share .cmp-tag{background:var(--text-light)}.compare-card h3{font-size:1.05rem;font-weight:700;margin:.5rem 0 .25rem}.compare-card p{font-size:.85rem;color:var(--text-mid);margin-bottom:.5rem}.compare-card ul{padding-left:1.2rem;font-size:.85rem;color:var(--text-mid)}.compare-card li{margin-bottom:.3rem}.compare-card li strong{color:var(--text)}
+  .ai-spotlight{background:linear-gradient(135deg,#1A1A2E,#2D2D4E);color:#fff;border-radius:var(--r);padding:2rem;margin:1.5rem 0;position:relative;overflow:hidden}.ai-spotlight::before{display:block;font-size:.7rem;font-weight:700;letter-spacing:2px;color:#A78BFA;margin-bottom:.75rem;content:'BLOQUE CLAVE — CATALOG + CLAUDE CODE'}.ai-spotlight h3{font-size:1.3rem;font-weight:700;margin-bottom:.75rem;color:#fff}.ai-spotlight p{font-size:.95rem;color:#CDD6F4;margin-bottom:.5rem}.ai-spotlight ul{padding-left:1.5rem;color:#CDD6F4;font-size:.9rem}.ai-spotlight li{margin-bottom:.4rem}.ai-spotlight code{background:rgba(124,58,237,.25);padding:.1rem .4rem;border-radius:3px;color:#E0CFFF;font-family:'JetBrains Mono',monospace;font-size:.82rem}
+  .pipeline{display:flex;align-items:center;justify-content:center;gap:.5rem;flex-wrap:wrap;background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:1.25rem;margin:1rem 0}.pipeline-step{padding:.6rem 1rem;border-radius:8px;font-size:.8rem;font-weight:600;text-align:center;min-width:130px;color:#fff}.ps-blue{background:var(--blue)}.ps-purple{background:var(--claude)}.ps-orange{background:var(--accent)}.ps-green{background:var(--green)}.ps-cat{background:var(--cat)}.pipeline-arrow{color:var(--text-light);font-size:1.2rem;font-weight:700}
+  .item-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:.7rem;margin:1rem 0}.item-pill{padding:.7rem;border-radius:8px;font-size:.78rem;font-weight:600;text-align:center;border:1px solid var(--cat);background:var(--cat-soft);color:var(--cat)}.item-pill .ip-icon{display:block;font-size:1.5rem;margin-bottom:.3rem}
+  .role-grid{display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin:1rem 0}@media(max-width:768px){.role-grid{grid-template-columns:1fr}}.role-card{padding:1.25rem;border-radius:var(--r);border:2px solid var(--cat);background:var(--cat-soft)}.role-card h4{font-size:1rem;font-weight:700;margin-bottom:.5rem;color:var(--cat)}.role-card p{font-size:.85rem;color:var(--text-mid);margin-bottom:.5rem}.role-card ul{padding-left:1.2rem;font-size:.85rem;color:var(--text-mid)}.role-card li{margin-bottom:.3rem}
+  .prompt-box{background:linear-gradient(135deg,#FFFDF7,#FFF3E0);border:1px solid var(--accent);border-radius:var(--r);padding:1rem 1.25rem;margin:.75rem 0;font-family:'JetBrains Mono',monospace;font-size:.85rem;color:var(--navy);position:relative}.prompt-box::before{content:'PROMPT';position:absolute;top:-9px;left:1rem;background:var(--accent);color:#fff;padding:.15rem .55rem;font-size:.6rem;font-weight:700;letter-spacing:1px;border-radius:3px;font-family:'DM Sans',sans-serif}
+  .footer{text-align:center;padding:2rem;font-size:.8rem;color:var(--text-light);border-top:1px solid var(--border);margin-top:2rem}.footer strong{color:var(--navy)}
+  .qa-card{background:var(--purple-soft);border-radius:var(--r);padding:1.25rem;border:1px solid #CE93D8;margin:1rem 0}.qa-card p{font-size:.88rem;color:var(--claude);font-weight:500}
+</style>
+</head>
+<body>
+
+<nav class="nav"><div class="nav-logo">POWER FOX — Formación</div><div class="nav-links"><a href="#que-es">Qué es</a><a href="#vs">vs AppSource</a><a href="#items">Qué se publica</a><a href="#flow">Flujo de publicación</a><a href="#api">APIs</a><a href="#claude">Claude + Catalog</a><a href="#cierre">Cierre</a></div></nav>
+
+<div class="hero">
+  <div class="hero-meta"><span class="hero-badge">Power Platform Catalog</span><span class="hero-week">S4 · Viernes · Tema 3</span></div>
+  <h1>Power Platform Catalog — El marketplace interno de tu organización</h1>
+  <p class="hero-sub">Un <strong>AppSource privado</strong> para tu tenant. Componentes, plantillas, plug-ins, AI prompts y conectores publicados por tus propios equipos, partners aprobados y Microsoft. Reemplaza el "te paso la solution.zip por Teams" por un repositorio gobernado.</p>
+  <div class="hero-time">Material de referencia · 7 secciones · GA en Power Apps y Power Automate · Disponible en Release Wave 2026</div>
+</div>
+
+<div class="container">
+
+  <div class="toc">
+    <strong>Contenido</strong>
+    <a href="#que-es">01 · Qué es y para qué sirve</a>
+    <a href="#vs">02 · vs AppSource vs sharing manual</a>
+    <a href="#items">03 · Qué se puede publicar</a>
+    <a href="#flow">04 · Flujo: publicar y consumir</a>
+    <a href="#api">05 · APIs: PAC CLI, SDK, Web API</a>
+    <a href="#claude">06 · Claude Code + Catalog</a>
+    <a href="#cierre">07 · Casos de uso para LitoClean / Tema</a>
+  </div>
+
+  <!-- ========== 01 — QUÉ ES ========== -->
+  <div class="section" id="que-es">
+    <div class="section-header"><div class="section-num" style="background:var(--cat)">01</div><h2>Qué es y para qué sirve</h2><span class="duration">3 min</span></div>
+
+    <div class="ai-spotlight">
+      <h3>🎯 La frase de Microsoft</h3>
+      <p><em>"Crowd-source and find templates and components within your organization easily."</em></p>
+      <p>El catalog es un <strong>repositorio gobernado de items reutilizables dentro de tu tenant</strong>. Los makers entran al catálogo desde Power Apps o Power Automate, ven una galería de tiles, instalan lo que necesitan, y arrancan con plantillas que <strong>ya están conectadas a tus sistemas y siguen tu theme corporativo</strong>.</p>
+    </div>
+
+    <div class="content-grid">
+      <div class="card">
+        <h3>📦 Los 3 tipos de items que aparecen</h3>
+        <ul>
+          <li><strong>Publicados por tu organización</strong> — soluciones que un dev/maker interno publicó para que otros los usen</li>
+          <li><strong>Publicados por partners aprobados</strong> — tu admin decide qué partners pueden publicar (ej. consultoras de confianza)</li>
+          <li><strong>Publicados por Microsoft</strong> — AI prompts, Copilot app templates, dataflow templates, plantillas enterprise, PCF controls, plug-ins</li>
+        </ul>
+      </div>
+      <div class="card">
+        <h3>💼 Por qué nos importa en LitoClean / Tema</h3>
+        <p>Hoy: cada vez que un maker quiere reutilizar un componente que otro hizo, lo pide por <strong>Teams</strong> o <strong>email</strong>. Lo recibe como zip. Lo importa. Espera que la versión sea la última. <strong>Cero gobernanza.</strong></p>
+        <ul>
+          <li>El <em>plug-in de validación de CIF</em> que escribió Bladimir → catálogo</li>
+          <li>La <em>canvas app de captura de partes</em> de Foix → catálogo</li>
+          <li>El <em>flow de notificación de aprobaciones</em> → catálogo</li>
+        </ul>
+        <p style="margin-top:.5rem"><strong>Resultado:</strong> los siguientes 5 proyectos ya empiezan con base sólida.</p>
+      </div>
+    </div>
+
+    <div class="info-box"><p><strong>📅 Estado:</strong> El catálogo está disponible en Power Apps y Power Automate. Microsoft sigue ampliando la oferta de templates en cada Release Wave. Es <strong>parte del fundamento estratégico</strong> de Power Platform 2026.</p></div>
+  </div>
+
+  <!-- ========== 02 — VS ========== -->
+  <div class="section" id="vs">
+    <div class="section-header"><div class="section-num" style="background:var(--blue)">02</div><h2>vs AppSource vs compartir solution.zip</h2><span class="duration">3 min</span></div>
+
+    <div class="versus-grid" style="grid-template-columns:1fr 1fr 1fr">
+      <div class="compare-card cmp-cat">
+        <div class="cmp-tag">Catalog ✓</div>
+        <h3>Marketplace interno</h3>
+        <ul>
+          <li>Scope: <strong>tu tenant</strong></li>
+          <li>Publican: tus equipos, partners aprobados, Microsoft</li>
+          <li>Versionado oficial</li>
+          <li>Install desde maker portal</li>
+          <li>Auditable</li>
+          <li>Roles: Submitter / Approver / Consumer</li>
+        </ul>
+      </div>
+      <div class="compare-card cmp-app">
+        <div class="cmp-tag">AppSource</div>
+        <h3>Marketplace público</h3>
+        <ul>
+          <li>Scope: <strong>todos los tenants Microsoft</strong></li>
+          <li>Publican: ISVs registrados</li>
+          <li>Versionado oficial</li>
+          <li>Install desde admin / maker</li>
+          <li>Cumple certificación Microsoft</li>
+          <li>No es para tu IP interna</li>
+        </ul>
+      </div>
+      <div class="compare-card cmp-share">
+        <div class="cmp-tag">Compartir zip ✗</div>
+        <h3>El método clásico</h3>
+        <ul>
+          <li>Scope: <strong>quien recuerdes invitar</strong></li>
+          <li>Publican: cualquiera con permiso de export</li>
+          <li>Sin versionado</li>
+          <li>Install: drag & drop manual</li>
+          <li><strong>No auditable</strong></li>
+          <li>Sin roles — caos puro</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="warn-box"><p><strong>⚠️ El problema del método clásico:</strong> 6 meses después nadie sabe qué versión del componente tiene cada entorno. Cuando algo se rompe, no hay forma de saber si fue tu cambio o el zip que importó otro hace 3 meses.</p></div>
+  </div>
+
+  <!-- ========== 03 — ITEMS ========== -->
+  <div class="section" id="items">
+    <div class="section-header"><div class="section-num" style="background:var(--accent)">03</div><h2>Qué se puede publicar</h2><span class="duration">3 min</span></div>
+
+    <div class="item-grid">
+      <div class="item-pill"><span class="ip-icon">🎨</span>Canvas Apps</div>
+      <div class="item-pill"><span class="ip-icon">🗂️</span>Model-Driven Apps</div>
+      <div class="item-pill"><span class="ip-icon">⚡</span>Cloud Flows</div>
+      <div class="item-pill"><span class="ip-icon">🤖</span>Copilot Templates</div>
+      <div class="item-pill"><span class="ip-icon">🧩</span>PCF Controls</div>
+      <div class="item-pill"><span class="ip-icon">🔌</span>Plug-ins</div>
+      <div class="item-pill"><span class="ip-icon">💬</span>AI Prompts</div>
+      <div class="item-pill"><span class="ip-icon">📊</span>Dataflow Templates</div>
+      <div class="item-pill"><span class="ip-icon">🌐</span>Custom Connectors</div>
+      <div class="item-pill"><span class="ip-icon">📋</span>Enterprise Templates</div>
+      <div class="item-pill"><span class="ip-icon">🎯</span>Solution Templates</div>
+      <div class="item-pill"><span class="ip-icon">🛠️</span>Webhooks</div>
+    </div>
+
+    <div class="tip-box"><p><strong>💡 Lo que más valor da:</strong> los <em>Enterprise Templates</em> — soluciones que ya conectan con tus sistemas internos (ERP, identidad, theming). El maker abre, instala, y empieza con el 70% del trabajo hecho según tus estándares corporativos.</p></div>
+  </div>
+
+  <!-- ========== 04 — FLUJO ========== -->
+  <div class="section" id="flow">
+    <div class="section-header"><div class="section-num" style="background:var(--green)">04</div><h2>Flujo: publicar y consumir</h2><span class="duration">5 min</span></div>
+
+    <div class="role-grid">
+      <div class="role-card">
+        <h4>👨‍💻 Como <em>Submitter</em> (developer / maker)</h4>
+        <ol style="padding-left:1.2rem;font-size:.85rem;color:var(--text-mid);margin-top:.5rem">
+          <li>Empaqueta tu solución (con PAC CLI, XRMToolBox, Studio)</li>
+          <li>Entra al <strong>Catalog manager app</strong></li>
+          <li>Submit del item con metadatos: nombre, descripción, versión, tags</li>
+          <li>Esperas aprobación (depende de governance)</li>
+          <li>Item aparece en el catálogo del tenant</li>
+        </ol>
+      </div>
+      <div class="role-card">
+        <h4>🛠️ Como <em>Approver</em> (admin / DevOps)</h4>
+        <ol style="padding-left:1.2rem;font-size:.85rem;color:var(--text-mid);margin-top:.5rem">
+          <li>Recibes notificación de submit</li>
+          <li>Revisas: ¿cumple naming? ¿tiene CLAUDE.md / docs? ¿auditoría de seguridad?</li>
+          <li>Apruebas o rechazas con feedback</li>
+          <li>Una vez aprobado, queda visible para todos los makers</li>
+          <li>Versionas con cada update — el maker ve histórico</li>
+        </ol>
+      </div>
+      <div class="role-card">
+        <h4>🎨 Como <em>Consumer</em> (maker)</h4>
+        <ol style="padding-left:1.2rem;font-size:.85rem;color:var(--text-mid);margin-top:.5rem">
+          <li>Entras a Power Apps maker portal</li>
+          <li>Ves el catálogo con tiles</li>
+          <li>Filtras: tipo de item, autor, tags</li>
+          <li>Click en "Install" sobre el tile</li>
+          <li>El item aparece en tu entorno listo para usar</li>
+        </ol>
+      </div>
+      <div class="role-card">
+        <h4>👀 Como <em>Auditor</em></h4>
+        <ol style="padding-left:1.2rem;font-size:.85rem;color:var(--text-mid);margin-top:.5rem">
+          <li>Vista del CoE Starter Kit conectada al catálogo</li>
+          <li>Ves: quién publicó, quién instaló, en qué entornos</li>
+          <li>Trazabilidad: si algo falla, sabes qué versión está donde</li>
+          <li>Reportes mensuales de adopción</li>
+        </ol>
+      </div>
+    </div>
+
+    <div class="pipeline">
+      <div class="pipeline-step ps-cat">Submit</div>
+      <span class="pipeline-arrow">→</span>
+      <div class="pipeline-step ps-orange">Review</div>
+      <span class="pipeline-arrow">→</span>
+      <div class="pipeline-step ps-green">Approve</div>
+      <span class="pipeline-arrow">→</span>
+      <div class="pipeline-step ps-blue">Publish</div>
+      <span class="pipeline-arrow">→</span>
+      <div class="pipeline-step ps-purple">Install</div>
+    </div>
+
+    <div class="info-box"><p><strong>🔐 Roles necesarios:</strong> el rol <code>Catalog Submitter</code> debe estar asignado a tu usuario o a un team al que perteneces. Si no, el admin lo configura desde el admin center.</p></div>
+  </div>
+
+  <!-- ========== 05 — APIS ========== -->
+  <div class="section" id="api">
+    <div class="section-header"><div class="section-num" style="background:var(--purple)">05</div><h2>APIs: PAC CLI, SDK, Web API</h2><span class="duration">5 min</span></div>
+
+    <p style="margin-bottom:1rem;font-size:.9rem;color:var(--text-mid)">Microsoft expone tres caminos para automatizar la publicación y consumo del catálogo. Elige el que encaje con tu pipeline:</p>
+
+    <div class="content-grid">
+      <div class="card">
+        <h3>⚡ PAC CLI (recomendado)</h3>
+        <p>El más rápido para devs y DevOps. Instalas el CLI, te autenticas, y publicas con un comando.</p>
+        <div class="code-block"><span class="comment"># Listar items del catálogo</span>
+pac catalog list
+
+<span class="comment"># Submit de una solución como item</span>
+pac catalog submit \
+  --path ./solution.zip \
+  --display-name <span class="string">"Litoclean Time Tracker"</span> \
+  --description <span class="string">"Canvas app de partes de horas"</span>
+
+<span class="comment"># Install de un item</span>
+pac catalog install \
+  --catalog-item-id <span class="string">"&lt;guid&gt;"</span> \
+  --target-environment-id <span class="string">"&lt;env-guid&gt;"</span></div>
+      </div>
+      <div class="card">
+        <h3>🔧 SDK para .NET</h3>
+        <p>Para apps cliente que necesitan integración profunda. Útil si construyes una herramienta interna que orquesta múltiples publicaciones.</p>
+        <div class="code-block"><span class="comment">// IOrganizationService + Catalog APIs</span>
+<span class="keyword">var</span> request = <span class="keyword">new</span> SubmitCatalogItemRequest
+{
+    Name = <span class="string">"litoclean_timetracker"</span>,
+    Path = <span class="string">"./solution.zip"</span>,
+    Version = <span class="string">"1.2.0"</span>
+};
+<span class="keyword">var</span> response = service.Execute(request);</div>
+      </div>
+    </div>
+
+    <div class="content-grid">
+      <div class="card">
+        <h3>🌐 Dataverse Web API</h3>
+        <p>Para clientes que no son .NET. Funciona desde PowerShell, Python, Node, lo que sea — es REST puro contra el endpoint del environment.</p>
+        <div class="code-block"><span class="comment"># PowerShell: listar items via Web API</span>
+<span class="keyword">$</span>response = Invoke-RestMethod `
+  -Uri <span class="string">"$envUrl/api/data/v9.2/catalogitems"</span> `
+  -Headers <span class="keyword">@</span>{ Authorization = <span class="string">"Bearer $token"</span> } `
+  -Method GET</div>
+      </div>
+      <div class="card">
+        <h3>🤔 ¿Cuál usar?</h3>
+        <ul>
+          <li><strong>Dev / DevOps en CI/CD</strong> → PAC CLI</li>
+          <li><strong>App custom con muchas operaciones</strong> → SDK .NET</li>
+          <li><strong>Script ad-hoc / cross-platform</strong> → Web API</li>
+        </ul>
+        <p style="margin-top:.5rem"><strong>Importante:</strong> antes de usar cualquier API, el catálogo debe estar <strong>set up</strong> en el entorno. Es un paso de admin one-time.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- ========== 06 — CLAUDE ========== -->
+  <div class="section" id="claude">
+    <div class="section-header"><div class="section-num" style="background:var(--claude)">06</div><h2>Claude Code + Power Platform Catalog</h2><span class="duration">5 min</span></div>
+
+    <div class="ai-spotlight">
+      <h3>🤖 Lo que Claude aporta encima del catálogo</h3>
+      <p>El catálogo resuelve <strong>la distribución</strong>. Lo que Claude resuelve es <strong>todo el trabajo previo y posterior</strong>: empaquetar bien, documentar, versionar, hacer audits antes de publicar, y elegir qué item del catálogo encaja con la necesidad real.</p>
+      <ul>
+        <li>Genera la <strong>documentación del item</strong> a partir del código</li>
+        <li>Genera el <strong>release notes</strong> entre versiones</li>
+        <li>Hace una <strong>auditoría de seguridad</strong> antes de submit</li>
+        <li>Consulta el catálogo y <strong>recomienda items existentes</strong> antes de que el maker reinvente la rueda</li>
+      </ul>
+    </div>
+
+    <div class="content-grid">
+      <div class="card">
+        <h3>📝 Empaquetar y publicar con Claude</h3>
+        <div class="prompt-box">Empaqueta la solución LitoCleanTimeTracker, genera un README con descripción, versión, dependencias y screenshots, y prepara el comando pac catalog submit con los metadatos correctos. La versión es 1.2.0 y los cambios principales son los que hay en los últimos 5 commits.</div>
+      </div>
+      <div class="card">
+        <h3>🔍 Buscar antes de construir</h3>
+        <div class="prompt-box">Necesito un componente de validación de IBAN para Canvas. Antes de construir, mira si hay algo en el catálogo del tenant. Dame las opciones disponibles, sus versiones y autores. Si no hay nada, propón un plan para construirlo.</div>
+      </div>
+      <div class="card">
+        <h3>✅ Audit pre-submit</h3>
+        <div class="prompt-box">Voy a publicar la solución LitoCleanCore al catálogo. Audítala antes: 1) busca secretos hardcodeados, 2) verifica que hay README y CHANGELOG, 3) confirma que todos los componentes tienen prefix pfx_, 4) lista las dependencias externas. Marca en rojo lo que no pase.</div>
+      </div>
+      <div class="card">
+        <h3>📊 Reportes de adopción</h3>
+        <div class="prompt-box">Conéctate al CoE Starter Kit y dime: cuáles son los 5 items del catálogo más instalados, en qué entornos, y qué autores son los más activos. Genera un reporte ejecutivo de 1 página para Luis.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ========== 07 — CIERRE ========== -->
+  <div class="section" id="cierre">
+    <div class="section-header"><div class="section-num" style="background:var(--green)">07</div><h2>Casos de uso para LitoClean / Tema</h2><span class="duration">3 min</span></div>
+
+    <div class="content-grid">
+      <div class="card card-full">
+        <h3>🎯 Items que tendrían sentido publicar ya</h3>
+        <ol style="padding-left:1.25rem;font-size:.88rem;color:var(--text-mid)">
+          <li><strong>Conector custom <code>pfx_post_powerfox_api</code></strong> — el del Time Tracker (S4-mié). Lo usan ya 3 apps. Catalog → versiones controladas.</li>
+          <li><strong>Plug-in de auditoría</strong> que firma created_by / modified_by con metadata. Reutilizable en cualquier solución cliente.</li>
+          <li><strong>Theme corporativo</strong> de LitoClean para Canvas. Cada nueva app empieza con la marca correcta.</li>
+          <li><strong>Plantilla de "Spec funcional"</strong> Canvas + Power Automate — el patrón maestro-detalle del bloque oficial de Viernes.</li>
+          <li><strong>PCF de validación CIF/IBAN</strong> ya listo para drag & drop.</li>
+        </ol>
+      </div>
+    </div>
+
+    <div class="qa-card"><p>❓ <strong>Pregunta para discusión:</strong> ¿qué componente que existe hoy en LitoClean estaría siendo reinventado por 3+ personas si no hay un catálogo? Ese es vuestro primer item a publicar.</p></div>
+
+    <div class="tip-box"><p><strong>🚀 Compromiso para la última sesión:</strong> identificar 1 item candidato, empaquetarlo con Claude, y discutir el plan de submit en clase final.</p></div>
+
+    <div class="info-box"><p><strong>📚 Para profundizar:</strong> <em>Catalog overview (maker)</em> · <em>Administer the catalog</em> · <em>PAC CLI catalog reference</em> · <em>CoE Starter Kit</em>.</p></div>
+  </div>
+
+</div>
+
+<div class="footer"><strong>POWER FOX</strong> · Formación Claude Code · S4 Viernes · Tema 3 de 4 · Mayo 2026</div>
+
+</body>
+</html>

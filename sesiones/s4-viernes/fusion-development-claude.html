@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Fusion Development — Equipos mixtos low-code + pro-code con Claude | Power Fox</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700&family=JetBrains+Mono:wght@400;500&display=swap');
+  :root{--navy:#0B1D3A;--blue:#1565C0;--blue-light:#42A5F5;--accent:#FF6D00;--accent-soft:#FFF3E0;--bg:#F5F7FA;--card:#FFF;--text:#1A2332;--text-mid:#546E7A;--text-light:#90A4AE;--border:#E8EDF2;--code-bg:#1E1E2E;--green:#2E7D32;--green-soft:#E8F5E9;--red:#C62828;--red-soft:#FFEBEE;--purple:#6A1B9A;--purple-soft:#F3E5F5;--claude:#7C3AED;--maker:#742774;--maker-soft:#F3E5F5;--prodev:#0078D4;--prodev-soft:#DEECF9;--devops:#F57C00;--devops-soft:#FFF3E0;--r:12px}
+  *{margin:0;padding:0;box-sizing:border-box}body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);line-height:1.7}
+  .nav{display:flex;justify-content:space-between;align-items:center;padding:.75rem 1.5rem;background:var(--card);border-bottom:1px solid var(--border);position:sticky;top:0;z-index:100}.nav-logo{font-weight:700;font-size:.9rem;color:var(--navy);letter-spacing:1px}.nav-links{display:flex;gap:1rem;flex-wrap:wrap}.nav-links a{font-size:.8rem;color:var(--text-mid);text-decoration:none;font-weight:500}.nav-links a:hover{color:var(--maker)}
+  .hero{background:var(--navy);color:#fff;padding:3rem 2rem 2.5rem;position:relative;overflow:hidden}.hero::after{content:'';position:absolute;top:0;right:0;width:40%;height:100%;background:linear-gradient(135deg,transparent,rgba(116,39,116,.3),rgba(0,120,212,.18))}.hero-meta{display:flex;gap:1.5rem;flex-wrap:wrap;align-items:center;margin-bottom:1rem;position:relative;z-index:1}.hero-badge{background:var(--maker);color:#fff;padding:.25rem .75rem;border-radius:4px;font-size:.75rem;font-weight:700;letter-spacing:1.5px;text-transform:uppercase}.hero-week{font-size:.85rem;opacity:.7}.hero h1{font-size:2.2rem;font-weight:700;line-height:1.2;margin-bottom:.5rem;position:relative;z-index:1}.hero-sub{font-size:1rem;opacity:.85;position:relative;z-index:1;max-width:780px}.hero-time{display:inline-flex;align-items:center;gap:.4rem;background:rgba(255,255,255,.1);padding:.3rem .75rem;border-radius:6px;font-size:.85rem;margin-top:.75rem;position:relative;z-index:1}
+  .container{max-width:1100px;margin:0 auto;padding:2rem 1.5rem}
+  .toc{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:1.25rem 1.5rem;margin:1.5rem 0;display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:.5rem 1.5rem}.toc a{font-size:.85rem;color:var(--text-mid);text-decoration:none;display:block;padding:.25rem 0}.toc a:hover{color:var(--maker)}.toc strong{color:var(--navy);font-size:.7rem;letter-spacing:1px;text-transform:uppercase;display:block;grid-column:1/-1;margin-bottom:.25rem}
+  .section{margin-bottom:3rem}.section-header{display:flex;align-items:center;gap:.75rem;margin-bottom:1.25rem;padding-bottom:.75rem;border-bottom:2px solid var(--border);flex-wrap:wrap}.section-num{width:36px;height:36px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:.9rem;color:#fff;flex-shrink:0}.section-header h2{font-size:1.3rem;font-weight:700}.section-header .duration{margin-left:auto;font-size:.8rem;color:var(--text-light);font-weight:500}
+  .content-grid{display:grid;grid-template-columns:1fr 1fr;gap:1.25rem}@media(max-width:768px){.content-grid{grid-template-columns:1fr}}
+  .triple-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1rem}@media(max-width:900px){.triple-grid{grid-template-columns:1fr}}
+  .card{background:var(--card);border-radius:var(--r);padding:1.5rem;box-shadow:0 1px 4px rgba(0,0,0,.05);border:1px solid var(--border)}.card h3{font-size:1.05rem;font-weight:700;margin-bottom:.75rem;display:flex;align-items:center;gap:.5rem}.card p,.card li{font-size:.88rem;color:var(--text-mid)}.card ul{padding-left:1.25rem}.card li{margin-bottom:.35rem}.card-full{grid-column:1/-1}
+  .highlight-box{border-left:4px solid var(--accent);background:var(--accent-soft);padding:1rem 1.25rem;border-radius:0 var(--r) var(--r) 0;margin:1rem 0}.highlight-box p{font-size:.88rem;color:var(--text)}.tip-box{border-left:4px solid var(--green);background:var(--green-soft);padding:1rem 1.25rem;border-radius:0 var(--r) var(--r) 0;margin:1rem 0}.tip-box p{font-size:.88rem}.warn-box{border-left:4px solid var(--red);background:var(--red-soft);padding:1rem 1.25rem;border-radius:0 var(--r) var(--r) 0;margin:1rem 0}.warn-box p{font-size:.88rem}.info-box{border-left:4px solid var(--maker);background:var(--maker-soft);padding:1rem 1.25rem;border-radius:0 var(--r) var(--r) 0;margin:1rem 0}.info-box p{font-size:.88rem}
+  .code-block{background:var(--code-bg);color:#CDD6F4;border-radius:8px;padding:1.25rem;font-family:'JetBrains Mono',monospace;font-size:.78rem;overflow-x:auto;margin:1rem 0;line-height:1.6;white-space:pre}.comment{color:#6C7086}.keyword{color:#CBA6F7}.string{color:#A6E3A1}.func{color:#89B4FA}.num{color:#FAB387}.prop{color:#F9E2AF}
+  .table-wrap{overflow-x:auto;margin:1rem 0}table{width:100%;border-collapse:collapse;font-size:.85rem}th{background:var(--navy);color:#fff;padding:.6rem 1rem;text-align:left;font-size:.78rem;text-transform:uppercase;letter-spacing:.5px}td{padding:.6rem 1rem;border-bottom:1px solid var(--border);vertical-align:top}tr:hover td{background:#F8FAFC}td code{background:var(--maker-soft);color:var(--maker);padding:.1rem .35rem;border-radius:3px;font-size:.78rem;font-family:'JetBrains Mono',monospace}
+  .persona-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1rem;margin:1rem 0}@media(max-width:900px){.persona-grid{grid-template-columns:1fr}}
+  .persona-card{border-radius:var(--r);padding:1.5rem;border:2px solid;position:relative;background:var(--card)}.persona-maker{border-color:var(--maker)}.persona-prodev{border-color:var(--prodev)}.persona-devops{border-color:var(--devops)}.persona-card .pers-icon{font-size:2rem;margin-bottom:.5rem}.persona-card h3{font-size:1.05rem;font-weight:700;margin-bottom:.4rem}.persona-card .pers-tag{position:absolute;top:-12px;left:1rem;padding:.2rem .7rem;border-radius:4px;font-size:.65rem;font-weight:700;letter-spacing:1.2px;color:#fff;text-transform:uppercase}.persona-maker .pers-tag{background:var(--maker)}.persona-prodev .pers-tag{background:var(--prodev)}.persona-devops .pers-tag{background:var(--devops)}.persona-card p{font-size:.85rem;color:var(--text-mid);margin-bottom:.5rem}.persona-card ul{padding-left:1.2rem;font-size:.83rem;color:var(--text-mid)}.persona-card li{margin-bottom:.3rem}.persona-card li strong{color:var(--text)}
+  .ai-spotlight{background:linear-gradient(135deg,#1A1A2E,#2D2D4E);color:#fff;border-radius:var(--r);padding:2rem;margin:1.5rem 0;position:relative;overflow:hidden}.ai-spotlight::before{display:block;font-size:.7rem;font-weight:700;letter-spacing:2px;color:#A78BFA;margin-bottom:.75rem;content:'BLOQUE CLAVE — CLAUDE COMO PEGAMENTO DEL EQUIPO FUSION'}.ai-spotlight h3{font-size:1.3rem;font-weight:700;margin-bottom:.75rem;color:#fff}.ai-spotlight p{font-size:.95rem;color:#CDD6F4;margin-bottom:.5rem}.ai-spotlight ul{padding-left:1.5rem;color:#CDD6F4;font-size:.9rem}.ai-spotlight li{margin-bottom:.4rem}.ai-spotlight code{background:rgba(124,58,237,.25);padding:.1rem .4rem;border-radius:3px;color:#E0CFFF;font-family:'JetBrains Mono',monospace;font-size:.82rem}
+  .pipeline{display:flex;align-items:center;justify-content:center;gap:.5rem;flex-wrap:wrap;background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:1.25rem;margin:1rem 0}.pipeline-step{padding:.6rem 1rem;border-radius:8px;font-size:.8rem;font-weight:600;text-align:center;min-width:130px;color:#fff}.ps-maker{background:var(--maker)}.ps-prodev{background:var(--prodev)}.ps-devops{background:var(--devops)}.ps-claude{background:var(--claude)}.pipeline-arrow{color:var(--text-light);font-size:1.2rem;font-weight:700}
+  .scenario-card{background:var(--card);border-radius:var(--r);padding:1.5rem;border:1px solid var(--border);margin-bottom:1.25rem;border-left:4px solid var(--maker)}.scenario-card .sc-title{display:flex;align-items:center;gap:.6rem;margin-bottom:.75rem;flex-wrap:wrap}.scenario-card .sc-num{width:30px;height:30px;border-radius:6px;background:var(--maker);color:#fff;font-weight:700;font-size:.85rem;display:flex;align-items:center;justify-content:center;flex-shrink:0}.scenario-card h3{font-size:1.05rem;font-weight:700;color:var(--text);margin:0}.scenario-card .sc-tag{font-size:.65rem;padding:.15rem .5rem;border-radius:4px;font-weight:700;letter-spacing:.5px;text-transform:uppercase;background:var(--maker-soft);color:var(--maker);margin-left:auto}
+  .prompt-box{background:linear-gradient(135deg,#FFFDF7,#FFF3E0);border:1px solid var(--accent);border-radius:var(--r);padding:1rem 1.25rem;margin:.75rem 0;font-family:'JetBrains Mono',monospace;font-size:.85rem;color:var(--navy);position:relative}.prompt-box::before{content:'PROMPT';position:absolute;top:-9px;left:1rem;background:var(--accent);color:#fff;padding:.15rem .55rem;font-size:.6rem;font-weight:700;letter-spacing:1px;border-radius:3px;font-family:'DM Sans',sans-serif}
+  .footer{text-align:center;padding:2rem;font-size:.8rem;color:var(--text-light);border-top:1px solid var(--border);margin-top:2rem}.footer strong{color:var(--navy)}
+  .qa-card{background:var(--purple-soft);border-radius:var(--r);padding:1.25rem;border:1px solid #CE93D8;margin:1rem 0}.qa-card p{font-size:.88rem;color:var(--claude);font-weight:500}
+</style>
+</head>
+<body>
+
+<nav class="nav"><div class="nav-logo">POWER FOX — Formación</div><div class="nav-links"><a href="#que-es">Qué es</a><a href="#personas">Personas</a><a href="#colaboracion">Colaboración</a><a href="#extensibility">Puntos de extensión</a><a href="#alm">ALM</a><a href="#claude">Claude como pegamento</a><a href="#anti">Anti-patrones</a></div></nav>
+
+<div class="hero">
+  <div class="hero-meta"><span class="hero-badge">Fusion Development</span><span class="hero-week">S4 · Viernes · Tema 2</span></div>
+  <h1>Fusion Development — Equipos mixtos low-code + pro-code</h1>
+  <p class="hero-sub">El modelo que Microsoft empuja desde hace años: <strong>maker (citizen)</strong> + <strong>pro dev (code-first)</strong> + <strong>IT/DevOps</strong> trabajando sobre la misma solución. Hoy con Claude Code, cada uno habla su lenguaje y el agente traduce.</p>
+  <div class="hero-time">Material de referencia · 7 secciones · Basado en doc oficial + ebook + experiencia real</div>
+</div>
+
+<div class="container">
+
+  <div class="toc">
+    <strong>Contenido</strong>
+    <a href="#que-es">01 · Qué es Fusion Development</a>
+    <a href="#personas">02 · Las 3 personas</a>
+    <a href="#colaboracion">03 · Colaboración real</a>
+    <a href="#extensibility">04 · Puntos de extensión por área</a>
+    <a href="#alm">05 · ALM en equipos fusion</a>
+    <a href="#claude">06 · Claude Code como pegamento</a>
+    <a href="#anti">07 · Anti-patrones y cierre</a>
+  </div>
+
+  <!-- ========== 01 — QUÉ ES ========== -->
+  <div class="section" id="que-es">
+    <div class="section-header"><div class="section-num" style="background:var(--maker)">01</div><h2>Qué es Fusion Development</h2><span class="duration">3 min</span></div>
+
+    <div class="ai-spotlight">
+      <h3>📖 La definición de Gartner (que Microsoft adopta)</h3>
+      <p><em>"Distributed and multidisciplinary digital business teams that blend technology and other types of domain expertise."</em></p>
+      <p>Traducción operativa: el equipo que construye una app de negocio <strong>no es solo IT</strong>. Es <strong>el dueño del proceso</strong> (negocio) + <strong>el que sabe Power Fx y Canvas</strong> (maker) + <strong>el que escribe TypeScript y plug-ins</strong> (pro dev) + <strong>el que despliega y audita</strong> (DevOps).</p>
+    </div>
+
+    <div class="content-grid">
+      <div class="card">
+        <h3>🎯 El objetivo declarado</h3>
+        <p>Escalar el desarrollo de aplicaciones <strong>a través del low-code</strong> sin sacrificar lo que solo se hace bien con código.</p>
+        <ul>
+          <li>Maker construye el 80% (UI, lógica simple, conexión a Dataverse)</li>
+          <li>Pro dev resuelve el 20% que el low-code no cubre (integraciones complejas, performance, lógica de negocio crítica)</li>
+          <li>DevOps garantiza que ambos trabajos viajen juntos a producción</li>
+        </ul>
+      </div>
+      <div class="card">
+        <h3>💼 Por qué nos importa en LitoClean / Tema</h3>
+        <p>Hoy en el equipo conviven:</p>
+        <ul>
+          <li><strong>Renny / Foix / Milagros</strong> — perfil maker / análisis de negocio</li>
+          <li><strong>Adolfo / Bladimir</strong> — perfiles más cercanos a pro dev</li>
+          <li><strong>Luis Hoyos</strong> — gerencia / governance del proceso</li>
+        </ul>
+        <p style="margin-top:.5rem">Sin un modelo fusion explícito, cada uno trabaja en su silo y los handoffs son emails con capturas. <strong>Fusion development es el modelo que reemplaza ese caos</strong>.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- ========== 02 — PERSONAS ========== -->
+  <div class="section" id="personas">
+    <div class="section-header"><div class="section-num" style="background:var(--prodev)">02</div><h2>Las 3 personas del equipo fusion</h2><span class="duration">5 min</span></div>
+
+    <div class="persona-grid">
+      <div class="persona-card persona-maker">
+        <div class="pers-tag">Maker</div>
+        <div class="pers-icon">🎨</div>
+        <h3>Citizen developer / Maker</h3>
+        <p><strong>Quién es:</strong> Usuario de negocio con conocimiento del proceso. No tiene fondo técnico necesariamente.</p>
+        <p style="margin-top:.5rem"><strong>Herramientas:</strong></p>
+        <ul>
+          <li>Power Apps Studio</li>
+          <li>Power Automate (cloud flows)</li>
+          <li>Copilot Studio (low-code)</li>
+          <li>Excel + Office Scripts (S4-mié)</li>
+          <li>Dataverse maker portal</li>
+        </ul>
+        <p style="margin-top:.5rem"><strong>Aporta:</strong> velocidad inicial, conocimiento del dominio, prototipado.</p>
+      </div>
+      <div class="persona-card persona-prodev">
+        <div class="pers-tag">Pro Dev</div>
+        <div class="pers-icon">💻</div>
+        <h3>Professional / Code-first developer</h3>
+        <p><strong>Quién es:</strong> Desarrollador que escribe C#, TypeScript, JavaScript. Trabaja en VS Code o Visual Studio.</p>
+        <p style="margin-top:.5rem"><strong>Herramientas:</strong></p>
+        <ul>
+          <li>Visual Studio Code + Claude Code</li>
+          <li>PCF (Power Apps Component Framework)</li>
+          <li>Plug-ins Dataverse (C# + SDK)</li>
+          <li>Custom connectors (Azure Functions)</li>
+          <li>Liquid + Web API en Power Pages</li>
+        </ul>
+        <p style="margin-top:.5rem"><strong>Aporta:</strong> performance, integraciones complejas, código testeable, security review.</p>
+      </div>
+      <div class="persona-card persona-devops">
+        <div class="pers-tag">IT / DevOps</div>
+        <div class="pers-icon">⚙️</div>
+        <h3>IT pro / DevOps engineer</h3>
+        <p><strong>Quién es:</strong> Responsable del ALM, despliegues, governance, monitoring.</p>
+        <p style="margin-top:.5rem"><strong>Herramientas:</strong></p>
+        <ul>
+          <li>PAC CLI</li>
+          <li>Azure DevOps / GitHub Actions</li>
+          <li>XRMToolBox + admin center</li>
+          <li>Power Platform CoE Starter Kit</li>
+          <li>Solution import/export pipelines</li>
+        </ul>
+        <p style="margin-top:.5rem"><strong>Aporta:</strong> repetibilidad, gobernanza, auditoría, seguridad.</p>
+      </div>
+    </div>
+
+    <div class="info-box"><p><strong>💡 Punto crítico:</strong> el pro dev <strong>no se baja al maker</strong> ni viceversa. Cada uno usa su tooling. Lo que comparten es <strong>la solución empaquetada</strong> y <strong>el lenguaje de negocio</strong>. Microsoft lo dice claro: <em>"pro devs use the same visual tooling as citizen makers when creating apps on Power Platform"</em> — pero solo cuando estén haciendo tareas de maker.</p></div>
+  </div>
+
+  <!-- ========== 03 — COLABORACIÓN ========== -->
+  <div class="section" id="colaboracion">
+    <div class="section-header"><div class="section-num" style="background:var(--green)">03</div><h2>Colaboración real — quién hace qué</h2><span class="duration">5 min</span></div>
+
+    <div class="pipeline">
+      <div class="pipeline-step ps-maker">Maker prototipa<br/>Canvas + Flow</div>
+      <span class="pipeline-arrow">→</span>
+      <div class="pipeline-step ps-prodev">Pro dev refuerza<br/>PCF + Plug-in</div>
+      <span class="pipeline-arrow">→</span>
+      <div class="pipeline-step ps-devops">DevOps empaqueta<br/>solution managed</div>
+      <span class="pipeline-arrow">→</span>
+      <div class="pipeline-step ps-claude">Claude documenta<br/>+ tests E2E</div>
+    </div>
+
+    <div class="scenario-card">
+      <div class="sc-title">
+        <div class="sc-num">1</div>
+        <h3>Escenario real: app de gestión de incidencias</h3>
+        <span class="sc-tag">Caso típico</span>
+      </div>
+      <table>
+        <tr><th>Tarea</th><th>Quién</th><th>Por qué</th></tr>
+        <tr><td>Definir el modelo de datos (entidades, columnas)</td><td>Maker + IT</td><td>Maker conoce el proceso; IT valida nombres y seguridad</td></tr>
+        <tr><td>Construir la canvas app de captura</td><td>Maker</td><td>Iteración rápida, validación con usuario final</td></tr>
+        <tr><td>Validación en tiempo real del CIF/IBAN</td><td>Pro dev (PCF)</td><td>Power Fx no cubre la regex compleja</td></tr>
+        <tr><td>Plug-in de auditoría on-create</td><td>Pro dev (C#)</td><td>Necesita escribir en log y firmar registros</td></tr>
+        <tr><td>Custom connector a SAP</td><td>Pro dev</td><td>Auth con OAuth + transformación de payload</td></tr>
+        <tr><td>Empaquetado y deploy a UAT/PROD</td><td>DevOps</td><td>Pipelines, gates, rollback plan</td></tr>
+        <tr><td>Tests E2E sobre el flujo crítico</td><td>Pro dev + Claude</td><td>Playwright para Power Platform (tema 1)</td></tr>
+      </table>
+    </div>
+
+    <div class="tip-box"><p><strong>🟢 La regla del 80/20:</strong> si el maker está peleando 4 horas con una fórmula Power Fx, eso ya no es low-code — es deuda técnica disfrazada. Llamada al pro dev.</p></div>
+  </div>
+
+  <!-- ========== 04 — EXTENSIBILITY ========== -->
+  <div class="section" id="extensibility">
+    <div class="section-header"><div class="section-num" style="background:var(--accent)">04</div><h2>Puntos de extensión — dónde entra el código</h2><span class="duration">5 min</span></div>
+
+    <p style="margin-bottom:1rem;font-size:.9rem;color:var(--text-mid)">Microsoft documenta exactamente dónde el pro dev puede extender Power Platform. Esto es el menú de "qué cae a code-first":</p>
+
+    <div class="table-wrap">
+      <table>
+        <tr><th>Área</th><th>Punto de extensión</th><th>Tecnología</th></tr>
+        <tr><td>Copilot Studio</td><td>Custom connectors / REST</td><td>Azure Functions, API Management</td></tr>
+        <tr><td>Copilot Studio</td><td>MCP servers como tools</td><td>Cualquier lenguaje</td></tr>
+        <tr><td>Copilot Studio</td><td>Multi-agent (A2A protocol)</td><td>M365 Agents SDK / Foundry</td></tr>
+        <tr><td>Canvas Apps</td><td>Componentes UI custom (PCF)</td><td>TypeScript + React</td></tr>
+        <tr><td>Canvas Apps</td><td>Custom connectors</td><td>OpenAPI + Azure Functions</td></tr>
+        <tr><td>Model-Driven</td><td>JS de cliente (formContext, Xrm.WebApi)</td><td>JavaScript (S2 del curso)</td></tr>
+        <tr><td>Model-Driven</td><td>HTML web resources</td><td>HTML + JS</td></tr>
+        <tr><td>Model-Driven</td><td>Componentes UI custom (PCF)</td><td>TypeScript + React</td></tr>
+        <tr><td>Power Automate</td><td>Custom connectors</td><td>OpenAPI + Azure Functions</td></tr>
+        <tr><td>Power Automate</td><td>Workflow definition functions</td><td>Expresiones avanzadas</td></tr>
+        <tr><td>Power BI</td><td>Custom visuals</td><td>SDK open-source</td></tr>
+        <tr><td>Power BI</td><td>Embed en apps externas</td><td>JavaScript SDK</td></tr>
+        <tr><td>Power Pages</td><td>Templates Liquid</td><td>HTML, CSS, Liquid</td></tr>
+        <tr><td>Power Pages</td><td>Portals Web API</td><td>JavaScript</td></tr>
+        <tr><td>Dataverse</td><td>Plug-ins (event handlers)</td><td>C# + SDK .NET</td></tr>
+        <tr><td>Dataverse</td><td>Webhooks + Service Bus</td><td>Cualquier lenguaje</td></tr>
+        <tr><td>Dataverse</td><td>Custom API</td><td>C# + SDK .NET</td></tr>
+        <tr><td>Dataverse</td><td>Virtual tables</td><td>C# o sin código</td></tr>
+      </table>
+    </div>
+
+    <div class="warn-box"><p><strong>⚠️ El menú es largo, pero la regla es simple:</strong> empieza siempre en low-code. Solo escala a code cuando topes con el límite real (no con la incomodidad temporal del Power Fx).</p></div>
+  </div>
+
+  <!-- ========== 05 — ALM ========== -->
+  <div class="section" id="alm">
+    <div class="section-header"><div class="section-num" style="background:var(--devops)">05</div><h2>ALM en equipos fusion — la parte que rompe</h2><span class="duration">5 min</span></div>
+
+    <div class="content-grid">
+      <div class="card">
+        <h3>🔴 El problema real</h3>
+        <p>Maker trabaja en <strong>maker.powerapps.com</strong>. Pro dev trabaja en <strong>VS Code + Git</strong>. Sin disciplina, son <strong>dos universos paralelos</strong> que no se hablan.</p>
+        <ul>
+          <li>Maker exporta solución unmanaged → la importa pro dev</li>
+          <li>Pro dev hace <code>pac solution unpack</code> → trabaja en YAML</li>
+          <li>Si maker hace cambios mientras tanto → conflictos</li>
+          <li>DevOps al final: "¿qué versión va a prod?"</li>
+        </ul>
+      </div>
+      <div class="card">
+        <h3>🟢 El modelo que funciona</h3>
+        <p>Una <strong>fuente de verdad única</strong>: el repo Git. Maker exporta y commitea (con ayuda de PAC CLI). Pro dev hace cambios y commitea. Pipeline empaqueta y despliega.</p>
+        <ul>
+          <li>Convención: <strong>solo el repo es la verdad</strong></li>
+          <li>Maker hace cambios → exporta → pull request</li>
+          <li>Pro dev revisa, aporta, mergea</li>
+          <li>Pipeline aplica a UAT y PROD</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="code-block"><span class="comment"># El loop maker → pro dev → DevOps que sí funciona</span>
+
+<span class="comment"># 1. Maker hace cambios en Power Apps Studio</span>
+<span class="comment"># 2. Maker (o un script automatizado) ejecuta:</span>
+pac solution export --path ./out/solution.zip --name LitoCleanCore --managed false
+pac solution unpack --zipfile ./out/solution.zip --folder ./src/Solutions/LitoCleanCore
+
+<span class="comment"># 3. Maker abre PR con los cambios YAML extraídos</span>
+git switch -c feature/maker-canvas-fix
+git add src/Solutions/
+git commit -m "feat(canvas): añade botón aprobar bulk"
+gh pr create --fill
+
+<span class="comment"># 4. Pro dev revisa el diff YAML, sugiere mejoras (Claude ayuda)</span>
+<span class="comment"># 5. DevOps mergea → pipeline empaqueta → deploy a UAT</span></div>
+
+    <div class="info-box"><p><strong>💡 El truco:</strong> el maker no necesita aprender Git profundo. <strong>Aprende un script de export y a abrir un PR</strong>. Claude Code puede automatizar el resto con un slash command como <code>/maker-publish</code>.</p></div>
+  </div>
+
+  <!-- ========== 06 — CLAUDE ========== -->
+  <div class="section" id="claude">
+    <div class="section-header"><div class="section-num" style="background:var(--claude)">06</div><h2>Claude Code como pegamento del equipo fusion</h2><span class="duration">6 min</span></div>
+
+    <div class="ai-spotlight">
+      <h3>🤖 La pieza nueva en 2026</h3>
+      <p>Antes, fusion development era <em>buena teoría</em> con un coste de coordinación brutal. Las personas hablan idiomas distintos: maker piensa en pantallas, pro dev en clases, DevOps en pipelines. <strong>Claude Code es el traductor universal</strong>.</p>
+      <ul>
+        <li>El maker pega un mock de Excel → Claude le devuelve la canvas app</li>
+        <li>El pro dev recibe el YAML del maker → Claude explica en qué pantalla vive cada lógica</li>
+        <li>DevOps escribe un prompt de "auditame este PR" → Claude revisa por seguridad, naming, ALM</li>
+      </ul>
+    </div>
+
+    <div class="content-grid">
+      <div class="card">
+        <h3>🎨 Para el maker</h3>
+        <ul>
+          <li><strong>Generar Power Fx</strong> a partir de descripción en español</li>
+          <li><strong>Explicar fórmula heredada</strong> que no entiende</li>
+          <li><strong>Convertir Excel → Canvas</strong> con prompt</li>
+          <li><strong>Documentar su solución</strong> automáticamente</li>
+        </ul>
+        <div class="prompt-box">Tengo una columna en Excel con fechas en formato dd/mm/yyyy. Necesito una fórmula Power Fx que calcule cuántos días han pasado desde esa fecha hasta hoy, y devuelva "vencido" si es > 30.</div>
+      </div>
+      <div class="card">
+        <h3>💻 Para el pro dev</h3>
+        <ul>
+          <li><strong>Reverse engineer</strong> de Canvas YAML (S4-mié) a diagrama</li>
+          <li><strong>Generar PCF components</strong> con TypeScript + React</li>
+          <li><strong>Plug-in C#</strong> a partir de spec funcional del maker</li>
+          <li><strong>Tests E2E con Playwright</strong> (tema 1)</li>
+        </ul>
+        <div class="prompt-box">Lee el plug-in PreCreateAccount.cs y dime qué hace. Después escribe los tests unitarios que cubran los 3 paths principales.</div>
+      </div>
+      <div class="card">
+        <h3>⚙️ Para DevOps</h3>
+        <ul>
+          <li><strong>Auditoría de soluciones</strong> con XRMToolBox + Claude</li>
+          <li><strong>Pipelines YAML</strong> (Azure DevOps / GitHub) generados</li>
+          <li><strong>Diff de soluciones</strong> entre entornos en lenguaje natural</li>
+          <li><strong>Reportes ejecutivos</strong> a partir del CoE Starter Kit</li>
+        </ul>
+        <div class="prompt-box">Compara la solución LitoCleanCore en DEV vs UAT y dime qué cambios hay. Marca en rojo los que son destructivos.</div>
+      </div>
+      <div class="card">
+        <h3>🌉 Para los handoffs</h3>
+        <p>El handoff que vimos el lunes (S4) <strong>encaja perfecto aquí</strong>: el maker termina su iteración → genera handoff → pro dev lo lee al inicio de su sesión → continúa sin re-explicar.</p>
+        <ul>
+          <li>El handoff es <strong>el único formato que entienden los 3 perfiles</strong></li>
+          <li>Markdown legible, estructurado, accionable</li>
+          <li>Vive en Git, viaja con el código</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- ========== 07 — ANTI-PATRONES ========== -->
+  <div class="section" id="anti">
+    <div class="section-header"><div class="section-num" style="background:var(--red)">07</div><h2>Anti-patrones y cierre</h2><span class="duration">3 min</span></div>
+
+    <div class="warn-box"><p><strong>⚠️ Los 5 anti-patrones más caros que vemos:</strong></p>
+    <ul style="padding-left:1.25rem;margin-top:.5rem;font-size:.88rem">
+      <li><strong>Pro dev rehace lo que maker ya tenía</strong> — porque "el Power Fx me da asco". Resultado: dos versiones del mismo feature, mantenimiento doble.</li>
+      <li><strong>Maker escribe lógica de negocio crítica en OnSelect de un botón</strong> — debería estar en plug-in. Cuando se rompe, nadie sabe dónde mirar.</li>
+      <li><strong>Sin solución managed en producción</strong> — todo unmanaged. Imposible hacer rollback limpio.</li>
+      <li><strong>Pipelines manuales</strong> — DevOps importa zips a mano. Funciona hasta que se va de vacaciones.</li>
+      <li><strong>Comunicación por email + capturas</strong> — sin handoffs estructurados. Cada handoff pierde el 30% del contexto.</li>
+    </ul>
+    </div>
+
+    <div class="qa-card"><p>❓ <strong>Pregunta para discusión en clase:</strong> en el equipo actual, ¿quién es maker, quién es pro dev y quién es DevOps? ¿Hay alguien que esté haciendo los 3 roles? (Eso es bandera roja).</p></div>
+
+    <div class="tip-box"><p><strong>🚀 Compromiso para la última sesión:</strong> cada alumno mapea <strong>un proceso real</strong> donde haya colaboración entre perfiles. Trae a la última clase: "esto es maker, esto es pro dev, esto es DevOps, este es el handoff entre ellos".</p></div>
+
+    <div class="info-box"><p><strong>📚 Recursos para profundizar:</strong> <em>Fusion Development e-book</em> (Microsoft, gratis) · <em>Power Platform ALM for developers</em> · <em>Best practices: Collaborating and co-developing apps using Power Apps</em>.</p></div>
+  </div>
+
+</div>
+
+<div class="footer"><strong>POWER FOX</strong> · Formación Claude Code · S4 Viernes · Tema 2 de 4 · Mayo 2026</div>
+
+</body>
+</html>

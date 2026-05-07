@@ -1,0 +1,436 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Playwright para Power Platform — Tests E2E con Claude Code | Power Fox</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700&family=JetBrains+Mono:wght@400;500&display=swap');
+  :root{--navy:#0B1D3A;--blue:#1565C0;--blue-light:#42A5F5;--accent:#FF6D00;--accent-soft:#FFF3E0;--bg:#F5F7FA;--card:#FFF;--text:#1A2332;--text-mid:#546E7A;--text-light:#90A4AE;--border:#E8EDF2;--code-bg:#1E1E2E;--green:#2E7D32;--green-soft:#E8F5E9;--red:#C62828;--red-soft:#FFEBEE;--purple:#6A1B9A;--purple-soft:#F3E5F5;--claude:#7C3AED;--pw:#2EAD33;--pw-soft:#E6F5E7;--ts:#3178C6;--ts-soft:#E3F0FB;--r:12px}
+  *{margin:0;padding:0;box-sizing:border-box}body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);line-height:1.7}
+  .nav{display:flex;justify-content:space-between;align-items:center;padding:.75rem 1.5rem;background:var(--card);border-bottom:1px solid var(--border);position:sticky;top:0;z-index:100}.nav-logo{font-weight:700;font-size:.9rem;color:var(--navy);letter-spacing:1px}.nav-links{display:flex;gap:1rem;flex-wrap:wrap}.nav-links a{font-size:.8rem;color:var(--text-mid);text-decoration:none;font-weight:500}.nav-links a:hover{color:var(--pw)}
+  .hero{background:var(--navy);color:#fff;padding:3rem 2rem 2.5rem;position:relative;overflow:hidden}.hero::after{content:'';position:absolute;top:0;right:0;width:40%;height:100%;background:linear-gradient(135deg,transparent,rgba(46,173,51,.3),rgba(124,58,237,.18))}.hero-meta{display:flex;gap:1.5rem;flex-wrap:wrap;align-items:center;margin-bottom:1rem;position:relative;z-index:1}.hero-badge{background:var(--pw);color:#fff;padding:.25rem .75rem;border-radius:4px;font-size:.75rem;font-weight:700;letter-spacing:1.5px;text-transform:uppercase}.hero-week{font-size:.85rem;opacity:.7}.hero h1{font-size:2.2rem;font-weight:700;line-height:1.2;margin-bottom:.5rem;position:relative;z-index:1}.hero-sub{font-size:1rem;opacity:.85;position:relative;z-index:1;max-width:780px}.hero-time{display:inline-flex;align-items:center;gap:.4rem;background:rgba(255,255,255,.1);padding:.3rem .75rem;border-radius:6px;font-size:.85rem;margin-top:.75rem;position:relative;z-index:1}
+  .container{max-width:1100px;margin:0 auto;padding:2rem 1.5rem}
+  .toc{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:1.25rem 1.5rem;margin:1.5rem 0;display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:.5rem 1.5rem}.toc a{font-size:.85rem;color:var(--text-mid);text-decoration:none;display:block;padding:.25rem 0}.toc a:hover{color:var(--pw)}.toc strong{color:var(--navy);font-size:.7rem;letter-spacing:1px;text-transform:uppercase;display:block;grid-column:1/-1;margin-bottom:.25rem}
+  .section{margin-bottom:3rem}.section-header{display:flex;align-items:center;gap:.75rem;margin-bottom:1.25rem;padding-bottom:.75rem;border-bottom:2px solid var(--border);flex-wrap:wrap}.section-num{width:36px;height:36px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:.9rem;color:#fff;flex-shrink:0}.section-header h2{font-size:1.3rem;font-weight:700}.section-header .duration{margin-left:auto;font-size:.8rem;color:var(--text-light);font-weight:500}
+  .content-grid{display:grid;grid-template-columns:1fr 1fr;gap:1.25rem}@media(max-width:768px){.content-grid{grid-template-columns:1fr}}
+  .card{background:var(--card);border-radius:var(--r);padding:1.5rem;box-shadow:0 1px 4px rgba(0,0,0,.05);border:1px solid var(--border)}.card h3{font-size:1.05rem;font-weight:700;margin-bottom:.75rem;display:flex;align-items:center;gap:.5rem}.card p,.card li{font-size:.88rem;color:var(--text-mid)}.card ul{padding-left:1.25rem}.card li{margin-bottom:.35rem}.card-full{grid-column:1/-1}
+  .highlight-box{border-left:4px solid var(--accent);background:var(--accent-soft);padding:1rem 1.25rem;border-radius:0 var(--r) var(--r) 0;margin:1rem 0}.highlight-box p{font-size:.88rem;color:var(--text)}.tip-box{border-left:4px solid var(--green);background:var(--green-soft);padding:1rem 1.25rem;border-radius:0 var(--r) var(--r) 0;margin:1rem 0}.tip-box p{font-size:.88rem}.warn-box{border-left:4px solid var(--red);background:var(--red-soft);padding:1rem 1.25rem;border-radius:0 var(--r) var(--r) 0;margin:1rem 0}.warn-box p{font-size:.88rem}.info-box{border-left:4px solid var(--pw);background:var(--pw-soft);padding:1rem 1.25rem;border-radius:0 var(--r) var(--r) 0;margin:1rem 0}.info-box p{font-size:.88rem}
+  .code-block{background:var(--code-bg);color:#CDD6F4;border-radius:8px;padding:1.25rem;font-family:'JetBrains Mono',monospace;font-size:.78rem;overflow-x:auto;margin:1rem 0;line-height:1.6;white-space:pre}.comment{color:#6C7086}.keyword{color:#CBA6F7}.string{color:#A6E3A1}.func{color:#89B4FA}.num{color:#FAB387}.prop{color:#F9E2AF}.type{color:#94E2D5}.method{color:#F38BA8;font-weight:700}
+  .table-wrap{overflow-x:auto;margin:1rem 0}table{width:100%;border-collapse:collapse;font-size:.85rem}th{background:var(--navy);color:#fff;padding:.6rem 1rem;text-align:left;font-size:.78rem;text-transform:uppercase;letter-spacing:.5px}td{padding:.6rem 1rem;border-bottom:1px solid var(--border);vertical-align:top}tr:hover td{background:#F8FAFC}td code{background:var(--pw-soft);color:var(--pw);padding:.1rem .35rem;border-radius:3px;font-size:.78rem;font-family:'JetBrains Mono',monospace}
+  .versus-grid{display:grid;grid-template-columns:1fr 1fr;gap:1.25rem;margin:1rem 0}@media(max-width:768px){.versus-grid{grid-template-columns:1fr}}.compare-card{border-radius:var(--r);padding:1.5rem;border:2px solid;position:relative;background:var(--card)}.cmp-pw{border-color:var(--pw)}.cmp-te{border-color:var(--text-light)}.compare-card .cmp-tag{position:absolute;top:-12px;left:1rem;padding:.25rem .8rem;border-radius:4px;font-size:.7rem;font-weight:700;letter-spacing:1.5px;color:#fff}.cmp-pw .cmp-tag{background:var(--pw)}.cmp-te .cmp-tag{background:var(--text-light)}.compare-card h3{font-size:1.1rem;font-weight:700;margin:.5rem 0 .25rem}.compare-card p{font-size:.85rem;color:var(--text-mid);margin-bottom:.5rem}.compare-card ul{padding-left:1.2rem;font-size:.85rem;color:var(--text-mid)}.compare-card li{margin-bottom:.3rem}.compare-card li strong{color:var(--text)}
+  .ai-spotlight{background:linear-gradient(135deg,#1A1A2E,#2D2D4E);color:#fff;border-radius:var(--r);padding:2rem;margin:1.5rem 0;position:relative;overflow:hidden}.ai-spotlight::before{display:block;font-size:.7rem;font-weight:700;letter-spacing:2px;color:#A78BFA;margin-bottom:.75rem;content:'BLOQUE CLAVE — PLAYWRIGHT MCP + CLAUDE CODE'}.ai-spotlight h3{font-size:1.3rem;font-weight:700;margin-bottom:.75rem;color:#fff}.ai-spotlight p{font-size:.95rem;color:#CDD6F4;margin-bottom:.5rem}.ai-spotlight ul{padding-left:1.5rem;color:#CDD6F4;font-size:.9rem}.ai-spotlight li{margin-bottom:.4rem}.ai-spotlight code{background:rgba(124,58,237,.25);padding:.1rem .4rem;border-radius:3px;color:#E0CFFF;font-family:'JetBrains Mono',monospace;font-size:.82rem}
+  .pipeline{display:flex;align-items:center;justify-content:center;gap:.5rem;flex-wrap:wrap;background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:1.25rem;margin:1rem 0}.pipeline-step{padding:.6rem 1rem;border-radius:8px;font-size:.8rem;font-weight:600;text-align:center;min-width:130px;color:#fff}.ps-blue{background:var(--blue)}.ps-purple{background:var(--claude)}.ps-orange{background:var(--accent)}.ps-green{background:var(--pw)}.pipeline-arrow{color:var(--text-light);font-size:1.2rem;font-weight:700}
+  .example-card{background:var(--card);border-radius:var(--r);padding:1.5rem;border:1px solid var(--border);margin-bottom:1.25rem;border-left:4px solid var(--pw)}.example-card .ex-title{display:flex;align-items:center;gap:.6rem;margin-bottom:.75rem;flex-wrap:wrap}.example-card .ex-num{width:30px;height:30px;border-radius:6px;background:var(--pw);color:#fff;font-weight:700;font-size:.85rem;display:flex;align-items:center;justify-content:center;flex-shrink:0}.example-card h3{font-size:1.05rem;font-weight:700;color:var(--text);margin:0}.example-card .ex-tag{font-size:.65rem;padding:.15rem .5rem;border-radius:4px;font-weight:700;letter-spacing:.5px;text-transform:uppercase;background:var(--pw-soft);color:var(--pw);margin-left:auto}
+  .api-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:.6rem;margin:1rem 0}.api-pill{padding:.55rem .85rem;border-radius:6px;font-size:.78rem;font-weight:600;text-align:left;border:1px solid var(--pw);background:var(--pw-soft);color:var(--pw);font-family:'JetBrains Mono',monospace}
+  .prompt-box{background:linear-gradient(135deg,#FFFDF7,#FFF3E0);border:1px solid var(--accent);border-radius:var(--r);padding:1rem 1.25rem;margin:.75rem 0;font-family:'JetBrains Mono',monospace;font-size:.85rem;color:var(--navy);position:relative}.prompt-box::before{content:'PROMPT';position:absolute;top:-9px;left:1rem;background:var(--accent);color:#fff;padding:.15rem .55rem;font-size:.6rem;font-weight:700;letter-spacing:1px;border-radius:3px;font-family:'DM Sans',sans-serif}
+  .footer{text-align:center;padding:2rem;font-size:.8rem;color:var(--text-light);border-top:1px solid var(--border);margin-top:2rem}.footer strong{color:var(--navy)}
+  .ts-badge{display:inline-block;background:var(--ts);color:#fff;font-size:.7rem;font-weight:700;padding:.1rem .45rem;border-radius:3px;letter-spacing:.5px;font-family:'JetBrains Mono',monospace;vertical-align:middle}
+  .qa-card{background:var(--purple-soft);border-radius:var(--r);padding:1.25rem;border:1px solid #CE93D8;margin:1rem 0}.qa-card p{font-size:.88rem;color:var(--claude);font-weight:500}
+</style>
+</head>
+<body>
+
+<nav class="nav"><div class="nav-logo">POWER FOX — Formación</div><div class="nav-links"><a href="#que-es">Qué es</a><a href="#vs-test-engine">vs Test Engine</a><a href="#anatomia">Anatomía</a><a href="#pom">Page Objects</a><a href="#auth">Auth</a><a href="#mcp">MCP + Claude</a><a href="#cicd">CI/CD</a></div></nav>
+
+<div class="hero">
+  <div class="hero-meta"><span class="hero-badge">Playwright + Power Platform</span><span class="hero-week">S4 · Viernes · Tema 1</span></div>
+  <h1>Playwright para Power Platform — Tests E2E con Claude Code</h1>
+  <p class="hero-sub">El framework oficial recomendado por Microsoft para testing E2E sobre Canvas Apps, Model-Driven Apps y apps generadas por IA. <strong>TypeScript</strong>, Page Object Model, autenticación reutilizable y un servidor MCP que deja a Claude escribir, arreglar y explicar tus tests sin salir del IDE.</p>
+  <div class="hero-time">Material de referencia · 9 secciones · Reemplaza al Test Engine deprecado · Open source MIT</div>
+</div>
+
+<div class="container">
+
+  <div class="toc">
+    <strong>Contenido</strong>
+    <a href="#que-es">01 · Qué es y por qué nos importa</a>
+    <a href="#vs-test-engine">02 · vs Power Apps Test Engine</a>
+    <a href="#anatomia">03 · Anatomía: monorepo Rush, paquetes</a>
+    <a href="#pom">04 · Page Object Model — los 4 tipos</a>
+    <a href="#auth">05 · Storage state — autenticación una sola vez</a>
+    <a href="#ejemplo">06 · Test de ejemplo paso a paso</a>
+    <a href="#mcp">07 · Playwright MCP + Claude Code</a>
+    <a href="#cicd">08 · CI/CD: GitHub Actions y Azure Pipelines</a>
+    <a href="#cierre">09 · Trampas, límites y cierre</a>
+  </div>
+
+  <!-- ========== 01 — QUÉ ES ========== -->
+  <div class="section" id="que-es">
+    <div class="section-header"><div class="section-num" style="background:var(--pw)">01</div><h2>Qué es y por qué nos importa</h2><span class="duration">5 min</span></div>
+
+    <div class="ai-spotlight">
+      <h3>🎯 La frase de Microsoft</h3>
+      <p><em>"Reliable, maintainable end-to-end tests for all Power Platform app types."</em></p>
+      <p>Power Platform Playwright Samples es un <strong>repo open-source de Microsoft</strong> con un framework completo construido sobre <code>@playwright/test</code>. No es un wrapper más: trae <strong>page objects</strong>, <strong>autenticación dual-domain</strong>, <strong>componentes reutilizables</strong> para AG Grid y formularios, y un <strong>MCP server</strong> que conecta directo con Claude Code y GitHub Copilot.</p>
+    </div>
+
+    <div class="content-grid">
+      <div class="card">
+        <h3>🧩 Cómo encaja con lo que ya sabéis</h3>
+        <p>En la <strong>S2</strong> vimos JavaScript en Model-Driven (formContext, Xrm.WebApi). En la <strong>S4-miércoles</strong> Office Scripts y Graph. Esto cierra la pirámide: <strong>tests E2E sobre la UI real</strong> de Canvas y MDA.</p>
+        <ul>
+          <li>TypeScript, no Power Fx YAML</li>
+          <li>Lanzas la app desde Playwright como un usuario real</li>
+          <li>Manipulas Grid, Form, navegación con métodos de alto nivel</li>
+          <li>Ejecutas en headless Chromium / Firefox / WebKit</li>
+        </ul>
+      </div>
+      <div class="card">
+        <h3>💼 Por qué nos importa en producción</h3>
+        <p>Hoy: nadie testea automáticamente las Canvas Apps complejas. Cada release es <strong>"que el de QA haga clic"</strong>. Eso no escala con 3 entornos y 12 apps.</p>
+        <ul>
+          <li>Bug del campo <code>approver != owner</code> que llegó a prod por no testear: cubierto en 5 líneas de Playwright</li>
+          <li>Regresiones tras un canvas unpack/repack: detectadas en CI antes de mergear</li>
+          <li>Onboarding de QA junior: lee tests TypeScript, no aprende un DSL nuevo</li>
+        </ul>
+        <p style="margin-top:.5rem"><strong>Dato:</strong> El Power Apps Test Engine clásico está <em>deprecated</em>. Esta es la herramienta oficial de Microsoft para 2026+.</p>
+      </div>
+    </div>
+
+    <div class="info-box"><p><strong>📦 Repo oficial:</strong> <code>github.com/microsoft/power-platform-playwright-samples</code> — Rush monorepo, MIT, mantenido por el equipo de Power Platform DevRel (Deepak Kamboj). Última actualización: abril 2026.</p></div>
+  </div>
+
+  <!-- ========== 02 — VS TEST ENGINE ========== -->
+  <div class="section" id="vs-test-engine">
+    <div class="section-header"><div class="section-num" style="background:var(--blue)">02</div><h2>vs Power Apps Test Engine</h2><span class="duration">3 min</span></div>
+
+    <p style="margin-bottom:1rem;font-size:.9rem;color:var(--text-mid)">El Test Engine clásico (Power Fx YAML) sigue funcionando pero <strong>está deprecado</strong>. Microsoft empuja a la migración. Comparativa real:</p>
+
+    <div class="versus-grid">
+      <div class="compare-card cmp-pw">
+        <div class="cmp-tag">Playwright Samples ✓</div>
+        <h3>El recomendado por Microsoft (2026+)</h3>
+        <ul>
+          <li>Lenguaje: <strong>TypeScript</strong></li>
+          <li>Runtime: <strong>Node.js</strong></li>
+          <li>IDE: VS Code completo, JetBrains, autocompletado de tipos</li>
+          <li>Auth: <strong>storage state reutilizable</strong> (1 login → 100 tests)</li>
+          <li>Page Object Model nativo</li>
+          <li>AI authoring vía <strong>Playwright MCP</strong></li>
+          <li>Aserciones: cualquier matcher de Playwright/Jest</li>
+          <li>Apps: Canvas, MDA, Custom Pages y <strong>Gen UX (Copilot apps)</strong></li>
+          <li>Cross-browser: Chromium, Firefox, WebKit</li>
+        </ul>
+      </div>
+      <div class="compare-card cmp-te">
+        <div class="cmp-tag">Test Engine ⚠️</div>
+        <h3>El clásico (deprecated)</h3>
+        <ul>
+          <li>Lenguaje: <strong>Power Fx en YAML</strong></li>
+          <li>Runtime: .NET</li>
+          <li>IDE: básico, sin autocompletado de tipos</li>
+          <li>Auth: archivo de configuración por test</li>
+          <li>Sin POM</li>
+          <li>Sin AI authoring</li>
+          <li>Aserciones: limitadas</li>
+          <li>Apps: solo Canvas y MDA</li>
+          <li>Cross-browser: limitado</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="warn-box"><p><strong>⚠️ Migración:</strong> Si tenéis tests en Test Engine, Microsoft publica una <em>migration guide</em> oficial. Antes de invertir más, evalúa migrar — la deprecación es una cuestión de tiempo.</p></div>
+  </div>
+
+  <!-- ========== 03 — ANATOMÍA ========== -->
+  <div class="section" id="anatomia">
+    <div class="section-header"><div class="section-num" style="background:var(--accent)">03</div><h2>Anatomía: monorepo Rush, dos paquetes</h2><span class="duration">4 min</span></div>
+
+    <div class="content-grid">
+      <div class="card card-full">
+        <h3>🗂️ Estructura del repo</h3>
+        <div class="code-block">power-platform-playwright-samples/
+├── <span class="prop">power-platform-playwright-toolkit/</span>   <span class="comment">// 📚 librería core</span>
+│   ├── src/
+│   │   ├── pages/         <span class="comment">// CanvasAppPage, ModelDrivenAppPage, GenUxPage</span>
+│   │   ├── components/    <span class="comment">// GridComponent, FormComponent</span>
+│   │   ├── auth/          <span class="comment">// storage state helpers</span>
+│   │   └── locators/      <span class="comment">// selectores DOM internos</span>
+│   └── package.json
+│
+├── <span class="prop">e2e-tests/</span>                          <span class="comment">// 🧪 reference implementation</span>
+│   ├── tests/
+│   │   ├── canvas/
+│   │   ├── modeldriven/
+│   │   └── genux/
+│   ├── playwright.config.ts
+│   └── package.json
+│
+└── rush.json                              <span class="comment">// Rush monorepo config</span></div>
+      </div>
+    </div>
+
+    <div class="content-grid">
+      <div class="card">
+        <h3>📚 <code>power-platform-playwright-toolkit</code></h3>
+        <p>La librería core. Page objects, componentes, auth, locators. La consumes como dependencia en tus tests.</p>
+      </div>
+      <div class="card">
+        <h3>🧪 <code>e2e-tests</code></h3>
+        <p>Implementación de referencia con tests reales contra la solución <strong>Northwind Traders</strong>. Tu punto de partida — fork, copia, adapta.</p>
+      </div>
+    </div>
+
+    <div class="info-box"><p><strong>💡 Clave:</strong> No es un paquete npm que instalas. <strong>Forkeas el repo entero</strong>. Esto te da visibilidad total de los selectores y helpers, y libertad para adaptarlos a tu entorno (campos custom, themes, conectores propios).</p></div>
+  </div>
+
+  <!-- ========== 04 — POM ========== -->
+  <div class="section" id="pom">
+    <div class="section-header"><div class="section-num" style="background:var(--purple)">04</div><h2>Page Object Model — los 4 tipos de app</h2><span class="duration">5 min</span></div>
+
+    <p style="margin-bottom:1rem;font-size:.9rem;color:var(--text-mid)">Una sola clase <code>AppProvider</code> lanza cualquier tipo de app. Cada tipo expone su propio Page Object con métodos de alto nivel.</p>
+
+    <div class="table-wrap">
+      <table>
+        <tr><th>Tipo de app</th><th>Page Object</th><th>Qué hace</th></tr>
+        <tr><td>Canvas apps</td><td><code>CanvasAppPage</code></td><td>Apps construidas en Power Apps Studio. Acceso a controles por nombre.</td></tr>
+        <tr><td>Model-Driven Apps</td><td><code>ModelDrivenAppPage</code></td><td>Vistas, formularios, ribbon, navegación por sitemap.</td></tr>
+        <tr><td>Custom Pages</td><td><code>ModelDrivenAppPage</code></td><td>Canvas pages embebidas en MDA. Mismo objeto, contexto MDA.</td></tr>
+        <tr><td>AI-generated (Gen UX)</td><td><code>GenUxPage</code></td><td>Apps generadas por Copilot. Soporte oficial — esto es nuevo.</td></tr>
+      </table>
+    </div>
+
+    <h3 style="margin-top:1.5rem;font-size:1rem;font-weight:700;color:var(--text)">Componentes reutilizables</h3>
+    <div class="api-grid">
+      <div class="api-pill">GridComponent</div>
+      <div class="api-pill">FormComponent</div>
+      <div class="api-pill">AppProvider</div>
+      <div class="api-pill">CanvasAppPage</div>
+      <div class="api-pill">ModelDrivenAppPage</div>
+      <div class="api-pill">GenUxPage</div>
+    </div>
+
+    <div class="tip-box"><p><strong>💚 Por qué importa <code>GridComponent</code>:</strong> el grid de MDA usa <strong>AG Grid</strong> bajo el capó, con DOM virtualizado. Hacer <code>page.locator('.ag-row-...')</code> a mano es un infierno. <code>GridComponent.getRowByCellValue('Name', 'Cliente X').click()</code> y listo.</p></div>
+  </div>
+
+  <!-- ========== 05 — AUTH ========== -->
+  <div class="section" id="auth">
+    <div class="section-header"><div class="section-num" style="background:var(--green)">05</div><h2>Storage state — autenticación una sola vez</h2><span class="duration">4 min</span></div>
+
+    <div class="content-grid">
+      <div class="card card-full">
+        <h3>🔐 El problema clásico</h3>
+        <p>Cada test que abre Power Apps tiene que hacer login → MFA → redirect a maker.powerapps.com → quizá a dynamics.com. <strong>30 segundos por test</strong>. Con 50 tests son 25 minutos solo en login.</p>
+      </div>
+    </div>
+
+    <div class="content-grid">
+      <div class="card">
+        <h3>✅ La solución del framework</h3>
+        <p><strong>Dual-domain storage state</strong>: una vez te autenticas, Playwright guarda las cookies y localStorage en un JSON. Todos los tests cargan ese JSON y arrancan ya autenticados.</p>
+        <ul>
+          <li>1 archivo cubre <code>make.powerapps.com</code></li>
+          <li>1 archivo cubre <code>*.dynamics.com</code> / CRM</li>
+          <li>Caducan, sí — pero los regeneras con un script</li>
+        </ul>
+      </div>
+      <div class="card">
+        <h3>🤖 En CI/CD</h3>
+        <p>Para pipelines headless usas <strong>credenciales de service principal</strong> o <strong>storage state generado fuera del pipeline</strong> y subido como secret.</p>
+        <ul>
+          <li>Azure Key Vault para guardar el JSON</li>
+          <li>GitHub Secret <code>POWER_PLATFORM_STORAGE_STATE</code></li>
+          <li>Rotación periódica (script + cron)</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="code-block"><span class="comment">// playwright.config.ts</span>
+<span class="keyword">import</span> { defineConfig } <span class="keyword">from</span> <span class="string">'@playwright/test'</span>;
+
+<span class="keyword">export default</span> defineConfig({
+  use: {
+    <span class="prop">storageState</span>: <span class="string">'./auth/storage-state.json'</span>,  <span class="comment">// 🔑 ya autenticado</span>
+    <span class="prop">baseURL</span>: process.env.<span class="prop">POWER_APPS_URL</span>,
+  },
+  <span class="prop">projects</span>: [
+    { <span class="prop">name</span>: <span class="string">'chromium'</span>, <span class="prop">use</span>: { ...devices[<span class="string">'Desktop Chrome'</span>] } },
+    { <span class="prop">name</span>: <span class="string">'firefox'</span>,  <span class="prop">use</span>: { ...devices[<span class="string">'Desktop Firefox'</span>] } },
+  ],
+});</div>
+  </div>
+
+  <!-- ========== 06 — EJEMPLO ========== -->
+  <div class="section" id="ejemplo">
+    <div class="section-header"><div class="section-num" style="background:var(--pw)">06</div><h2>Test de ejemplo paso a paso</h2><span class="duration">7 min</span></div>
+
+    <p style="margin-bottom:1rem;font-size:.9rem;color:var(--text-mid)">Vamos a testear que <strong>un usuario aprobador puede aprobar un parte de horas en bloque</strong> — exactamente el caso del Time Tracker que vimos el miércoles.</p>
+
+    <div class="example-card">
+      <div class="ex-title">
+        <div class="ex-num">1</div>
+        <h3>Test E2E: aprobar parte de horas en bloque</h3>
+        <span class="ex-tag">Canvas App</span>
+      </div>
+      <div class="code-block"><span class="keyword">import</span> { test, expect } <span class="keyword">from</span> <span class="string">'@playwright/test'</span>;
+<span class="keyword">import</span> { AppProvider, CanvasAppPage } <span class="keyword">from</span> <span class="string">'power-platform-playwright-toolkit'</span>;
+
+test(<span class="string">'aprobador puede aprobar partes en bloque'</span>, <span class="keyword">async</span> ({ page }) => {
+  <span class="comment">// 1. Lanzar la canvas app embebida</span>
+  <span class="keyword">const</span> app = <span class="keyword">await</span> AppProvider.<span class="method">launch</span>(page, {
+    <span class="prop">type</span>: <span class="string">'canvas'</span>,
+    <span class="prop">appId</span>: <span class="string">'pfx_weeklytimeentrypage_40d1a'</span>,
+  });
+
+  <span class="comment">// 2. Esperar a que cargue las colecciones</span>
+  <span class="keyword">await</span> app.<span class="method">waitForReady</span>();
+
+  <span class="comment">// 3. Cambiar a la semana objetivo</span>
+  <span class="keyword">await</span> app.<span class="method">getControl</span>(<span class="string">'ComboboxCanvas1'</span>).<span class="method">selectOption</span>(<span class="string">'2026-04-29'</span>);
+
+  <span class="comment">// 4. Verificar que hay partes pendientes</span>
+  <span class="keyword">const</span> partes = app.<span class="method">getControl</span>(<span class="string">'Gallery1'</span>);
+  <span class="keyword">await</span> <span class="method">expect</span>(partes).<span class="method">toHaveCount</span>(3);
+
+  <span class="comment">// 5. Click en "Aprobar" en bloque</span>
+  <span class="keyword">await</span> app.<span class="method">getControl</span>(<span class="string">'ButtonCanvas7'</span>).<span class="method">click</span>();
+
+  <span class="comment">// 6. Confirmar el modal</span>
+  <span class="keyword">await</span> app.<span class="method">getControl</span>(<span class="string">'btnConfirmApproval'</span>).<span class="method">click</span>();
+
+  <span class="comment">// 7. Verificar que los 3 partes ahora están en estado "Aprobado"</span>
+  <span class="keyword">await</span> <span class="method">expect</span>(partes.<span class="method">getRow</span>(0)).<span class="method">toContainText</span>(<span class="string">'Aprobado'</span>);
+});</div>
+      <p style="margin-top:.5rem;font-size:.85rem;color:var(--text-mid)"><strong>Lo que hace:</strong> simula un usuario real abriendo la app, seleccionando semana, viendo el grid, clicando aprobar. Si el bug del miércoles (BulkApprove no respeta el filtro) volviera, este test fallaría en CI antes de mergear.</p>
+    </div>
+
+    <div class="example-card">
+      <div class="ex-title">
+        <div class="ex-num">2</div>
+        <h3>Test sobre Model-Driven con grid de Dataverse</h3>
+        <span class="ex-tag">MDA</span>
+      </div>
+      <div class="code-block">test(<span class="string">'crear cuenta y validar en grid'</span>, <span class="keyword">async</span> ({ page }) => {
+  <span class="keyword">const</span> app = <span class="keyword">await</span> AppProvider.<span class="method">launch</span>(page, {
+    <span class="prop">type</span>: <span class="string">'modeldriven'</span>,
+    <span class="prop">appUniqueName</span>: <span class="string">'litoclean_servicemanagement'</span>,
+  });
+
+  <span class="keyword">await</span> app.<span class="method">navigateToEntity</span>(<span class="string">'account'</span>);
+
+  <span class="comment">// FormComponent maneja el form completo, sin selectores manuales</span>
+  <span class="keyword">await</span> app.<span class="method">openNewRecord</span>();
+  <span class="keyword">await</span> app.<span class="method">form</span>.<span class="method">setField</span>(<span class="string">'name'</span>, <span class="string">'Cliente Test'</span>);
+  <span class="keyword">await</span> app.<span class="method">form</span>.<span class="method">setField</span>(<span class="string">'pfx_clientcode'</span>, <span class="string">'CT-001'</span>);
+  <span class="keyword">await</span> app.<span class="method">form</span>.<span class="method">save</span>();
+
+  <span class="comment">// GridComponent maneja AG Grid sin dolor</span>
+  <span class="keyword">await</span> app.<span class="method">navigateToEntity</span>(<span class="string">'account'</span>);
+  <span class="keyword">const</span> row = <span class="keyword">await</span> app.<span class="method">grid</span>.<span class="method">getRowByCellValue</span>(<span class="string">'name'</span>, <span class="string">'Cliente Test'</span>);
+  <span class="keyword">await</span> <span class="method">expect</span>(row).<span class="method">toBeVisible</span>();
+});</div>
+    </div>
+  </div>
+
+  <!-- ========== 07 — MCP CON CLAUDE ========== -->
+  <div class="section" id="mcp">
+    <div class="section-header"><div class="section-num" style="background:var(--claude)">07</div><h2>Playwright MCP + Claude Code — el bloque clave</h2><span class="duration">6 min</span></div>
+
+    <div class="ai-spotlight">
+      <h3>🤖 La parte que cambia el juego</h3>
+      <p>Microsoft mantiene un <strong>Playwright MCP server</strong> que expone los page objects del toolkit como <em>tools</em>. Cuando lo conectas a Claude Code o GitHub Copilot, el agente:</p>
+      <ul>
+        <li><strong>Genera tests</strong> a partir de descripciones en lenguaje natural</li>
+        <li><strong>Arregla tests rotos</strong> leyendo el error y proponiendo el fix</li>
+        <li><strong>Explica qué hace cada test</strong> — útil para QA junior</li>
+        <li><strong>Hace replay</strong> de un user flow real y genera el .spec.ts equivalente</li>
+      </ul>
+    </div>
+
+    <div class="content-grid">
+      <div class="card">
+        <h3>🔌 Cómo se instala</h3>
+        <ul>
+          <li>Clonas el repo de samples</li>
+          <li>Configuras el Playwright MCP en <code>.claude/mcp.json</code> o equivalente</li>
+          <li>Apuntas el MCP a tu storage state</li>
+          <li>Listo: en Claude Code escribes el prompt y deja que genere</li>
+        </ul>
+      </div>
+      <div class="card">
+        <h3>📊 Donde está el cuello de botella en 2026</h3>
+        <p>Según la comunidad, el bottleneck real ya no es <em>escribir</em> ni <em>ejecutar</em> tests — es <strong>triagear los fallos</strong>. Aquí Claude saca jugo: lee el log de Playwright, compara con git diff, identifica <strong>qué cambio del PR rompió el test</strong>.</p>
+      </div>
+    </div>
+
+    <h3 style="margin-top:1rem;font-size:1rem;font-weight:700">Prompts que funcionan en Claude Code</h3>
+    <div class="prompt-box">Genera un test E2E para la canvas app pfx_weeklytimeentrypage_40d1a que verifique que un usuario con rol "Recurso" no puede ver el botón "Aprobar". Usa CanvasAppPage del toolkit y un storage state de un usuario sin rol aprobador.</div>
+    <div class="prompt-box">El test "approval-bulk.spec.ts" está fallando con "locator not found". Lee el último diff del Screen1.pa.yaml y sugiere si el botón ButtonCanvas7 fue renombrado.</div>
+    <div class="prompt-box">Convierte este flujo manual de QA (enviado en pasos numerados) en un .spec.ts usando ModelDrivenAppPage y FormComponent.</div>
+  </div>
+
+  <!-- ========== 08 — CICD ========== -->
+  <div class="section" id="cicd">
+    <div class="section-header"><div class="section-num" style="background:var(--blue)">08</div><h2>CI/CD: GitHub Actions y Azure Pipelines</h2><span class="duration">4 min</span></div>
+
+    <div class="pipeline">
+      <div class="pipeline-step ps-blue">PR abierto</div>
+      <span class="pipeline-arrow">→</span>
+      <div class="pipeline-step ps-orange">Build solution</div>
+      <span class="pipeline-arrow">→</span>
+      <div class="pipeline-step ps-green">Playwright tests</div>
+      <span class="pipeline-arrow">→</span>
+      <div class="pipeline-step ps-purple">Triage fallos con Claude</div>
+      <span class="pipeline-arrow">→</span>
+      <div class="pipeline-step ps-blue">Merge / Block</div>
+    </div>
+
+    <div class="content-grid">
+      <div class="card">
+        <h3>🐙 GitHub Actions</h3>
+        <div class="code-block"><span class="comment"># .github/workflows/e2e.yml</span>
+<span class="prop">jobs</span>:
+  <span class="prop">e2e</span>:
+    <span class="prop">runs-on</span>: ubuntu-latest
+    <span class="prop">steps</span>:
+      - <span class="prop">uses</span>: actions/checkout@v4
+      - <span class="prop">uses</span>: actions/setup-node@v4
+        <span class="prop">with</span>: { node-version: 20 }
+      - <span class="prop">run</span>: rush install
+      - <span class="prop">run</span>: rush build
+      - <span class="prop">env</span>:
+          <span class="prop">STORAGE_STATE</span>: ${{ secrets.PP_STATE }}
+        <span class="prop">run</span>: |
+          echo "$STORAGE_STATE" > auth/state.json
+          npx playwright test</div>
+      </div>
+      <div class="card">
+        <h3>☁️ Azure Pipelines</h3>
+        <p>Mismo patrón. La diferencia clave: <strong>self-hosted agent dentro del tenant</strong> si tu Power Platform requiere acceso de red privada. Resto igual: Node 20, Rush, Playwright, headless.</p>
+        <ul>
+          <li>Variables de Key Vault para storage state</li>
+          <li>Reporter HTML publicado como artifact</li>
+          <li>Trace zip de Playwright (oro para debugging)</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="info-box"><p><strong>📈 Reporter en 2026:</strong> Playwright trae el report HTML estándar más opciones de la comunidad (Allure, blob storage). El report incluye <strong>screenshots, video, trace y network log</strong> de cada test fallido — debugging asíncrono real.</p></div>
+  </div>
+
+  <!-- ========== 09 — CIERRE ========== -->
+  <div class="section" id="cierre">
+    <div class="section-header"><div class="section-num" style="background:var(--red)">09</div><h2>Trampas, límites y cierre</h2><span class="duration">3 min</span></div>
+
+    <div class="warn-box"><p><strong>⚠️ Trampas habituales:</strong></p>
+    <ul style="padding-left:1.25rem;margin-top:.5rem;font-size:.88rem">
+      <li><strong>Storage state caduca</strong> — automatiza la regeneración (cron + script). No esperes a que CI rompa.</li>
+      <li><strong>MFA bloquea CI</strong> — usa cuenta de servicio sin MFA o tokens persistentes. Nunca hardcodees credenciales reales.</li>
+      <li><strong>Selectores frágiles si renombras controles</strong> — nombra controles Canvas con prefijo claro (<code>btnApprove</code>, no <code>Button1_27</code>).</li>
+      <li><strong>Tests lentos por culpa del lazy loading</strong> de Canvas — usa <code>waitForReady()</code>, no <code>waitForTimeout(3000)</code>.</li>
+      <li><strong>No paralelices tests que escriben sobre el mismo registro Dataverse</strong> — colisiones aleatorias. Usa <code>test.describe.configure({ mode: 'serial' })</code> o IDs únicos por test.</li>
+    </ul>
+    </div>
+
+    <div class="qa-card"><p>❓ <strong>Pregunta para discusión:</strong> ¿qué Canvas App o MDA del entorno actual deberíamos cubrir <em>ya</em> con 3-5 tests E2E? Pista: el que más se rompe en deploys.</p></div>
+
+    <div class="tip-box"><p><strong>🚀 Tarea de 30 minutos:</strong> Forkea el repo de samples, levanta el reference test contra Northwind Traders en tu entorno dev, y rompe a propósito un test cambiando un campo. Mira cómo el reporter te dice exactamente qué pasó.</p></div>
+  </div>
+
+</div>
+
+<div class="footer"><strong>POWER FOX</strong> · Formación Claude Code · S4 Viernes · Tema 1 de 4 · Mayo 2026</div>
+
+</body>
+</html>

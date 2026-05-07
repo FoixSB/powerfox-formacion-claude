@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Playwright MCP + Claude Code — Browser automation con IA | Power Fox</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700&family=JetBrains+Mono:wght@400;500&display=swap');
+  :root{--navy:#0B1D3A;--blue:#1565C0;--accent:#FF6D00;--accent-soft:#FFF3E0;--bg:#F5F7FA;--card:#FFF;--text:#1A2332;--text-mid:#546E7A;--text-light:#90A4AE;--border:#E8EDF2;--code-bg:#1E1E2E;--green:#2E7D32;--green-soft:#E8F5E9;--red:#C62828;--red-soft:#FFEBEE;--purple:#6A1B9A;--purple-soft:#F3E5F5;--claude:#7C3AED;--pw:#2EAD33;--pw-soft:#E6F5E7;--r:12px}
+  *{margin:0;padding:0;box-sizing:border-box}body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);line-height:1.7}
+  .nav{display:flex;justify-content:space-between;align-items:center;padding:.75rem 1.5rem;background:var(--card);border-bottom:1px solid var(--border);position:sticky;top:0;z-index:100}.nav-logo{font-weight:700;font-size:.9rem;color:var(--navy);letter-spacing:1px}.nav-links{display:flex;gap:1rem;flex-wrap:wrap}.nav-links a{font-size:.8rem;color:var(--text-mid);text-decoration:none;font-weight:500}
+  .hero{background:linear-gradient(135deg,#1A0033,#0B1D3A);color:#fff;padding:3rem 2rem 2.5rem;position:relative;overflow:hidden}.hero::after{content:'';position:absolute;top:0;right:0;width:40%;height:100%;background:linear-gradient(135deg,transparent,rgba(46,173,51,.3),rgba(124,58,237,.3))}.hero-meta{display:flex;gap:1.5rem;flex-wrap:wrap;align-items:center;margin-bottom:1rem;position:relative;z-index:1}.hero-badge{background:var(--claude);color:#fff;padding:.25rem .75rem;border-radius:4px;font-size:.75rem;font-weight:700;letter-spacing:1.5px;text-transform:uppercase}.hero-week{font-size:.85rem;opacity:.7}.hero h1{font-size:2.2rem;font-weight:700;line-height:1.2;margin-bottom:.5rem;position:relative;z-index:1}.hero-sub{font-size:1rem;opacity:.85;position:relative;z-index:1;max-width:780px}.hero-time{display:inline-flex;align-items:center;gap:.4rem;background:rgba(255,255,255,.1);padding:.3rem .75rem;border-radius:6px;font-size:.85rem;margin-top:.75rem;position:relative;z-index:1}
+  .container{max-width:1100px;margin:0 auto;padding:2rem 1.5rem}
+  .toc{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:1.25rem 1.5rem;margin:1.5rem 0;display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:.5rem 1.5rem}.toc a{font-size:.85rem;color:var(--text-mid);text-decoration:none;display:block;padding:.25rem 0}.toc a:hover{color:var(--claude)}.toc strong{color:var(--navy);font-size:.7rem;letter-spacing:1px;text-transform:uppercase;display:block;grid-column:1/-1;margin-bottom:.25rem}
+  .section{margin-bottom:3rem}.section-header{display:flex;align-items:center;gap:.75rem;margin-bottom:1.25rem;padding-bottom:.75rem;border-bottom:2px solid var(--border);flex-wrap:wrap}.section-num{width:36px;height:36px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:.9rem;color:#fff;flex-shrink:0}.section-header h2{font-size:1.3rem;font-weight:700}
+  .content-grid{display:grid;grid-template-columns:1fr 1fr;gap:1.25rem}@media(max-width:768px){.content-grid{grid-template-columns:1fr}}
+  .card{background:var(--card);border-radius:var(--r);padding:1.5rem;box-shadow:0 1px 4px rgba(0,0,0,.05);border:1px solid var(--border)}.card h3{font-size:1.05rem;font-weight:700;margin-bottom:.75rem;display:flex;align-items:center;gap:.5rem}.card p,.card li{font-size:.88rem;color:var(--text-mid)}.card ul{padding-left:1.25rem}.card li{margin-bottom:.35rem}.card-full{grid-column:1/-1}
+  .highlight-box{border-left:4px solid var(--accent);background:var(--accent-soft);padding:1rem 1.25rem;border-radius:0 var(--r) var(--r) 0;margin:1rem 0}.highlight-box p{font-size:.88rem;color:var(--text)}.tip-box{border-left:4px solid var(--green);background:var(--green-soft);padding:1rem 1.25rem;border-radius:0 var(--r) var(--r) 0;margin:1rem 0}.tip-box p{font-size:.88rem}.warn-box{border-left:4px solid var(--red);background:var(--red-soft);padding:1rem 1.25rem;border-radius:0 var(--r) var(--r) 0;margin:1rem 0}.warn-box p{font-size:.88rem}
+  .code-block{background:var(--code-bg);color:#CDD6F4;border-radius:8px;padding:1.25rem;font-family:'JetBrains Mono',monospace;font-size:.78rem;overflow-x:auto;margin:1rem 0;line-height:1.6;white-space:pre}.comment{color:#6C7086}.keyword{color:#CBA6F7}.string{color:#A6E3A1}.func{color:#89B4FA}.num{color:#FAB387}.prop{color:#F9E2AF}.method{color:#F38BA8;font-weight:700}
+  .ai-spotlight{background:linear-gradient(135deg,#1A1A2E,#2D2D4E);color:#fff;border-radius:var(--r);padding:2rem;margin:1.5rem 0;position:relative;overflow:hidden}.ai-spotlight::before{display:block;font-size:.7rem;font-weight:700;letter-spacing:2px;color:#A78BFA;margin-bottom:.75rem;content:'⚡ MCP DEEP DIVE'}.ai-spotlight h3{font-size:1.3rem;font-weight:700;margin-bottom:.75rem;color:#fff}.ai-spotlight p{font-size:.95rem;color:#CDD6F4;margin-bottom:.5rem}.ai-spotlight ul{padding-left:1.5rem;color:#CDD6F4;font-size:.9rem}.ai-spotlight li{margin-bottom:.4rem}.ai-spotlight code{background:rgba(124,58,237,.25);padding:.1rem .4rem;border-radius:3px;color:#E0CFFF;font-family:'JetBrains Mono',monospace;font-size:.82rem}
+  .table-wrap{overflow-x:auto;margin:1rem 0}table{width:100%;border-collapse:collapse;font-size:.85rem}th{background:var(--navy);color:#fff;padding:.6rem 1rem;text-align:left;font-size:.78rem;text-transform:uppercase;letter-spacing:.5px}td{padding:.6rem 1rem;border-bottom:1px solid var(--border);vertical-align:top}tr:hover td{background:#F8FAFC}td code{background:var(--pw-soft);color:var(--pw);padding:.1rem .35rem;border-radius:3px;font-size:.78rem;font-family:'JetBrains Mono',monospace}
+  .prompt-box{background:linear-gradient(135deg,#FFFDF7,#FFF3E0);border:1px solid var(--accent);border-radius:var(--r);padding:1rem 1.25rem;margin:.75rem 0;font-family:'JetBrains Mono',monospace;font-size:.85rem;color:var(--navy);position:relative}.prompt-box::before{content:'PROMPT';position:absolute;top:-9px;left:1rem;background:var(--accent);color:#fff;padding:.15rem .55rem;font-size:.6rem;font-weight:700;letter-spacing:1px;border-radius:3px;font-family:'DM Sans',sans-serif}
+  .footer{text-align:center;padding:2rem;font-size:.8rem;color:var(--text-light);border-top:1px solid var(--border);margin-top:2rem}.footer strong{color:var(--navy)}
+  .pipeline{display:flex;align-items:center;justify-content:center;gap:.5rem;flex-wrap:wrap;background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:1.25rem;margin:1rem 0}.pipeline-step{padding:.6rem 1rem;border-radius:8px;font-size:.8rem;font-weight:600;text-align:center;min-width:130px;color:#fff}.ps-blue{background:var(--blue)}.ps-purple{background:var(--claude)}.ps-orange{background:var(--accent)}.ps-green{background:var(--pw)}.pipeline-arrow{color:var(--text-light);font-size:1.2rem;font-weight:700}
+  .qa-card{background:var(--purple-soft);border-radius:var(--r);padding:1.25rem;border:1px solid #CE93D8;margin:1rem 0}.qa-card p{font-size:.88rem;color:var(--claude);font-weight:500}
+</style>
+</head>
+<body>
+
+<nav class="nav"><div class="nav-logo">POWER FOX — Bonus</div><div class="nav-links"><a href="#que-es">Qué es MCP</a><a href="#playwright-mcp">Playwright MCP</a><a href="#instalacion">Instalación</a><a href="#tools">Tools que expone</a><a href="#flujos">Flujos típicos</a><a href="#cierre">Cierre</a></div></nav>
+
+<div class="hero">
+  <div class="hero-meta"><span class="hero-badge">Bonus · Playwright MCP</span><span class="hero-week">S4 · Viernes · Tema 5</span></div>
+  <h1>Playwright MCP + Claude Code — Browser automation con IA</h1>
+  <p class="hero-sub">El servidor MCP de Microsoft Playwright es el que cambia el flujo de testing en 2026: Claude lee la página real, hace click, escribe, captura snapshots, genera tests. <strong>Es el motor que conecta IA con el navegador</strong>. Aquí, deep dive completo.</p>
+  <div class="hero-time">Material complementario al Tema 1 · Para devs que quieran ir un nivel más profundo</div>
+</div>
+
+<div class="container">
+
+  <div class="toc">
+    <strong>Contenido</strong>
+    <a href="#que-es">01 · Qué es MCP (recap rápido)</a>
+    <a href="#playwright-mcp">02 · Playwright MCP — el servidor</a>
+    <a href="#instalacion">03 · Instalación y configuración</a>
+    <a href="#tools">04 · Tools que expone</a>
+    <a href="#flujos">05 · Flujos típicos en clase</a>
+    <a href="#cierre">06 · Trampas y cierre</a>
+  </div>
+
+  <!-- ========== 01 — MCP RECAP ========== -->
+  <div class="section" id="que-es">
+    <div class="section-header"><div class="section-num" style="background:var(--claude)">01</div><h2>Qué es MCP — recap rápido</h2></div>
+
+    <div class="ai-spotlight">
+      <h3>📡 Model Context Protocol</h3>
+      <p><strong>MCP</strong> es un protocolo estándar (Anthropic, ahora ampliamente adoptado) para que un agente como Claude Code se conecte a herramientas externas. Cada <em>servidor MCP</em> expone un conjunto de <em>tools</em> que el agente puede invocar.</p>
+      <p>Lo que ya conocéis: el MCP de M365 (S4-mié) le da a Claude poder de leer correos / SharePoint / Teams. El MCP de Supabase le da acceso a la base de datos. <strong>Playwright MCP le da acceso a un navegador real</strong>.</p>
+    </div>
+
+    <div class="content-grid">
+      <div class="card">
+        <h3>🔌 Cómo funciona</h3>
+        <ul>
+          <li>Tú declaras el server en <code>.claude/mcp.json</code> o equivalente</li>
+          <li>Claude Code lo lanza al arrancar la sesión</li>
+          <li>El server expone tools (funciones invocables)</li>
+          <li>Claude llama a las tools cuando lo necesita</li>
+          <li>Resultado vuelve al modelo, que decide siguiente paso</li>
+        </ul>
+      </div>
+      <div class="card">
+        <h3>🎯 Por qué es relevante hoy</h3>
+        <p>Hasta ahora Claude podía <strong>leer y escribir archivos</strong>. Con MCP de Playwright, Claude puede <strong>operar un navegador</strong>: abrir Power Apps, hacer click, escribir, esperar respuestas, capturar pantalla.</p>
+        <p style="margin-top:.5rem">Es la diferencia entre un IDE inteligente y un agente que de verdad opera el sistema.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- ========== 02 — PLAYWRIGHT MCP ========== -->
+  <div class="section" id="playwright-mcp">
+    <div class="section-header"><div class="section-num" style="background:var(--pw)">02</div><h2>Playwright MCP — el servidor</h2></div>
+
+    <p style="margin-bottom:1rem;font-size:.9rem;color:var(--text-mid)">Microsoft mantiene un servidor MCP oficial llamado <strong>Playwright MCP</strong>. Está integrado en el repo <code>power-platform-playwright-samples</code> (el del Tema 1) y también disponible como paquete independiente para uso general.</p>
+
+    <div class="content-grid">
+      <div class="card">
+        <h3>🟢 Variante general (cualquier web)</h3>
+        <p>Servidor MCP genérico — funciona con cualquier sitio. Útil para automatizar tareas web genéricas (rellenar formularios externos, scraping autorizado, demos).</p>
+        <ul>
+          <li>Paquete: <code>@playwright/mcp</code></li>
+          <li>Open source, mantenido por Microsoft</li>
+          <li>Funciona con cualquier navegador Playwright</li>
+        </ul>
+      </div>
+      <div class="card">
+        <h3>🔵 Variante Power Platform</h3>
+        <p>Versión integrada en <code>power-platform-playwright-samples</code> que ya conoce los page objects y selectores específicos de Canvas, MDA, Custom Pages, GenUX.</p>
+        <ul>
+          <li>Conoce <code>CanvasAppPage</code>, <code>ModelDrivenAppPage</code>, <code>GenUxPage</code></li>
+          <li>Maneja AG Grid y FormComponent automáticamente</li>
+          <li>Storage state dual-domain ya configurado</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="warn-box"><p><strong>⚠️ Importante:</strong> el servidor MCP <strong>opera un navegador real</strong>. Eso significa que si lo apuntas a producción, las acciones son reales. Trabaja siempre contra <strong>sandbox o entornos dev</strong> hasta que tengas confianza con los flujos.</p></div>
+  </div>
+
+  <!-- ========== 03 — INSTALACIÓN ========== -->
+  <div class="section" id="instalacion">
+    <div class="section-header"><div class="section-num" style="background:var(--blue)">03</div><h2>Instalación y configuración</h2></div>
+
+    <div class="content-grid">
+      <div class="card card-full">
+        <h3>📦 Variante general — la más rápida para empezar</h3>
+        <div class="code-block"><span class="comment"># 1. Asegúrate de tener Node.js 20+</span>
+node --version
+
+<span class="comment"># 2. Instala el paquete (npm o npx, recomendado npx para no contaminar global)</span>
+npx <span class="prop">@playwright/mcp</span>@latest
+
+<span class="comment"># 3. Configura en .claude/mcp.json (o similar según harness)</span></div>
+
+<div class="code-block"><span class="comment">// .claude/mcp.json — ejemplo</span>
+{
+  <span class="prop">"mcpServers"</span>: {
+    <span class="prop">"playwright"</span>: {
+      <span class="prop">"command"</span>: <span class="string">"npx"</span>,
+      <span class="prop">"args"</span>: [<span class="string">"-y"</span>, <span class="string">"@playwright/mcp@latest"</span>]
+    }
+  }
+}</div>
+
+        <p style="font-size:.85rem;color:var(--text-mid)">Reinicias Claude Code, y de pronto el agente tiene acceso a un navegador.</p>
+      </div>
+    </div>
+
+    <div class="content-grid">
+      <div class="card card-full">
+        <h3>🏢 Variante Power Platform — para el Tema 1</h3>
+        <div class="code-block"><span class="comment"># 1. Forkea el repo de samples</span>
+gh repo fork microsoft/power-platform-playwright-samples --clone
+
+<span class="comment"># 2. Setup dependencias (Rush monorepo)</span>
+<span class="keyword">cd</span> power-platform-playwright-samples
+npm install -g <span class="prop">@microsoft/rush</span>
+rush install
+rush build
+
+<span class="comment"># 3. Genera el storage state (1 vez por usuario)</span>
+npx playwright test auth-setup.spec.ts
+
+<span class="comment"># 4. Configura el MCP server apuntando a tu fork</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ========== 04 — TOOLS ========== -->
+  <div class="section" id="tools">
+    <div class="section-header"><div class="section-num" style="background:var(--accent)">04</div><h2>Tools que expone — qué puede hacer Claude</h2></div>
+
+    <p style="margin-bottom:1rem;font-size:.9rem;color:var(--text-mid)">Una vez instalado, Claude tiene a disposición ~25 tools de browser automation. Las más usadas:</p>
+
+    <div class="table-wrap">
+      <table>
+        <tr><th>Tool</th><th>Qué hace</th><th>Cuándo la usa Claude</th></tr>
+        <tr><td><code>browser_navigate</code></td><td>Abre una URL</td><td>"Ve a make.powerapps.com"</td></tr>
+        <tr><td><code>browser_snapshot</code></td><td>Captura DOM accesible (no imagen)</td><td>"Dime qué hay en pantalla"</td></tr>
+        <tr><td><code>browser_take_screenshot</code></td><td>Captura imagen real</td><td>"Pásame una captura"</td></tr>
+        <tr><td><code>browser_click</code></td><td>Click en un elemento</td><td>Después de identificarlo en el snapshot</td></tr>
+        <tr><td><code>browser_type</code></td><td>Escribe texto en un input</td><td>"Rellena el campo email"</td></tr>
+        <tr><td><code>browser_fill_form</code></td><td>Rellena form completo</td><td>Múltiples campos a la vez</td></tr>
+        <tr><td><code>browser_wait_for</code></td><td>Espera condición</td><td>Espera que cargue grid, modal, etc.</td></tr>
+        <tr><td><code>browser_select_option</code></td><td>Dropdown / select</td><td>Escoger una opción</td></tr>
+        <tr><td><code>browser_press_key</code></td><td>Tecla específica</td><td>Enter, Escape, atajos</td></tr>
+        <tr><td><code>browser_evaluate</code></td><td>JS arbitrario en la página</td><td>Casos avanzados</td></tr>
+        <tr><td><code>browser_network_requests</code></td><td>Lista de network calls</td><td>Debugging de APIs</td></tr>
+        <tr><td><code>browser_console_messages</code></td><td>Logs de consola</td><td>Detectar errores JS</td></tr>
+        <tr><td><code>browser_tabs</code></td><td>Gestiona pestañas</td><td>Workflows multi-pestaña</td></tr>
+      </table>
+    </div>
+
+    <div class="tip-box"><p><strong>💡 La diferencia clave:</strong> <code>browser_snapshot</code> devuelve el <strong>árbol de accesibilidad</strong>, no una imagen. Esto es crítico — el agente entiende la <em>semántica</em> de la página (botones, inputs, labels), no solo píxeles. Mucho más fiable que screenshots para automatización.</p></div>
+  </div>
+
+  <!-- ========== 05 — FLUJOS ========== -->
+  <div class="section" id="flujos">
+    <div class="section-header"><div class="section-num" style="background:var(--green)">05</div><h2>Flujos típicos en clase y trabajo real</h2></div>
+
+    <div class="content-grid">
+      <div class="card card-full">
+        <h3>🔄 Flujo 1 — Generar un test E2E desde un user flow descrito</h3>
+        <p style="margin-bottom:.75rem">Le explicas a Claude qué tiene que hacer un usuario. Claude abre Power Apps, recorre los pasos, y genera el .spec.ts equivalente con los selectores correctos.</p>
+        <div class="prompt-box">Abre la canvas app Time Tracker en mi entorno dev (URL en .env). Loguéate con el storage state. Selecciona la semana del 2026-04-29, registra 8h en lunes para el proyecto "LitoClean - Mantenimiento", guarda. Genera el .spec.ts equivalente que se pueda ejecutar en CI.</div>
+      </div>
+    </div>
+
+    <div class="content-grid">
+      <div class="card card-full">
+        <h3>🐛 Flujo 2 — Debuggear un test que falla en CI</h3>
+        <p style="margin-bottom:.75rem">El test pasa local, falla en CI. Claude abre el navegador, reproduce el flujo, captura console + network, identifica diferencia.</p>
+        <div class="prompt-box">El test approval-bulk.spec.ts falla en GitHub Actions con "locator not found" pero pasa local. Reproduce el flujo en mi browser usando el storage state de CI, captura snapshot + console + network, y dime qué está pasando.</div>
+      </div>
+    </div>
+
+    <div class="content-grid">
+      <div class="card card-full">
+        <h3>📸 Flujo 3 — Documentar visualmente una app</h3>
+        <p style="margin-bottom:.75rem">Recorre la app, toma capturas de cada pantalla, y genera un PDF/HTML de documentación visual. Útil para entregables a cliente.</p>
+        <div class="prompt-box">Recorre la model-driven app "LitoClean Service Management". Por cada vista principal (Accounts, Cases, Service Activities), abre, espera carga, captura screenshot, y describe en 1 párrafo qué hace. Genera un HTML resumen.</div>
+      </div>
+    </div>
+
+    <div class="content-grid">
+      <div class="card card-full">
+        <h3>🧪 Flujo 4 — Smoke test diario automatizado</h3>
+        <p style="margin-bottom:.75rem">Combina con <code>/schedule</code> (visto en S4-lunes): cada mañana Claude ejecuta un smoke test sobre los flujos críticos y avisa si algo no responde.</p>
+        <div class="prompt-box">Cada lunes a las 8:00 AM ejecuta: 1) abre Power Apps, 2) verifica que Time Tracker carga en menos de 5s, 3) verifica que los grids principales responden, 4) si algo falla, manda un email a yeriel@... con captura.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ========== 06 — CIERRE ========== -->
+  <div class="section" id="cierre">
+    <div class="section-header"><div class="section-num" style="background:var(--red)">06</div><h2>Trampas y cierre</h2></div>
+
+    <div class="warn-box"><p><strong>⚠️ Trampas reales:</strong></p>
+    <ul style="padding-left:1.25rem;margin-top:.5rem;font-size:.88rem">
+      <li><strong>No apuntes nunca el MCP a producción</strong> sin saber qué hace el agente. Si dudas, sandbox o dev.</li>
+      <li><strong>Storage state caduca</strong> — automatiza la regeneración, no esperes a que CI rompa.</li>
+      <li><strong>Costes</strong> — cada interacción del navegador consume tokens del modelo. Para tests masivos, ejecuta <em>Playwright sin MCP</em>; deja MCP para autoría y debugging.</li>
+      <li><strong>Recursos</strong> — el navegador headless consume RAM/CPU. En CI usa runners adecuados.</li>
+      <li><strong>Permisos</strong> — el MCP puede hacer cualquier acción que tú harías en el browser. Trátalo como un usuario más con el principio de menor privilegio.</li>
+    </ul>
+    </div>
+
+    <div class="qa-card"><p>❓ <strong>Pregunta para discusión:</strong> de los 4 flujos descritos, ¿cuál tiene más impacto en tu día a día? El smoke test diario suele ser el favorito de DevOps; los devs prefieren la generación de tests; los gerentes la documentación visual.</p></div>
+
+    <div class="tip-box"><p><strong>🚀 Tarea de 30 minutos en casa:</strong> instala el Playwright MCP general (no el de Power Platform), apúntalo a un sitio público (ej. tu propia web), y pídele a Claude que te genere un test E2E sobre el formulario de contacto. Mira cómo razona y genera.</p></div>
+  </div>
+
+</div>
+
+<div class="footer"><strong>POWER FOX</strong> · Formación Claude Code · S4 Viernes · Tema 5 (bonus) · Mayo 2026</div>
+
+</body>
+</html>
